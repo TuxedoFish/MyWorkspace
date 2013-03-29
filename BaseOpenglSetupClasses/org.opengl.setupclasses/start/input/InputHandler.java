@@ -23,7 +23,7 @@ public class InputHandler {
 		return f - (f*2);
 	}
 	public void update(DisplaySetup d) {
-		if(Mouse.isButtonDown(2)) {
+		if(Mouse.isButtonDown(1)) {
 			if(!mousescrolldown) {
 				lastx = Mouse.getX();
 				lasty = Mouse.getY();
