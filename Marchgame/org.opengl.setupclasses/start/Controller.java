@@ -127,7 +127,7 @@ public class Controller {
 	private ObjectLoader ol = new ObjectLoader();
 	
 	private DisplaySetup display;
-	
+	//this is a method
 	public void mouseChangeUpdate(float changex, float changey, float changez) {
 		if(changex != -1) {
 			this.changex = changex;
