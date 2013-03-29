@@ -11,8 +11,9 @@ import org.lwjgl.util.vector.Vector3f;
 import utils.Face;
 
 public class ObjectLoader {
-	public Object loadModel(File f) throws FileNotFoundException, IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(f));
+	public Object loadModel(String f) throws FileNotFoundException, IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(
+				new File(getClass().getResource(f).getFile())));
 		Object m = new Object();
 		String line;
 		

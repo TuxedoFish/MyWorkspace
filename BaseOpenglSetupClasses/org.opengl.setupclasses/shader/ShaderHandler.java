@@ -3,6 +3,7 @@ package shader;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,7 +86,8 @@ public class ShaderHandler {
 		
 		try {
 			//Creates a reader to get data from the file
-			BufferedReader reader = new BufferedReader(new FileReader(filename));
+			BufferedReader reader = new BufferedReader(new FileReader(
+					new File(getClass().getResource(filename).getFile())));
 			//Temporary holder variable
 			String line;
 			//Reads whole file

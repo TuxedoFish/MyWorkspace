@@ -132,8 +132,7 @@ public class Controller {
 
 		shapes.add(triangle);
 		try {
-			shapes.add(ol.loadModel(new File("C:/Users/harry/workspace/BaseOpenglSetupClasses/" +
-					"org.opengl.setupclasses/object/bunny.obj")).createUsable());
+			shapes.add(ol.loadModel("bunny.obj").createUsable());
 		} catch (IOException e) {
 			System.err.println("ERROROROROOR : " + e.getLocalizedMessage());
 			System.exit(1);
@@ -194,12 +193,11 @@ public class Controller {
 	public void setupshaders(ShaderHandler s) {
 		testprogram = s.createprogram();
 		
-		s.addshader(testprogram,"C:/Users/harry/workspace/BaseOpenglSetupClasses/org.opengl.setupclasses/shader/testshader.vert",ARBVertexShader.GL_VERTEX_SHADER_ARB);
-		s.addshader(testprogram,"C:/Users/harry/workspace/BaseOpenglSetupClasses/org.opengl.setupclasses/shader/testshader.frag",ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+		s.addshader(testprogram,"testshader.vert",ARBVertexShader.GL_VERTEX_SHADER_ARB);
+		s.addshader(testprogram,"testshader.frag",ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
 	    s.finishprogram(testprogram);
 	}
 	public float getChangeX() {
-		System.out.println(changex);
 		return changex;
 	}
 	public float getChangeY() {
