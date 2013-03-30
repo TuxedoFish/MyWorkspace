@@ -223,12 +223,12 @@ public class Controller {
 			lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
-			boss.addSprite(boss6, 0, 3, 1000);
-			boss.addSprite(boss1, 0, 3, 50);
-			boss.addSprite(boss2, 0, 3, 50);
-			boss.addSprite(boss3, 0, 6, 10);
-			boss.addSprite(boss4, 0, 6, 10);
-			boss.addSprite(boss5, 0, 6, 10);
+			boss.addSprite(boss6, 0, 3, 1000, 1, false);
+			boss.addSprite(boss1, 0, 3, 50, 1, true);
+			boss.addSprite(boss2, 0, 3, 50, 1, true);
+			boss.addSprite(boss3, 0, 6, 10, 1, true);
+			boss.addSprite(boss4, 0, 6, 10, 1, true);
+			boss.addSprite(boss5, 0, 6, 10, 1, true);
 			enemies = el.load(images.getImage("level1enemies.png"), this, player, bullets);
 		} catch (IOException e1) {
 			System.err.println("err loading img");

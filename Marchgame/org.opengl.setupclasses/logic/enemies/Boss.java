@@ -37,6 +37,7 @@ public class Boss {
 	private ArrayList<EnemyBullet> bullets = new ArrayList<EnemyBullet>();
 	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
 	private ArrayList<TexID> texids = new ArrayList<TexID>();
+	private ArrayList<BossPart> bps = new ArrayList<BossPart>();
 	private Sprite bullet;
 	private Sprite explosion;
 	private Vector2f bpos = new Vector2f(0.0f, 0.0f);
@@ -91,11 +92,12 @@ public class Boss {
 					(float)me.get(i).getHeight()/Display.getHeight());
 		}
 	}
-	public void addSprite(Sprite s, int lowesttexid, int highesttexid, int health) {
+	public void addSprite(Sprite s, int lowesttexid, int highesttexid, int health, int pattern, boolean hittable) {
 		me.add(s);
 		myrect.add(new Rectangle2D.Float());
 		this.texids.add(new TexID(lowesttexid, highesttexid, texid));
 		healths.add(health);
+		bps.add(new BossPart(health, hittable));
 	}
 	public void animate() {
 		for(int i=0; i<me.size(); i++) {
@@ -127,7 +129,8 @@ public class Boss {
 		if(!stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
 				for(int j=0; j<myrect.size(); j++) {
-					if(playerbullets.get(i).contains(me.get(j).getPos(), (float)myrect.get(j).getWidth(), (float)myrect.get(j).getHeight(), d)) {
+					if(playerbullets.get(i).contains(me.get(j).getPos(), (float)myrect.get(j).getWidth(), 
+							(float)myrect.get(j).getHeight(), d) && bps.get(j).isHittable()) {
 						if(!playerbullets.get(i).getDestroying()) {
 							parent.bulletexplode(i);
 							this.healths.set(j, healths.get(j)-5);
