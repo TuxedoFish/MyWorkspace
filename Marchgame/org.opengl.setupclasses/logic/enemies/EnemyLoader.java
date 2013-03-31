@@ -28,7 +28,7 @@ public class EnemyLoader {
 	public ArrayList<Enemy> loadCached(String level, Controller parent, Sprite player, ArrayList<EnemyBullet> bullets) {
 		ArrayList<Enemy> allenemies = new ArrayList<Enemy>();
 		ImageReturn images = new ImageReturn();
-		BufferedReader reader2;
+		BufferedReader reader2; //dad
 		try {
 			reader2 = images.getFile("enemies/" + level + ".txt");
 			String line = null;
