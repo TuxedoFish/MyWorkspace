@@ -229,7 +229,7 @@ public class Controller {
 			boss.addSprite(boss3, 0, 6, 10, 1, true);
 			boss.addSprite(boss4, 0, 6, 10, 1, true);
 			boss.addSprite(boss5, 0, 6, 10, 1, true);
-			enemies = el.load(images.getImage("level1enemies.png"), this, player, bullets);
+			enemies = el.loadCached("level1", this, player, bullets);
 		} catch (IOException e1) {
 			System.err.println("err loading img");
 			System.exit(1);
