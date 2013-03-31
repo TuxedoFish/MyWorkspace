@@ -53,10 +53,11 @@ public class Enemy {
 	private int hti;
 	private boolean isup = true;
 	private int width;
+	private TextureHolder[] textures;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
-			, int width, int pattern) {
+			, int width, int pattern, TextureHolder[] ts) {
 		this.width = width/Display.getWidth();
 		this.playerbullets = playerbullets;
 		this.parent = parent;
@@ -73,22 +74,37 @@ public class Enemy {
 		
 		ImageReturn images = new ImageReturn();
 		GridParser gp = new GridParser();
-		TextureHolder texture;
+		TextureHolder texture; TextureHolder texture2; TextureHolder texture3;
 		
 		try {
-			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
-			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, texture, 
-					0, new Vector2f(0.0f, 0.0f));
-			texture = gp.parseGrid(images.getImage("bullets2.png"), 19);
-			this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, texture, 
-					0, new Vector2f(0.0f, 0.0f));
-			texture = gp.parseGrid(images.getImage(texloc), 49);
-			me = new Sprite(images.getImage(texloc), parent, 100, 100, texture, 0, this.pos);
+			if(ts != null) {
+				textures = ts;
+				this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, ts[0], 
+						0, new Vector2f(0.0f, 0.0f), ts[0].getTexid());
+				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, ts[1], 
+						0, new Vector2f(0.0f, 0.0f), ts[1].getTexid());
+				me = new Sprite(images.getImage(texloc), parent, 100, 100, ts[2], 0, this.pos, ts[2].getTexid());
+			} else {
+				texture = gp.parseGrid(images.getImage("explosion.png"), 29);
+				this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, texture, 
+						0, new Vector2f(0.0f, 0.0f), texture.getTexid());
+				texture2 = gp.parseGrid(images.getImage("bullets2.png"), 19);
+				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, texture2, 
+						0, new Vector2f(0.0f, 0.0f), texture2.getTexid());
+				texture3 = gp.parseGrid(images.getImage(texloc), 49);
+				me = new Sprite(images.getImage(texloc), parent, 100, 100, texture3, 0, this.pos, texture3.getTexid());
+				textures = new TextureHolder[]{
+						texture, texture2, texture3
+				};
+			}
 		} catch (IOException e) {
 			System.err.println("err at enemy");
 			System.exit(1);
 			e.printStackTrace();
 		}
+	}
+	public TextureHolder[] getTextures() {
+		return textures;
 	}
 	public void animate() {
 		if(isup) {

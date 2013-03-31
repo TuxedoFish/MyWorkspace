@@ -66,10 +66,10 @@ public class Boss {
 		try {
 			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
 			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 50, 50, texture, 
-					0, new Vector2f(0.0f, 0.0f));
+					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
 			texture = gp.parseGrid(images.getImage("bullets.png"), 19);
 			this.bullet = new Sprite(images.getImage("bullets.png"), parent, 20, 20, texture, 
-					0, new Vector2f(0.0f, 0.0f));
+					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
 		} catch (IOException e) {
 			System.err.println("err at enemy");
 			System.exit(1);

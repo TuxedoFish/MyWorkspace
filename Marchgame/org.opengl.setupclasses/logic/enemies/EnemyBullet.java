@@ -49,7 +49,6 @@ public class EnemyBullet {
 		}
 		if(this.pos.x >= pos.x && this.pos.x <= pos.x + width 
 				&& this.pos.y <= pos.y && this.pos.y >= pos.y - height) {
-			System.out.println(this.pos + " : " + pos);
 			return true;
 		}
 		return false;

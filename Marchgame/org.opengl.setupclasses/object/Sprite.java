@@ -73,20 +73,20 @@ public class Sprite{
 	
 	private Controller parent;
 	
-	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int texid, Vector2f pos) {
+	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int currenttexid, 
+			Vector2f pos, int texid) {
 		parent = c;
 		any = true;
 		this.th = th;
 		texture = img;
-		TextureUtils util = new TextureUtils();
-		textureid = util.binddata(texture);
+		textureid = texid;
 		
 		modelmatrix.translate(pos);
 		
 		this.width = width;
 		this.height = height;
 		this.pos = pos;
-		datafb = getData(this.pos, width, height, texid);
+		datafb = getData(this.pos, width, height, currenttexid);
 		indices = getIndices(0);
 	}
 	public int getWidth() {

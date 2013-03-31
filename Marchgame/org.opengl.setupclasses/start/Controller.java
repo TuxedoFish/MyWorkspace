@@ -149,6 +149,8 @@ public class Controller {
 		this.texids.add(ch.newCol(c, colors));
 	}
 	public void startup() {
+		EnemyLoader el = new EnemyLoader();
+		enemies = el.loadCached("level1", this, player, bullets);
 		started = true;
 	}
 	public ArrayList<Integer> getColorsID() {
@@ -194,7 +196,6 @@ public class Controller {
 		Parser parser = new Parser();
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
-		EnemyLoader el = new EnemyLoader();
 		
 		try {
 			blocks = parser.parseLevel(images.getImage("level1.png"), 
@@ -207,19 +208,20 @@ public class Controller {
 			
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
 			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
-			player = new Sprite(images.getImage("spaceship.png"), this, 100, 100, texture, 0, new Vector2f(0.0f, -0.75f));
+			player = new Sprite(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
+					new Vector2f(0.0f, -0.75f), texture.getTexid());
 			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
 			this.explosion = new Sprite(images.getImage("explosion.png"), this, 70, 70, texture, 
-					0, new Vector2f(0.0f, 0.0f));
+					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
 			texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
 			TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
-			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f));
-			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f));
-			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f));
-			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f));
-			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
-			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
-			bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f));
+			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f), texture.getTexid());
+			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f), texture.getTexid());
+			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f), eye.getTexid());
+			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f), eye.getTexid());
+			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f), eye.getTexid());
+			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f), texture.getTexid());
+			bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f), texture2.getTexid());
 			lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
@@ -229,7 +231,6 @@ public class Controller {
 			boss.addSprite(boss3, 0, 6, 10, 1, true);
 			boss.addSprite(boss4, 0, 6, 10, 1, true);
 			boss.addSprite(boss5, 0, 6, 10, 1, true);
-			enemies = el.loadCached("level1", this, player, bullets);
 		} catch (IOException e1) {
 			System.err.println("err loading img");
 			System.exit(1);
@@ -436,8 +437,6 @@ public class Controller {
 			for(int i=0; i<enemies.size(); i++) {
 				enemies.get(i).scroll();
 			}
-		} else {
-			boss.render(sh, d);
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);
 		player.render(sh);

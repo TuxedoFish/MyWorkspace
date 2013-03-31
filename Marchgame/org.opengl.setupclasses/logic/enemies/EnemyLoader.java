@@ -17,6 +17,7 @@ import object.Sprite;
 import org.lwjgl.util.vector.Vector2f;
 
 import start.Controller;
+import texture.TextureHolder;
 
 public class EnemyLoader {
 	public EnemyLoader() {
@@ -27,8 +28,11 @@ public class EnemyLoader {
 	}
 	public ArrayList<Enemy> loadCached(String level, Controller parent, Sprite player, ArrayList<EnemyBullet> bullets) {
 		ArrayList<Enemy> allenemies = new ArrayList<Enemy>();
+		ArrayList<String> keys = new ArrayList<String>();
+		ArrayList<TextureHolder[]> textures = new ArrayList<TextureHolder[]>();
+		
 		ImageReturn images = new ImageReturn();
-		BufferedReader reader2; //dad
+		BufferedReader reader2;
 		try {
 			reader2 = images.getFile("enemies/" + level + ".txt");
 			String line = null;
@@ -47,8 +51,15 @@ public class EnemyLoader {
 				int hti = Integer.valueOf(reader.readLine());
 				int width = Integer.valueOf(reader.readLine());
 				int pattern = Integer.valueOf(reader.readLine());
-				allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-						bullets, texloc, lti, hti, width, pattern));
+				if(!keys.contains(parts[0])) {
+					allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
+							bullets, texloc, lti, hti, width, pattern, null));
+					keys.add(parts[0]);
+					textures.add(allenemies.get(allenemies.size()-1).getTextures());
+				} else {
+					allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
+							bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0]))));
+				}
 			}
 		} catch (IOException e) {
 			System.err.println("err getting img");
@@ -110,7 +121,7 @@ public class EnemyLoader {
 							writer.close();
 						}
 						allenemies.add(new Enemy(new Vector2f(i*25, (enemies.getHeight()*25)-(j*25)), 0, parent, 
-								ep, player, bullets, texture, lti, hti, width, pattern));
+								ep, player, bullets, texture, lti, hti, width, pattern, null));
 						if(!colors.contains(c)) {
 							writer2.println(name + " " + (i*25) + " " + ((enemies.getHeight()*25)-(j*25)));
 							names.add(name);
