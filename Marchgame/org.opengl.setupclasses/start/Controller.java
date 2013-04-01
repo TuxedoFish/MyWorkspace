@@ -115,6 +115,8 @@ public class Controller {
 	private LevelHolder blockdata;
 	private LevelRenderer lr;
 	
+	private Loader render;
+	
 	private ShaderHandler shaderhandler;
 	
 	private boolean started = false;
@@ -149,6 +151,48 @@ public class Controller {
 		this.texids.add(ch.newCol(c, colors));
 	}
 	public void startup() {
+		Parser parser = new Parser();
+		ImageReturn images = new ImageReturn();
+		
+		try {
+			blocks = parser.parseLevel(images.getImage("level1.png"), 
+					new Vector2f(-1.0f, -1.0f));
+			GridParser gp = new GridParser();
+			blocktex = gp.parseGrid(images.getImage("LAND.png"), 20);
+			levelheight = (images.getImage("LAND.png").getHeight() * 20) / (Display.getHeight());
+			lr = new LevelRenderer();
+			blockdata = lr.getLevelData(blocks, blocktex);
+			
+			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
+			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
+			player = new Sprite(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
+					new Vector2f(0.0f, -0.75f), texture.getTexid());
+			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
+			this.explosion = new Sprite(images.getImage("explosion.png"), this, 70, 70, texture, 
+					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
+			texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
+			TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
+			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f), texture.getTexid());
+			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f), texture.getTexid());
+			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f), eye.getTexid());
+			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f), eye.getTexid());
+			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f), eye.getTexid());
+			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f), texture.getTexid());
+			bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f), texture2.getTexid());
+			lr.update(blocks, display);
+			
+			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
+			boss.addSprite(boss6, 0, 3, 1000, 1, false);
+			boss.addSprite(boss1, 0, 3, 50, 1, true);
+			boss.addSprite(boss2, 0, 3, 50, 1, true);
+			boss.addSprite(boss3, 0, 6, 10, 1, true);
+			boss.addSprite(boss4, 0, 6, 10, 1, true);
+			boss.addSprite(boss5, 0, 6, 10, 1, true);
+		} catch (IOException e1) {
+			System.err.println("err loading img");
+			System.exit(1);
+			e1.printStackTrace();
+		}
 		EnemyLoader el = new EnemyLoader();
 		enemies = el.loadCached("level1", this, player, bullets);
 		started = true;
@@ -193,55 +237,17 @@ public class Controller {
 		
 		GridMaker gm = new GridMaker();
 		gm.makeGrid(20, 10);
-		Parser parser = new Parser();
-		shaderhandler = new ShaderHandler();
-		setupshaders(shaderhandler);
 		
-		try {
-			blocks = parser.parseLevel(images.getImage("level1.png"), 
-					new Vector2f(-1.0f, -1.0f));
-			GridParser gp = new GridParser();
-			blocktex = gp.parseGrid(images.getImage("LAND.png"), 20);
-			levelheight = (images.getImage("LAND.png").getHeight() * 20) / (Display.getHeight());
-			lr = new LevelRenderer();
-			blockdata = lr.getLevelData(blocks, blocktex);
-			
-			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
-			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
-			player = new Sprite(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
-					new Vector2f(0.0f, -0.75f), texture.getTexid());
-			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
-			this.explosion = new Sprite(images.getImage("explosion.png"), this, 70, 70, texture, 
-					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
-			texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
-			TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
-			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f), texture.getTexid());
-			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f), texture.getTexid());
-			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f), eye.getTexid());
-			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f), eye.getTexid());
-			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f), eye.getTexid());
-			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f), texture.getTexid());
-			bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f), texture2.getTexid());
-			lr.update(blocks, display);
-			
-			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
-			boss.addSprite(boss6, 0, 3, 1000, 1, false);
-			boss.addSprite(boss1, 0, 3, 50, 1, true);
-			boss.addSprite(boss2, 0, 3, 50, 1, true);
-			boss.addSprite(boss3, 0, 6, 10, 1, true);
-			boss.addSprite(boss4, 0, 6, 10, 1, true);
-			boss.addSprite(boss5, 0, 6, 10, 1, true);
-		} catch (IOException e1) {
-			System.err.println("err loading img");
-			System.exit(1);
-			e1.printStackTrace();
-		}
 		InputHandler ih = new InputHandler(this);
+		render = new Loader(display, shaderhandler, ih, started);
 		
 		ColorHandler ch = new ColorHandler();
 		texids.add(ch.newCol(Color.BLUE, colors));
 		TextureUtils util = new TextureUtils();
 		int titlescreen = 0;
+		
+		shaderhandler = new ShaderHandler();
+		setupshaders(shaderhandler);
 		
 		try {
 			titlescreen = util.binddata(images.getImage("title.png"));
@@ -266,10 +272,6 @@ public class Controller {
 		pos = 0.0f;
 		
 		ControllerTimer ct = new ControllerTimer(this);
-		
-//		for(int i=0; i<10; i++) {
-//			enemies.add(new Enemy(player, bullets));
-//		}
 		
 		while(!Display.isCloseRequested()) {
 			if(started) {
