@@ -50,6 +50,7 @@ import physics.Rectangle3D;
 
 import shader.ShaderHandler;
 import start.gui.Gui;
+import start.gui.GuiButton;
 import start.gui.GuiElementHandler;
 import start.gui.GuiString;
 import start.input.InputHandler;
@@ -84,11 +85,12 @@ import static org.lwjgl.util.glu.GLU.*;
 public class Controller {
 	private int testprogram;
 	private int textureID = 0;
-	private Gui gui;
 	private ArrayList<Shape> shapes = new ArrayList<Shape>();
 	private boolean jump;
 	private int stage; private int ministage;
 	private int score;
+	
+	private GuiElementHandler gui;
 	
 	private float changex; private float changey; private float changez;
 	private int health = 500;
@@ -99,6 +101,7 @@ public class Controller {
 	private boolean move = false;
 	private Boss boss;
 	private int levelheight;
+	private EnemyLoader el;
 	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
@@ -107,6 +110,9 @@ public class Controller {
 	private ArrayList<EnemyBullet> bullets = new ArrayList<EnemyBullet>();
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
+	private int loadpercent = 0;
+	
+	private InputHandler ih;
 	
 	private Vector2f bpos = new Vector2f(0.0f, 0.0f);
 	private Vector2f epos = new Vector2f(0.0f, 0.0f);
@@ -149,8 +155,20 @@ public class Controller {
 		this.texids.add(ch.newCol(c, colors));
 	}
 	public void startup() {
-		EnemyLoader el = new EnemyLoader();
-		enemies = el.loadCached("level1", this, player, bullets);
+		gui.clearElements();
+		ih.clearElements();
+		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+		el = new EnemyLoader(true, "level1", this, player, this.bullets, null);
+	}
+	public void startupfinish() {
+		enemies = el.getEnemies();
+		for(int i=0; i<enemies.size(); i++) {
+			IntBuffer vboids = BufferUtils.createIntBuffer(3);
+			glGenBuffers(vboids);
+			IntBuffer vaoids = BufferUtils.createIntBuffer(3);
+			glGenVertexArrays(vaoids);
+			enemies.get(i).finish(vboids, vaoids);
+		}
 		started = true;
 	}
 	public ArrayList<Integer> getColorsID() {
@@ -158,6 +176,12 @@ public class Controller {
 	}
 	public ArrayList<Color> getColors() {
 		return colors;
+	}
+	public void loadupdate(int percent) {
+		gui.clearElements();
+		ih.clearElements();
+		loadpercent += percent;
+		gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 	}
 	public void start() {
 		LineCollection lc = new LineCollection();
@@ -209,19 +233,23 @@ public class Controller {
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
 			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
 			player = new Sprite(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
-					new Vector2f(0.0f, -0.75f), texture.getTexid());
+					new Vector2f(0.0f, -0.75f));
+			this.player.finish(glGenBuffers(), glGenVertexArrays());
 			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
 			this.explosion = new Sprite(images.getImage("explosion.png"), this, 70, 70, texture, 
-					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
+					0, new Vector2f(0.0f, 0.0f));
+			this.explosion.finish(glGenBuffers(), glGenVertexArrays());
 			texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
 			TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
-			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f), texture.getTexid());
-			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f), texture.getTexid());
-			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f), eye.getTexid());
-			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f), eye.getTexid());
-			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f), eye.getTexid());
-			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f), texture.getTexid());
-			bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f), texture2.getTexid());
+			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f));
+			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f));
+			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f));
+			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f));
+			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
+			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
+			this.bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f));
+			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
+			
 			lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
@@ -231,12 +259,17 @@ public class Controller {
 			boss.addSprite(boss3, 0, 6, 10, 1, true);
 			boss.addSprite(boss4, 0, 6, 10, 1, true);
 			boss.addSprite(boss5, 0, 6, 10, 1, true);
+			IntBuffer vboids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
+			glGenBuffers(vboids);
+			IntBuffer vaoids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
+			glGenVertexArrays(vaoids);
+			boss.finish(vboids, vaoids);
 		} catch (IOException e1) {
 			System.err.println("err loading img");
 			System.exit(1);
 			e1.printStackTrace();
 		}
-		InputHandler ih = new InputHandler(this);
+		ih = new InputHandler(this);
 		
 		ColorHandler ch = new ColorHandler();
 		texids.add(ch.newCol(Color.BLUE, colors));
@@ -271,11 +304,18 @@ public class Controller {
 //			enemies.add(new Enemy(player, bullets));
 //		}
 		
+		gui = new GuiElementHandler();
+		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
+		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
+		
 		while(!Display.isCloseRequested()) {
 			if(started) {
 				rendergl(shaderhandler, display, lc);
 				ih.update(display);
 			} else {
+				if(el != null && el.getFinished()) {
+					this.startupfinish();
+				}
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				
@@ -294,14 +334,13 @@ public class Controller {
 				int perspmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "PerspectiveMatrix");
 				glUniformMatrix4(perspmatrixloc, false, display.getProjectionMatrix());
 				
-				int modelmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "ModelMatrix");
 				FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
 				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
-				glUniformMatrix4(modelmatrixloc, false, matrix);
 				
 				DataUtils utils = new DataUtils();
-				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 2, bgindicesb);
+				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 2, bgindicesb, matrix);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				gui.drawElements(shaderhandler);
 				ih.update(display);
 			}
 			Display.update();
@@ -309,36 +348,25 @@ public class Controller {
 		}
 		ct.interrupt();
 	}
-	public void drawLoadScreen(int percent, ShaderHandler sh) {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		//Clears display
-		glClear(GL_COLOR_BUFFER_BIT |
-			GL_DEPTH_BUFFER_BIT);
-		glLoadIdentity();
-		glPushMatrix();
-
-		ARBShaderObjects.glUseProgramObjectARB(shaderhandler.getPrograms().get(0).getId());
-		
-		int viewmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "ViewMatrix");
-		glUniformMatrix4(viewmatrixloc, false, display.getModelViewMatrix());
-		
-		int perspmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "PerspectiveMatrix");
-		glUniformMatrix4(perspmatrixloc, false, display.getProjectionMatrix());
-		
-		int modelmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "ModelMatrix");
-		FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
-		Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
-		glUniformMatrix4(modelmatrixloc, false, matrix);
-		
-		GuiElementHandler gui = new GuiElementHandler();
-		gui.newString("loading - " + percent, Color.white, 100, 20, new Vector2f(0.1f, 0.95f));
-		gui.drawElements(sh);
-		
-		Display.update();
-		Display.sync(60);
+	public void action(String message) {
+		if(message.equals("start")) {
+			this.levelselectscreen();
+		}
+		if(message.equals("levelselected")) {
+			this.startup();
+		}
+	}
+	public void levelselectscreen() {
+		gui.clearElements();
+		ih.clearElements();
+		for(int i=0; i<(float)Display.getWidth()/100.0f; i++) {
+			for(int j=0; j<(float)Display.getHeight()/25.5f; j++) {	
+				gui.newButton("button", new Vector2f(-1.0f + i*(100.0f/(float)Display.getWidth()*2), 1.0f - j*(20.0f/(float)Display.getHeight()*2)), 
+						100.0f, 20.0f, ih, this, "levelselected");
+				gui.newString("level1", Color.red, 100, 20, 
+						new Vector2f(-1.0f + i*(100.0f/(float)Display.getWidth()*2), 1.0f - j*(20.0f/(float)Display.getHeight()*2)));
+			}
+		}
 	}
 	public void update() {
 		for(int i=0; i<enemies.size(); i++) {
@@ -427,10 +455,6 @@ public class Controller {
 		glUniform4f(lightloc, light.x, light.y, light.z, light.w);
 		glUniform4f(viewdirloc, viewdir.x, viewdir.y, viewdir.z, viewdir.w);
 		
-		GuiElementHandler gui = new GuiElementHandler();
-		gui.newString("score : " + health, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-		gui.drawElements(sh);
-		
 		if((d.getPos().y + 0.25f > levelheight*-1)) {
 			display.changepos(0.0f, -0.005f, 0.0f);
 			player.changePos(0.0f, 0.005f);
@@ -439,8 +463,9 @@ public class Controller {
 			}
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);
-		player.render(sh);
-		boss.render(sh, d);
+		DataUtils util = new DataUtils();
+		boss.render(sh, d, util);
+		player.render(sh, util);
 		
 		if(stage >= 35) {
 			stage = 0;
@@ -477,7 +502,7 @@ public class Controller {
 				bullets.get(i).age();
 				bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
 				bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-				bullet.render(sh);
+				bullet.render(sh, util);
 			}
 		}
 		for(int i=0; i<explosions.size(); i++) {
@@ -485,21 +510,22 @@ public class Controller {
 			explosions.get(i).age();
 			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-			explosion.render(sh);
+			explosion.render(sh, util);
 			if(explosions.get(i).getAge()>24) {
 				explosions.remove(i);
 				i-=1;
 			}
 		}
 		for(int i=0; i<enemies.size(); i++) {
-			enemies.get(i).render(shaderhandler, display);
+			enemies.get(i).render(shaderhandler, display, util);
 		}
+		gui.clearElements();
+		ih.clearElements();
+		gui.newString("score : " + health, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+		gui.drawElements(sh);
 	}
 	public ShaderHandler getSh() {
 		return shaderhandler;
-	}
-	public Gui getGui() {
-		return gui;
 	}
 	public void setupshaders(ShaderHandler s) {
 		testprogram = s.createprogram();

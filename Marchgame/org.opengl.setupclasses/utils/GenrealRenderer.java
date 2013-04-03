@@ -38,7 +38,6 @@ public class GenrealRenderer {
 		emptymatrixfb.flip();
 	}
 	public void renderLineCollection(LineCollection lc, ShaderHandler sh, DisplaySetup d, Controller parent) {
-		
 		if(parent.getColors().indexOf(new Color(0.0f, 0.0f, 0.0f, 1.0f)) == -1) {
 			parent.addColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
 		}

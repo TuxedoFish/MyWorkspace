@@ -57,8 +57,8 @@ public class Sprite{
 	private IntBuffer indices;
 	
 	private int textureid;
-	private int vboID = glGenBuffers();
-	private int vaoID = glGenVertexArrays();
+	private int vboID = 0;
+	private int vaoID = 0;
 	
 	private int width = 0, height = 0;
 	private TextureHolder th;
@@ -74,12 +74,11 @@ public class Sprite{
 	private Controller parent;
 	
 	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int currenttexid, 
-			Vector2f pos, int texid) {
+			Vector2f pos) {
 		parent = c;
 		any = true;
 		this.th = th;
 		texture = img;
-		textureid = texid;
 		
 		modelmatrix.translate(pos);
 		
@@ -88,6 +87,12 @@ public class Sprite{
 		this.pos = pos;
 		datafb = getData(this.pos, width, height, currenttexid);
 		indices = getIndices(0);
+	}
+	public void finish(int vboid, int vaoid) {
+		this.vboID = vboid;
+		this.vaoID = vaoid;
+		TextureUtils util = new TextureUtils();
+		this.textureid = util.binddata(texture);
 	}
 	public int getWidth() {
 		return width;
@@ -172,20 +177,14 @@ public class Sprite{
 	public void changeTexture(int texid) {
 		datafb = getData(pos, width, height, texid);
 	}
-	public void render(ShaderHandler sh) {
+	public void render(ShaderHandler sh, DataUtils util) {
 		if(any) {
-			DataUtils util = new DataUtils();
-			
-			util.setup(datafb, vaoID, vboID, parent.getSh(), textureid, 2, indices);
-			
 			FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);
 			Matrix4f.mul(rotmatrix, modelmatrix, new Matrix4f()).store(modelmatrixfb);
 			modelmatrixfb.flip();
 			
-			int modelmatrixloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "ModelMatrix");
-			glUniformMatrix4(modelmatrixloc, false, modelmatrixfb);
-			
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			util.setup(datafb, vaoID, vboID, parent.getSh(), textureid, 2, indices, modelmatrixfb);
+			util.drawRectangle();
 		}
 	}
 	public void rotate(float angle) {

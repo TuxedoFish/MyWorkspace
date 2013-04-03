@@ -4,6 +4,7 @@ import images.ImageReturn;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
@@ -18,6 +19,7 @@ import shader.ShaderHandler;
 import start.Controller;
 import start.DisplaySetup;
 import texture.TextureHolder;
+import utils.DataUtils;
 
 public class Boss {
 	private Vector2f pos;
@@ -66,14 +68,24 @@ public class Boss {
 		try {
 			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
 			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 50, 50, texture, 
-					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
+					0, new Vector2f(0.0f, 0.0f));
 			texture = gp.parseGrid(images.getImage("bullets.png"), 19);
 			this.bullet = new Sprite(images.getImage("bullets.png"), parent, 20, 20, texture, 
-					0, new Vector2f(0.0f, 0.0f), texture.getTexid());
+					0, new Vector2f(0.0f, 0.0f));
 		} catch (IOException e) {
 			System.err.println("err at enemy");
 			System.exit(1);
 			e.printStackTrace();
+		}
+	}
+	public int getAmountOfParts() {
+		return me.size();
+	}
+	public void finish(IntBuffer vboids, IntBuffer vaoids) {
+		this.explosion.finish(vboids.get(0), vaoids.get(0));
+		this.bullet.finish(vboids.get(1), vaoids.get(1));
+		for(int i=0; i<me.size(); i++) {
+			me.get(i).finish(vboids.get(i+1), vaoids.get(i+1));
 		}
 	}
 	public void update(DisplaySetup d) {
@@ -118,7 +130,7 @@ public class Boss {
 			}
 		}
 	}
-	public void render(ShaderHandler sh, DisplaySetup d) {
+	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
 		if(anstage == 5) {
 			animate();
@@ -148,14 +160,14 @@ public class Boss {
 				}
 			}
 			for(int i=0; i<me.size(); i++) {
-				me.get(i).render(sh);
+				me.get(i).render(sh, util);
 			}
 			for(int i=0; i<explosions.size(); i++) {
 				explosion.changeTexture((explosions.get(i).getAge()/5));
 				explosions.get(i).age();
 				explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 				epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-				explosion.render(sh);
+				explosion.render(sh, util);
 				if(explosions.get(i).getAge()>24) {
 					explosions.remove(i);
 					i-=1;
@@ -191,7 +203,7 @@ public class Boss {
 					bullets.get(i).age();
 					bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
 					bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-					bullet.render(sh);
+					bullet.render(sh, util);
 					if(!bullets.get(i).getDestroying()) {
 						Vector4f tempos = new Vector4f(bullets.get(i).getPos().x + ((bullet.getWidth()/Display.getWidth())/2.0f), 
 								bullets.get(i).getPos().y - ((bullet.getHeight()/Display.getHeight())/2.0f), 0.0f, 1.0f);

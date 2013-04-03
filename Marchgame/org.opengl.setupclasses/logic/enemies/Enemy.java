@@ -5,6 +5,7 @@ import images.ImageReturn;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
@@ -23,6 +24,7 @@ import shader.ShaderHandler;
 import start.Controller;
 import start.DisplaySetup;
 import texture.TextureHolder;
+import utils.DataUtils;
 
 public class Enemy {
 	private Vector2f pos;
@@ -80,19 +82,19 @@ public class Enemy {
 			if(ts != null) {
 				textures = ts;
 				this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, ts[0], 
-						0, new Vector2f(0.0f, 0.0f), ts[0].getTexid());
+						0, new Vector2f(0.0f, 0.0f));
 				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, ts[1], 
-						0, new Vector2f(0.0f, 0.0f), ts[1].getTexid());
-				me = new Sprite(images.getImage(texloc), parent, 100, 100, ts[2], 0, this.pos, ts[2].getTexid());
+						0, new Vector2f(0.0f, 0.0f));
+				me = new Sprite(images.getImage(texloc), parent, 100, 100, ts[2], 0, this.pos);
 			} else {
 				texture = gp.parseGrid(images.getImage("explosion.png"), 29);
 				this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, texture, 
-						0, new Vector2f(0.0f, 0.0f), texture.getTexid());
+						0, new Vector2f(0.0f, 0.0f));
 				texture2 = gp.parseGrid(images.getImage("bullets2.png"), 19);
 				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, texture2, 
-						0, new Vector2f(0.0f, 0.0f), texture2.getTexid());
+						0, new Vector2f(0.0f, 0.0f));
 				texture3 = gp.parseGrid(images.getImage(texloc), 49);
-				me = new Sprite(images.getImage(texloc), parent, 100, 100, texture3, 0, this.pos, texture3.getTexid());
+				me = new Sprite(images.getImage(texloc), parent, 100, 100, texture3, 0, this.pos);
 				textures = new TextureHolder[]{
 						texture, texture2, texture3
 				};
@@ -102,6 +104,11 @@ public class Enemy {
 			System.exit(1);
 			e.printStackTrace();
 		}
+	}
+	public void finish(IntBuffer vboids, IntBuffer vaoids) {
+		this.explosion.finish(vboids.get(0), vaoids.get(0));
+		this.bullet.finish(vboids.get(1), vaoids.get(1));
+		this.me.finish(vboids.get(2), vaoids.get(2));
 	}
 	public TextureHolder[] getTextures() {
 		return textures;
@@ -142,7 +149,7 @@ public class Enemy {
 	public void scroll() {
 		me.changePos(0.0f, 0.005f);
 	}
-	public void render(ShaderHandler sh, DisplaySetup d) {
+	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
 		animate();
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
@@ -185,14 +192,14 @@ public class Enemy {
 				Vector2f startpos = ep.getPoint(0).getPos();
 				me.setPos(startpos.x, startpos.y + pos.y + 1.0f);
 			}
-			me.render(sh);
+			me.render(sh, util);
 		}
 		for(int i=0; i<explosions.size(); i++) {
 			explosion.changeTexture((explosions.get(i).getAge()/5));
 			explosions.get(i).age();
 			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-			explosion.render(sh);
+			explosion.render(sh, util);
 			if(explosions.get(i).getAge()>24) {
 				explosions.remove(i);
 				i-=1;
@@ -232,7 +239,7 @@ public class Enemy {
 				bullets.get(i).age();
 				bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
 				bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-				bullet.render(sh);
+				bullet.render(sh, util);
 				if(!bullets.get(i).getDestroying()) {
 					if(bullets.get(i).contains(playersprite.getPos(), (float)player.getWidth(), (float)player.getHeight(), d)) {
 						bullets.get(i).setDestroyingSelf(true);

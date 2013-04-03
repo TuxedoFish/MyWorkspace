@@ -39,10 +39,13 @@ import object.VertexHandler;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import shader.ShaderHandler;
+import start.Controller;
+import start.input.InputHandler;
 import texture.TextureAtlas;
 import utils.DataUtils;
 import utils.TextureUtils;
@@ -65,8 +68,8 @@ public class GuiElementHandler {
 	public GuiElementHandler() {
 		texid = glGenTextures();
 	}
-	public void newString (String str, Color c, float  width, float height, Vector2f topleft) {
-		elements.add(new GuiString(str, c, new Vector2f(topleft.x + nextx, topleft.y + nexty), 
+	public void newString(String str, Color c, float  width, float height, Vector2f topleft) {
+		elements.add(new GuiString(str, c, new Vector2f(topleft.x, topleft.y), 
 				width, height, topleft));
 		
 		Rectangle2D r = elements.get(elements.size()-1).getBounds();
@@ -75,6 +78,12 @@ public class GuiElementHandler {
 		if(r.getHeight()/(Display.getHeight()/2.0f) > maxheight) {
 			maxheight = (float)r.getHeight()/(Display.getHeight()/2.0f);
 		}
+	}
+	public void newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
+			String eventmessage) {
+		GuiButton button = new GuiButton(loc, pos, width, height, parent, eventmessage);
+		elements.add(button);
+		ih.addButton(button);
 	}
 	public void newLine() {
 		nextx = 0.0f;
@@ -88,14 +97,15 @@ public class GuiElementHandler {
 		elements.clear();
 	}
 	public void drawElements(ShaderHandler sh) {
-		for(int i=0; i<elements.size();i++) {
+		for(int i=0; i<10 && i<elements.size();i++) {
 			TextureUtils texutil = new TextureUtils();
 			texutil.binddata(elements.get(i).getImg(), texid);
 			
 			DataUtils datautil = new DataUtils();
-			datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 1, elements.get(i).getIndices());
-	
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			if(elements.size() != 0) {
+				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 1, elements.get(i).getIndices(), null);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			}
 		}
 	}
 }

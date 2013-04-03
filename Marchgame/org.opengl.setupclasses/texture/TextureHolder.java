@@ -8,26 +8,22 @@ import org.lwjgl.util.vector.Vector2f;
 import utils.TextureUtils;
 
 public class TextureHolder {
-	int parentwidth;
-	int parentheight;
-	ArrayList<Texture> tex = new ArrayList<Texture>();
-	int currenttexid = 0;
-	
-	int textureid;
+	private int parentwidth;
+	private int parentheight;
+	private ArrayList<Texture> tex = new ArrayList<Texture>();
+	private int currenttexid = 0;
+	private BufferedImage img;
 	
 	public TextureHolder(int parentsize, BufferedImage img) {
 		this.parentwidth = parentsize;
 		this.parentheight = parentsize;
-		
-		TextureUtils util = new TextureUtils();
-		textureid = util.binddata(img);
+		this.img = img;
 	}
 	public TextureHolder(int parentwidth, int parentheight, BufferedImage img) {
 		this.parentwidth = parentwidth;
 		this.parentheight = parentheight;
 		
 		TextureUtils util = new TextureUtils();
-		textureid = util.binddata(img);
 	}
 	public void addTexture(Vector2f topleft, int size) {
 		tex.add(new Texture(currenttexid, topleft, size, parentwidth));
@@ -38,7 +34,11 @@ public class TextureHolder {
 		currenttexid += 1;
 	}
 	public int getTexid() {
-		return textureid;
+		TextureUtils util = new TextureUtils();
+		return util.binddata(img);
+	}
+	public BufferedImage getImg() {
+		return img;
 	}
 	public Vector2f[] getTextureCoords(int texid) {
 		boolean done = false;

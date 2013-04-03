@@ -1,5 +1,7 @@
 package start.gui;
 
+import images.ImageReturn;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -40,16 +42,23 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
+import start.Controller;
 import utils.TextureUtils;
 
 public class GuiButton implements GuiElement{
-	private BufferedImage img;
+	private BufferedImage[] imgs;
 	private Vector2f pos;
 	private IntBuffer indicesfb;
 	private FloatBuffer datafb;
 	private Rectangle2D bounds;
+	private int current = 0;
+	private Controller parent;
+	private String message;
 	
-	public GuiButton(String str, Color c, Vector2f pos, float width, float height, Vector2f topleft) {
+	public GuiButton(String buttonname, Vector2f pos, float width, float height, Controller parent, 
+			String eventmessage) {
+		this.parent = parent;
+		this.message = eventmessage;
 		this.pos = pos;
 		int[] indices = {
 				0, 1, 2,
@@ -59,45 +68,30 @@ public class GuiButton implements GuiElement{
 		indicesfb.put(indices);
 		indicesfb.flip();
 		
-		img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = img.getGraphics();
+		ImageReturn images = new ImageReturn();
 		
-		Rectangle2D r = g.getFontMetrics().getStringBounds(str, 0, str.length(), g);
-		
-		for(int i=0; i < str.length();i++) {
-			if(!((Math.abs(pos.x-topleft.x)) + (g.getFontMetrics().getStringBounds(str, 0, i, g).getWidth()
-					/(Display.getWidth()/2)) < width)) {
-				if(i < 3) {
-					if(i < 2) {
-						str = "";
-					} else {
-						str = "...";
-					}
-				} else {
-					str = str.substring(0, i-2) + "...";
-				}
-				i = str.length();
-			}
+		try {
+			imgs = new BufferedImage[] {
+					images.getImage(buttonname+".png"), 
+					images.getImage(buttonname+"hover.png"), 
+					images.getImage(buttonname+"pressed.png"), 
+			};
+		} catch (IOException e) {
+			System.err.println("err finding button @ " + buttonname);
+			e.printStackTrace();
 		}
 		
-		img = new BufferedImage((int)r.getWidth(), (int)r.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-		g = img.getGraphics();
-		
-		g.setColor(c);
-		g.drawString(str, 0, (int)r.getHeight()/4*3);
-		g.dispose();
-		
 		float[] data = {
-				pos.x, pos.y, -1.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
+				pos.x, pos.y, 0.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x + (float)((r.getWidth()/Display.getWidth())*3), pos.y, -1.0f, 1.0f, 	 1.0f, 0.0f, 
+				pos.x + (float)((width/Display.getWidth())*2), pos.y, 0.0f, 1.0f, 	 1.0f, 0.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x + (float)((r.getWidth()/Display.getWidth())*3), pos.y - (float)((r.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 
+				pos.x + (float)((width/Display.getWidth())*2), pos.y - (float)((height/Display.getHeight())*2), 0.0f, 1.0f, 
 				1.0f, 1.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x, pos.y - (float)((r.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 	0.0f, 1.0f, 
+				pos.x, pos.y - (float)((height/Display.getHeight())*2), 0.0f, 1.0f, 0.0f, 1.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 		};
 		
@@ -105,7 +99,7 @@ public class GuiButton implements GuiElement{
 		datafb.put(data);
 		datafb.rewind();
 		
-		this.bounds = r;
+		this.bounds = new Rectangle2D.Float((pos.x+1.0f)*(Display.getWidth()/2), (pos.y+1.0f)*(Display.getHeight()/2), width, height);
 	}
 	public Rectangle2D getBounds() { 
 		return bounds;
@@ -120,10 +114,16 @@ public class GuiButton implements GuiElement{
 		return indicesfb;
 	}
 	public BufferedImage getImg() {
-		return img;
+		return imgs[current];
+	}
+	public void setState(int state) {
+		if(state == 2) {
+			parent.action(message);
+		}
+		this.current = state;
 	}
 	public void setImg(BufferedImage img) {
-		this.img = img;
+		this.imgs = imgs;
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;

@@ -305,10 +305,8 @@ public class Shape {
 		if(oc) {
 			texid = 0;
 		}
-		util.setup(onetriangle, vh, sh, texids.get(texid), 1, indicesb);
+		util.setup(onetriangle, vh, sh, texids.get(texid), 1, indicesb, modelmatrixfb);
 		//set matrix
-		int modelmatrixloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "ModelMatrix");
-		glUniformMatrix4(modelmatrixloc, false, modelmatrixfb);
 		//Draw them as triangles
 		glDrawArrays(GL_TRIANGLES, 0, noindices);
 	}
