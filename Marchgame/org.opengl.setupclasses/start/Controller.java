@@ -378,6 +378,7 @@ public class Controller {
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).fire(display);
 		}
+		boss.shoot();
 	}
 	public void damage(int d) {
 		health -= d;
@@ -529,7 +530,7 @@ public class Controller {
 			prevhealth = health;
 			gui.clearElements();
 			ih.clearElements();
-			gui.newString("score : " + health, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+			gui.newString("score : " + health, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 		}
 		gui.drawElements(sh);
 	}

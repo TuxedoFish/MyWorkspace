@@ -219,7 +219,9 @@ public class Enemy {
 			if(!bullets.get(i).getDestroying()) {
 				bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.sin(bullets.get(i).getRot())/200.0f)), 
 					(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/200.0f))));
-				if(bullets.get(i).getAge() > 100) {
+				Vector4f bulletp = new Vector4f(bullets.get(i).getPos().x, bullets.get(i).getPos().y, 0.0f, 1.0f);
+				Matrix4f.transform(d.getModelViewMatrixAsMatrix(), bulletp, bulletp);
+				if(bulletp.x >= 1.1f || bulletp.x <= -1.1f || bulletp.y >= 1.1f || bulletp.y <= -1.1f) {
 					bullets.get(i).setDestroyingSelf(true);
 					explosions.add(new EnemyBullet(bullets.get(i).getPos(), 0.0f, 70));
 					changed = true;

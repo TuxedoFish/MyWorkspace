@@ -67,10 +67,10 @@ public class Boss {
 		TextureHolder texture;
 		try {
 			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
-			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 50, 50, texture, 
+			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, texture, 
 					0, new Vector2f(0.0f, 0.0f));
-			texture = gp.parseGrid(images.getImage("bullets.png"), 19);
-			this.bullet = new Sprite(images.getImage("bullets.png"), parent, 20, 20, texture, 
+			texture = gp.parseGrid(images.getImage("bullets2.png"), 19);
+			this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, texture, 
 					0, new Vector2f(0.0f, 0.0f));
 		} catch (IOException e) {
 			System.err.println("err at enemy");
@@ -109,7 +109,7 @@ public class Boss {
 		myrect.add(new Rectangle2D.Float());
 		this.texids.add(new TexID(lowesttexid, highesttexid, texid));
 		healths.add(health);
-		bps.add(new BossPart(health, hittable));
+		bps.add(new BossPart(pattern, hittable));
 	}
 	public void animate() {
 		for(int i=0; i<me.size(); i++) {
@@ -126,6 +126,17 @@ public class Boss {
 					this.texids.get(i).setCurrenttexid(texids.get(i).getCurrenttexid()-1);
 				} else {
 					this.texids.get(i).setUp(true);
+				}
+			}
+		}
+	}
+	public void shoot() {
+		for(int i=0; i<me.size(); i++) {
+			if(bps.get(i).isHittable()) {
+				if(bps.get(i).getPattern() == 1) {
+					for(float j=0.0f; j<2*Math.PI; j+= Math.PI/4) {
+						bullets.add(new EnemyBullet(me.get(i).getPos(), j, 40));
+					}
 				}
 			}
 		}
@@ -183,7 +194,9 @@ public class Boss {
 				if(!bullets.get(i).getDestroying()) {
 					bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.sin(bullets.get(i).getRot())/100.0f)), 
 						(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/100.0f))));
-					if(bullets.get(i).getAge() > 100) {
+					Vector4f bulletp = new Vector4f(bullets.get(i).getPos().x, bullets.get(i).getPos().y, 0.0f, 1.0f);
+					Matrix4f.transform(d.getModelViewMatrixAsMatrix(), bulletp, bulletp);
+					if(bulletp.x >= 1.1f || bulletp.x <= -1.1f || bulletp.y >= 1.1f || bulletp.y <= -1.1f) {
 						bullets.get(i).setDestroyingSelf(true);
 						explosions.add(new EnemyBullet(bullets.get(i).getPos(), 0.0f, 70));
 						changed = true;
@@ -205,21 +218,8 @@ public class Boss {
 					bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
 					bullet.render(sh, util);
 					if(!bullets.get(i).getDestroying()) {
-						Vector4f tempos = new Vector4f(bullets.get(i).getPos().x + ((bullet.getWidth()/Display.getWidth())/2.0f), 
-								bullets.get(i).getPos().y - ((bullet.getHeight()/Display.getHeight())/2.0f), 0.0f, 1.0f);
-						tempos = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), tempos, tempos);
-						Vector2f p1 = new Vector2f((float)player.getX(), (float)player.getY());
-						Vector2f p2 = new Vector2f((float)(player.getX() + player.getWidth()), (float)player.getY());
-						Vector2f p3 = new Vector2f((float)(player.getX() + player.getWidth()), (float)(player.getY() - player.getHeight()));
-						Vector2f p4 = new Vector2f((float)player.getX(), (float)(player.getY() - player.getHeight()));
-						if(Math.abs(Math.sqrt(Math.pow(p1.x - tempos.x, 2) + 
-								Math.pow(p1.y - tempos.y, 2))) < (float)20.0f/Display.getHeight() ||
-						   Math.abs(Math.sqrt(Math.pow(p2.x - tempos.x, 2) + 
-								Math.pow(p2.y - tempos.y, 2))) < (float)20.0f/Display.getHeight() ||
-						   Math.abs(Math.sqrt(Math.pow(p3.x - tempos.x, 2) + 
-								Math.pow(p3.y - tempos.y, 2))) < (float)20.0f/Display.getHeight() ||
-						   Math.abs(Math.sqrt(Math.pow(p4.x - tempos.x, 2) + 
-								Math.pow(p4.y - tempos.y, 2))) < (float)20.0f/Display.getHeight()) {
+						if(bullets.get(i).contains(playersprite.getPos(), 
+								(float)player.getWidth(), (float)player.getHeight(), d)) {
 							bullets.get(i).setDestroyingSelf(true);
 							explosions.add(new EnemyBullet(bullets.get(i).getPos(), 0.0f, 70));
 							explosions.add(new EnemyBullet(new Vector2f((float)(bullets.get(i).getPos().x + (Math.random()*0.1f)-0.05f), (float)(bullets.get(i).getPos().y + (Math.random()*0.04f)-0.02f)), 0.0f, 70));
