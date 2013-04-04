@@ -56,6 +56,8 @@ public class Enemy {
 	private boolean isup = true;
 	private int width;
 	private TextureHolder[] textures;
+	private int texturestage;
+	private int speed;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
@@ -66,6 +68,7 @@ public class Enemy {
 		this.pattern = pattern;
 		this.lti = lowesttexid;
 		this.hti = highesttexid;
+		this.speed = 5;
 		this.pos = new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f)));
 		this.playersprite = player;
@@ -87,13 +90,13 @@ public class Enemy {
 						0, new Vector2f(0.0f, 0.0f));
 				me = new Sprite(images.getImage(texloc), parent, 100, 100, ts[2], 0, this.pos);
 			} else {
-				texture = gp.parseGrid(images.getImage("explosion.png"), 29);
+				texture = gp.parseGrid(images.getImage("explosion.png"), 29.0f);
 				this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, texture, 
 						0, new Vector2f(0.0f, 0.0f));
-				texture2 = gp.parseGrid(images.getImage("bullets2.png"), 19);
+				texture2 = gp.parseGrid(images.getImage("bullets2.png"), 19.0f);
 				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, texture2, 
 						0, new Vector2f(0.0f, 0.0f));
-				texture3 = gp.parseGrid(images.getImage(texloc), 49);
+				texture3 = gp.parseGrid(images.getImage(texloc), 49.0f);
 				me = new Sprite(images.getImage(texloc), parent, 100, 100, texture3, 0, this.pos);
 				textures = new TextureHolder[]{
 						texture, texture2, texture3
@@ -114,21 +117,26 @@ public class Enemy {
 		return textures;
 	}
 	public void animate() {
-		if(isup) {
-			if(hti>texid+1) {
-				me.changeTexture(texid+1);
-				texid += 1;
-			} else {
-				isup = false;
-			}
-		} else {
-			if(lti<texid-1) {
-				me.changeTexture(texid-1);
-				texid -= 1;
-			} else {
-				isup = true;
-			}
-		}
+//		if(texturestage>speed) {
+//			if(isup) {
+//				if(hti>texid+1) {
+//					me.changeTexture(texid+1);
+//					texid += 1;
+//				} else {
+//					isup = false;
+//				}
+//			} else {
+//				if(lti<texid-1) {
+//					me.changeTexture(texid-1);
+//					texid -= 1;
+//				} else {
+//					isup = true;
+//				}
+//			}
+//			texturestage = 0;
+//		} else {
+//			texturestage += 1;
+//		}
 	}
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
@@ -152,6 +160,7 @@ public class Enemy {
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
 		animate();
+		
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
 				if(playerbullets.get(i).contains(me.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)) {
@@ -192,6 +201,7 @@ public class Enemy {
 				Vector2f startpos = ep.getPoint(0).getPos();
 				me.setPos(startpos.x, startpos.y + pos.y + 1.0f);
 			}
+			//me.changeTexture(0);
 			me.render(sh, util);
 		}
 		for(int i=0; i<explosions.size(); i++) {

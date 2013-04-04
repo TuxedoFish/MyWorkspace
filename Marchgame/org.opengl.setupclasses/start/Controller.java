@@ -375,10 +375,12 @@ public class Controller {
 		}
 	}
 	public void update() {
-		for(int i=0; i<enemies.size(); i++) {
-			enemies.get(i).fire(display);
+		if(started) {
+			for(int i=0; i<enemies.size(); i++) {
+				enemies.get(i).fire(display);
+			}
+			boss.shoot();
 		}
-		boss.shoot();
 	}
 	public void damage(int d) {
 		health -= d;

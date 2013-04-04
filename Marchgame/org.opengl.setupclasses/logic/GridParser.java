@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector2f;
 import texture.TextureHolder;
 
 public class GridParser {
-	public TextureHolder parseFile(File lvl, int blocksize) {
+	public TextureHolder parseFile(File lvl, float blocksize) {
 		try {
 			return parseGrid(ImageIO.read(lvl.getAbsoluteFile()), blocksize);
 		} catch (IOException e) {
@@ -23,23 +23,23 @@ public class GridParser {
 		System.exit(1);
 		return null;
 	}
-	public TextureHolder parseGrid(BufferedImage lvl, int blocksize) {
+	public TextureHolder parseGrid(BufferedImage lvl, float blocksize) {
 		TextureHolder th = new TextureHolder(lvl.getHeight(), lvl);
 		
-		for(int i = 0; i < lvl.getHeight()/(blocksize+1); i++) {
-			for(int j = 0; j < lvl.getWidth()/(blocksize+1); j++) {
-				th.addTexture(new Vector2f((j*(blocksize+1)) + 1, (i*(blocksize+1)) + 1), blocksize);
+		for(float i = 0; i < (lvl.getHeight()/(blocksize))-1.0f; i++) {
+			for(float j = 0; j < (lvl.getWidth()/(blocksize))-1.0f; j++) {
+				th.addTexture(new Vector2f((j*(blocksize+1.0f)) + 1.0f, (i*(blocksize+1.0f)) + 1.0f), blocksize);
 			}
 		}
 		
 		return th;
 	}
-	public TextureHolder parseGrid(BufferedImage lvl, int blockwidth, int blockheight) {
+	public TextureHolder parseGrid(BufferedImage lvl, float blockwidth, float blockheight) {
 		TextureHolder th = new TextureHolder(lvl.getWidth(), lvl.getHeight(), lvl);
 		
-		for(int i = 0; i < lvl.getHeight()/blockheight; i++) {
-			for(int j = 0; j < lvl.getWidth()/blockwidth; j++) {
-				th.addTexture(new Vector2f(j*(blockwidth+1) + 1, i*(blockheight+1) + 1), blockwidth, blockheight);
+		for(float i = 0; i < (lvl.getHeight()/blockheight)-1.0f; i++) {
+			for(float j = 0; j < (lvl.getWidth()/blockwidth)-1.0f; j++) {
+				th.addTexture(new Vector2f(j*(blockwidth+1.0f) + 1.0f, i*(blockheight+1.0f) + 1.0f), blockwidth, blockheight);
 			}
 		}
 		

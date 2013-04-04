@@ -10,10 +10,10 @@ public class Texture {
 		this.texid = texid;
 		
 		texcoords = new Vector2f[] {
-			new Vector2f((float)pos.x/parentlength, (float)(pos.y/parentlength)),
-			new Vector2f((float)((pos.x + length)/parentlength), (float)(pos.y/parentlength)),
-			new Vector2f((float)((pos.x + length)/parentlength), (float)((pos.y + length)/parentlength)),
-			new Vector2f((float)pos.x/parentlength, (float)((pos.y + length)/parentlength))
+			new Vector2f(pos.x/parentlength, (pos.y/parentlength)),
+			new Vector2f(((pos.x + length)/parentlength), (pos.y/parentlength)),
+			new Vector2f(((pos.x + length)/parentlength), ((pos.y + length)/parentlength)),
+			new Vector2f(pos.x/parentlength, ((pos.y + length)/parentlength))
 		};
 	}
 	public Texture(int texid, Vector2f pos, float width, float height, float parentwidth, float parentheight) {

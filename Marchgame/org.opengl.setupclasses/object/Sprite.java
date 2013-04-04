@@ -70,6 +70,7 @@ public class Sprite{
 	private int textureids;
 	
 	private boolean any = false;
+	private int currenttexid;
 	
 	private Controller parent;
 	
@@ -81,6 +82,7 @@ public class Sprite{
 		texture = img;
 		
 		modelmatrix.translate(pos);
+		this.currenttexid = currenttexid;
 		
 		this.width = width;
 		this.height = height;
@@ -175,6 +177,7 @@ public class Sprite{
 		}
 	}
 	public void changeTexture(int texid) {
+		currenttexid = texid;
 		datafb = getData(pos, width, height, texid);
 	}
 	public void render(ShaderHandler sh, DataUtils util) {
@@ -183,7 +186,7 @@ public class Sprite{
 			Matrix4f.mul(rotmatrix, modelmatrix, new Matrix4f()).store(modelmatrixfb);
 			modelmatrixfb.flip();
 			
-			util.setup(datafb, vaoID, vboID, parent.getSh(), textureid, 2, indices, modelmatrixfb);
+			util.setup(datafb, vboID, vaoID, parent.getSh(), textureid, 2, indices, modelmatrixfb);
 			util.drawRectangle();
 		}
 	}
