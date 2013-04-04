@@ -1,8 +1,11 @@
 package start.gui;
 
+import images.ImageReturn;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -62,6 +65,14 @@ public class GuiString implements GuiElement{
 		img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = img.getGraphics();
 		
+		ImageReturn images = new ImageReturn();
+		try {
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(10.0f));
+		} catch (FontFormatException | IOException e) {
+			System.err.println("err loading font");
+			e.printStackTrace();
+		}
+		
 		Rectangle2D r = g.getFontMetrics().getStringBounds(str, 0, str.length(), g);
 		
 		for(int i=0; i < str.length();i++) {
@@ -83,6 +94,12 @@ public class GuiString implements GuiElement{
 		img = new BufferedImage((int)r.getWidth(), (int)r.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		g = img.getGraphics();
 		
+		try {
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(10.0f));
+		} catch (FontFormatException | IOException e) {
+			System.err.println("err loading font");
+			e.printStackTrace();
+		}
 		g.setColor(c);
 		g.drawString(str, 0, (int)r.getHeight()/4*3);
 		g.dispose();

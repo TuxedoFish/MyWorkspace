@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -15,6 +16,9 @@ import javax.imageio.ImageIO;
 public class ImageReturn {
 	public BufferedImage getImage(String loc) throws IOException {
 		return (ImageIO.read(getClass().getResourceAsStream(loc)));
+	}
+	public InputStream getFont(String loc) throws IOException {
+		return ((getClass().getResourceAsStream("fonts/" + loc)));
 	}
 	public File getImageLoc(String loc) throws IOException {
 		return new File((getClass().getResource(loc)).getFile());

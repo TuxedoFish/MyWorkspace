@@ -94,6 +94,7 @@ public class Controller {
 	
 	private float changex; private float changey; private float changez;
 	private int health = 500;
+	private int prevhealth = 0;
 	
 	private Sprite player;
 	private Sprite bullet;
@@ -111,6 +112,7 @@ public class Controller {
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
 	private int loadpercent = 0;
+	private int prevpercent = 0;
 	
 	private InputHandler ih;
 	
@@ -133,7 +135,7 @@ public class Controller {
 	private ObjectLoader ol = new ObjectLoader();
 	
 	private DisplaySetup display;
-	//this is a method
+	
 	public void mouseChangeUpdate(float changex, float changey, float changez) {
 		if(changex != -1) {
 			this.changex = changex;
@@ -178,10 +180,7 @@ public class Controller {
 		return colors;
 	}
 	public void loadupdate(int percent) {
-		gui.clearElements();
-		ih.clearElements();
 		loadpercent += percent;
-		gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 	}
 	public void start() {
 		LineCollection lc = new LineCollection();
@@ -315,6 +314,13 @@ public class Controller {
 			} else {
 				if(el != null && el.getFinished()) {
 					this.startupfinish();
+				}
+				if(el != null && prevpercent != loadpercent) {
+					prevpercent = loadpercent;
+					gui.clearElements();
+					ih.clearElements();
+					gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
+					gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 				}
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -519,9 +525,12 @@ public class Controller {
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).render(shaderhandler, display, util);
 		}
-		gui.clearElements();
-		ih.clearElements();
-		gui.newString("score : " + health, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+		if(prevhealth != health) {
+			prevhealth = health;
+			gui.clearElements();
+			ih.clearElements();
+			gui.newString("score : " + health, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+		}
 		gui.drawElements(sh);
 	}
 	public ShaderHandler getSh() {

@@ -85,6 +85,9 @@ public class GuiElementHandler {
 		elements.add(button);
 		ih.addButton(button);
 	}
+	public void newBar(String barname, Vector2f pos, int percent) {
+		elements.add(new GuiBar(barname, pos, percent));
+	}
 	public void newLine() {
 		nextx = 0.0f;
 		nexty -= maxheight;

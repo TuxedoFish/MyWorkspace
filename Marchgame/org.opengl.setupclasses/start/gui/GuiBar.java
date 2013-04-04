@@ -45,20 +45,16 @@ import org.lwjgl.util.vector.Vector2f;
 import start.Controller;
 import utils.TextureUtils;
 
-public class GuiButton implements GuiElement{
-	private BufferedImage[] imgs;
+public class GuiBar implements GuiElement{
+	private BufferedImage img;
 	private Vector2f pos;
 	private IntBuffer indicesfb;
 	private FloatBuffer datafb;
 	private Rectangle2D bounds;
-	private int current = 0;
-	private Controller parent;
-	private String message;
+	private BufferedImage emptybar;
+	private BufferedImage bar;
 	
-	public GuiButton(String buttonname, Vector2f pos, float width, float height, Controller parent, 
-			String eventmessage) {
-		this.parent = parent;
-		this.message = eventmessage;
+	public GuiBar(String barname, Vector2f pos, int percent) {
 		this.pos = pos;
 		int[] indices = {
 				0, 1, 2,
@@ -71,27 +67,33 @@ public class GuiButton implements GuiElement{
 		ImageReturn images = new ImageReturn();
 		
 		try {
-			imgs = new BufferedImage[] {
-					images.getImage("/gui/" + buttonname+".png"), 
-					images.getImage("/gui/" + buttonname+"hover.png"), 
-					images.getImage("/gui/" + buttonname+"pressed.png"), 
-			};
+			bar = images.getImage("/gui/" + barname + ".png");
+			emptybar = images.getImage("/gui/empty" + barname + ".png");
+			img = new BufferedImage(emptybar.getWidth(), emptybar.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			Graphics g = img.getGraphics();
+			
+			g.drawImage(emptybar, 0, 0, null);
+			g.drawImage(bar.getSubimage(0, 0, (int)(((float)bar.getWidth()/100.0f)*(float)percent), 
+					bar.getHeight()), 1, 1, null);
+			g.dispose();
+			File outputfile = new File("saved.png");
+		    ImageIO.write(img, "png", outputfile);
 		} catch (IOException e) {
-			System.err.println("err finding button @ " + buttonname);
+			System.err.println("err finding button @ " + barname);
 			e.printStackTrace();
 		}
 		
 		float[] data = {
 				pos.x, pos.y, 0.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x + (float)((width/Display.getWidth())*2), pos.y, 0.0f, 1.0f, 	 1.0f, 0.0f, 
+				pos.x + (float)(((float)emptybar.getWidth()/Display.getWidth())*2), pos.y, 0.0f, 1.0f, 	 1.0f, 0.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x + (float)((width/Display.getWidth())*2), pos.y - (float)((height/Display.getHeight())*2), 0.0f, 1.0f, 
+				pos.x + (float)(((float)emptybar.getWidth()/Display.getWidth())*2), pos.y - (float)(((float)emptybar.getHeight()/Display.getHeight())*2), 0.0f, 1.0f, 
 				1.0f, 1.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x, pos.y - (float)((height/Display.getHeight())*2), 0.0f, 1.0f, 0.0f, 1.0f, 
+				pos.x, pos.y - (float)(((float)emptybar.getHeight()/Display.getHeight())*2), 0.0f, 1.0f, 0.0f, 1.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 		};
 		
@@ -99,7 +101,7 @@ public class GuiButton implements GuiElement{
 		datafb.put(data);
 		datafb.rewind();
 		
-		this.bounds = new Rectangle2D.Float((pos.x+1.0f)*(Display.getWidth()/2), (pos.y+1.0f)*(Display.getHeight()/2), width, height);
+		this.bounds = new Rectangle2D.Float((pos.x+1.0f)*(Display.getWidth()/2), (pos.y+1.0f)*(Display.getHeight()/2), emptybar.getWidth(), emptybar.getHeight());
 	}
 	public Rectangle2D getBounds() { 
 		return bounds;
@@ -114,16 +116,10 @@ public class GuiButton implements GuiElement{
 		return indicesfb;
 	}
 	public BufferedImage getImg() {
-		return imgs[current];
-	}
-	public void setState(int state) {
-		if(state == 2) {
-			parent.action(message);
-		}
-		this.current = state;
+		return img;
 	}
 	public void setImg(BufferedImage img) {
-		this.imgs = imgs;
+		this.img = img;
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
