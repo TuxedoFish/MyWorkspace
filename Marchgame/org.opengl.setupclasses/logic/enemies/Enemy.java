@@ -68,7 +68,7 @@ public class Enemy {
 		this.pattern = pattern;
 		this.lti = lowesttexid;
 		this.hti = highesttexid;
-		this.speed = 5;
+		this.speed = 3;
 		this.pos = new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f)));
 		this.playersprite = player;

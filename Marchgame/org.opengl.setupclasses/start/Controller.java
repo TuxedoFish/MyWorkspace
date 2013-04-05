@@ -365,14 +365,11 @@ public class Controller {
 	public void levelselectscreen() {
 		gui.clearElements();
 		ih.clearElements();
-		for(int i=0; i<(float)Display.getWidth()/100.0f; i++) {
-			for(int j=0; j<(float)Display.getHeight()/25.5f; j++) {	
-				gui.newButton("button", new Vector2f(-1.0f + i*(100.0f/(float)Display.getWidth()*2), 1.0f - j*(20.0f/(float)Display.getHeight()*2)), 
+				gui.newButton("button", new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)), 
 						100.0f, 20.0f, ih, this, "levelselected");
 				gui.newString("level1", Color.red, 100, 20, 
-						new Vector2f(-1.0f + i*(100.0f/(float)Display.getWidth()*2), 1.0f - j*(20.0f/(float)Display.getHeight()*2)));
-			}
-		}
+						new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)));
+			
 	}
 	public void update() {
 		if(started) {

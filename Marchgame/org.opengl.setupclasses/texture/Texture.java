@@ -17,10 +17,8 @@ public class Texture {
 			new Vector2f(((pos.x + length)/parentlength), ((pos.y + length)/parentlength)),
 			new Vector2f(roundTwoDecimals(pos.x/parentlength), ((pos.y + length)/parentlength))
 		};
-		System.out.println(" 1 : " + texcoords[0] + " : " + texcoords[1] + " : " + texcoords[2] + " : " +
-				texcoords[3] + " : ");
 	}
-	private float roundTwoDecimals(double d) {
+	private float roundTwoDecimals(float d) {
         DecimalFormat twoDForm = new DecimalFormat("#.####");
         return Float.valueOf(twoDForm.format(d));
 	}
