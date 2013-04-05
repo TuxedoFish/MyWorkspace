@@ -117,26 +117,26 @@ public class Enemy {
 		return textures;
 	}
 	public void animate() {
-//		if(texturestage>speed) {
-//			if(isup) {
-//				if(hti>texid+1) {
-//					me.changeTexture(texid+1);
-//					texid += 1;
-//				} else {
-//					isup = false;
-//				}
-//			} else {
-//				if(lti<texid-1) {
-//					me.changeTexture(texid-1);
-//					texid -= 1;
-//				} else {
-//					isup = true;
-//				}
-//			}
-//			texturestage = 0;
-//		} else {
-//			texturestage += 1;
-//		}
+		if(texturestage>speed) {
+			if(isup) {
+				if(hti>texid+1) {
+					me.changeTexture(texid+1);
+					texid += 1;
+				} else {
+					isup = false;
+				}
+			} else {
+				if(lti<texid-1) {
+					me.changeTexture(texid-1);
+					texid -= 1;
+				} else {
+					isup = true;
+				}
+			}
+			texturestage = 0;
+		} else {
+			texturestage += 1;
+		}
 	}
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
@@ -201,7 +201,6 @@ public class Enemy {
 				Vector2f startpos = ep.getPoint(0).getPos();
 				me.setPos(startpos.x, startpos.y + pos.y + 1.0f);
 			}
-			//me.changeTexture(0);
 			me.render(sh, util);
 		}
 		for(int i=0; i<explosions.size(); i++) {

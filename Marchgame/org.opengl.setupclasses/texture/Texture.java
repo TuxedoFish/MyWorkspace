@@ -1,5 +1,7 @@
 package texture;
 
+import java.text.DecimalFormat;
+
 import org.lwjgl.util.vector.Vector2f;
 
 public class Texture {
@@ -10,11 +12,17 @@ public class Texture {
 		this.texid = texid;
 		
 		texcoords = new Vector2f[] {
-			new Vector2f(pos.x/parentlength, (pos.y/parentlength)),
+			new Vector2f(roundTwoDecimals(pos.x/parentlength), (pos.y/parentlength)),
 			new Vector2f(((pos.x + length)/parentlength), (pos.y/parentlength)),
 			new Vector2f(((pos.x + length)/parentlength), ((pos.y + length)/parentlength)),
-			new Vector2f(pos.x/parentlength, ((pos.y + length)/parentlength))
+			new Vector2f(roundTwoDecimals(pos.x/parentlength), ((pos.y + length)/parentlength))
 		};
+		System.out.println(" 1 : " + texcoords[0] + " : " + texcoords[1] + " : " + texcoords[2] + " : " +
+				texcoords[3] + " : ");
+	}
+	private float roundTwoDecimals(double d) {
+        DecimalFormat twoDForm = new DecimalFormat("#.####");
+        return Float.valueOf(twoDForm.format(d));
 	}
 	public Texture(int texid, Vector2f pos, float width, float height, float parentwidth, float parentheight) {
 		this.texid = texid;
