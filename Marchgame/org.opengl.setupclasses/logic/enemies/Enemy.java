@@ -266,18 +266,17 @@ public class Enemy {
 	public void fire(DisplaySetup d) {
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			if(pattern == 1) {
-				for(float i=0; i<2*Math.PI; i+=1.5f) {
-					shoot(i);
+				for(float i=0; i<2*Math.PI; i+=Math.PI/2) {
+					//shoot(i);
 				}
 			}
 			if(pattern == 2) {
-				Vector4f p = new Vector4f(playersprite.getPos().x, -playersprite.getPos().y, 0.0f, 1.0f);
-				p = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p, p);
-				Vector4f p2 = new Vector4f(me.getPos().x, -me.getPos().y, 0.0f, 1.0f);
-				p2 = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p2, p2);
-				//System.out.println(p + " : " + p2);
+				System.out.println((float)(Math.atan2((playersprite.getPos().y - me.getPos().y), 
+						(playersprite.getPos().x - me.getPos().x))) + " : " + playersprite.getPos() + 
+						" : " + me.getPos());
 				
-				shoot((float)(Math.atan2((p.y - p2.y), (p.x - p2.x)) * (180.0f/Math.PI)));
+				shoot((float)(Math.atan2((playersprite.getPos().y - me.getPos().y), 
+						(playersprite.getPos().x - me.getPos().x))));
 			}
 		}
 	}

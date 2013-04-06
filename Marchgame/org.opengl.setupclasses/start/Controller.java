@@ -122,6 +122,7 @@ public class Controller {
 	private TextureHolder blocktex;
 	private LevelHolder blockdata;
 	private LevelRenderer lr;
+	private Sprite currentlevel;
 	
 	private ShaderHandler shaderhandler;
 	
@@ -221,13 +222,15 @@ public class Controller {
 		setupshaders(shaderhandler);
 		
 		try {
-			blocks = parser.parseLevel(images.getImage("level1.png"), 
-					new Vector2f(-1.0f, -1.0f));
+			//blocks = parser.parseLevel(images.getImage("level1.png"), 
+				//	new Vector2f(-1.0f, -1.0f));
 			GridParser gp = new GridParser();
-			blocktex = gp.parseGrid(images.getImage("LAND.png"), 20);
+			blocktex = gp.parseGrid(images.getImage("LEVEl1.png"), 640, 5000);
+			currentlevel = new Sprite(images.getImage("LEVEL1.png"), this, 1280, 5000, blocktex, 0, new Vector2f(-1.0f, 8.0f));
+			currentlevel.finish(glGenBuffers(), glGenVertexArrays());
 			levelheight = (images.getImage("LAND.png").getHeight() * 20) / (Display.getHeight());
-			lr = new LevelRenderer();
-			blockdata = lr.getLevelData(blocks, blocktex);
+			//lr = new LevelRenderer();
+			//blockdata = lr.getLevelData(blocks, blocktex);
 			
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
 			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
@@ -249,7 +252,7 @@ public class Controller {
 			this.bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f));
 			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 			
-			lr.update(blocks, display);
+			//lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
 			boss.addSprite(boss6, 0, 3, 1000, 1, false);
@@ -468,8 +471,9 @@ public class Controller {
 				enemies.get(i).scroll();
 			}
 		}
-		lr.render(blockdata, sh, blocktex, blocks, d);
+		//lr.render(blockdata, sh, blocktex, blocks, d);
 		DataUtils util = new DataUtils();
+		currentlevel.render(sh, util);
 		boss.render(sh, d, util);
 		player.render(sh, util);
 		
