@@ -177,7 +177,7 @@ public class Enemy {
 							this.lastp = ep.getPoint(index-1);
 							this.p = new PathPoint(new Vector2f(0.0f, 0.0f), ep.getPoint(index-1).getIndex());
 							this.p.setPos(new Vector2f(lastp.getPos().x, lastp.getPos().y - 0.6f));
-							dist = 30;
+							dist = 50;
 						} else {
 							this.stopped = true;
 						}
@@ -220,14 +220,16 @@ public class Enemy {
 		textstage += 1;
 		boolean changed = true;
 		for(int i=0; i<bullets.size(); i++) {
+			bullets.get(i).setPos(new Vector2f(bullets.get(i).getPos().x, 
+					bullets.get(i).getPos().y + 0.005f));
 			if(changed) {
 				bullet.changeTexture((textstage/5));
 				changed = false;
 			}
 			boolean stopped = false;
 			if(!bullets.get(i).getDestroying()) {
-				bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.sin(bullets.get(i).getRot())/200.0f)), 
-					(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/200.0f))));
+				bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.cos(bullets.get(i).getRot())/100.0f)), 
+					(float)(bullets.get(i).getPos().y - (Math.sin(bullets.get(i).getRot())/100.0f))));
 				Vector4f bulletp = new Vector4f(bullets.get(i).getPos().x, bullets.get(i).getPos().y, 0.0f, 1.0f);
 				Matrix4f.transform(d.getModelViewMatrixAsMatrix(), bulletp, bulletp);
 				if(bulletp.x >= 1.1f || bulletp.x <= -1.1f || bulletp.y >= 1.1f || bulletp.y <= -1.1f) {
@@ -266,17 +268,18 @@ public class Enemy {
 	public void fire(DisplaySetup d) {
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			if(pattern == 1) {
-				for(float i=0; i<2*Math.PI; i+=Math.PI/2) {
-					//shoot(i);
+				for(float i=0; i<2*Math.PI; i+=Math.PI) {
+					shoot((float)(i+(2*Math.PI)));
 				}
 			}
 			if(pattern == 2) {
-				System.out.println((float)(Math.atan2((playersprite.getPos().y - me.getPos().y), 
-						(playersprite.getPos().x - me.getPos().x))) + " : " + playersprite.getPos() + 
-						" : " + me.getPos());
-				
-				shoot((float)(Math.atan2((playersprite.getPos().y - me.getPos().y), 
-						(playersprite.getPos().x - me.getPos().x))));
+				double compassBearing=Math.atan2(me.getPos().y - playersprite.getPos().y, 
+						me.getPos().x - playersprite.getPos().x);
+				if (compassBearing<0)
+		    	{
+		        	compassBearing=Math.PI*2+compassBearing;
+		    	}
+				shoot((float)compassBearing);
 			}
 		}
 	}
