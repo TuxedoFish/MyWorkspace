@@ -132,7 +132,7 @@ public class Window {
 		
 		DataUtils util = new DataUtils();
 		
-        util.setup(windowdata, vboID, vaoID, sh, texID, 2, indicesBuffer, null);
+        util.setup(windowdata, vboID, vaoID, sh, texID, 2, indicesBuffer, null, 0);
         
 		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
 		

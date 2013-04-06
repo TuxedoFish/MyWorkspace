@@ -31,12 +31,12 @@ import shader.ShaderHandler;
 
 public class DataUtils {
 	public void setup(FloatBuffer data, VertexHandler vh, ShaderHandler sh, int textureID, int type, 
-			IntBuffer indicesBuffer, FloatBuffer modelmatrixfb) {
+			IntBuffer indicesBuffer, FloatBuffer modelmatrixfb, int brightness) {
 		
-		setup(data, vh.getVboId(), vh.getVao(), sh, textureID, type, indicesBuffer, modelmatrixfb);
+		setup(data, vh.getVboId(), vh.getVao(), sh, textureID, type, indicesBuffer, modelmatrixfb, brightness);
 	}
 	public void setup(FloatBuffer data, int vboID, int vaoID, ShaderHandler sh, int textureID, int type, 
-			IntBuffer indicesBuffer, FloatBuffer modelmatrixfb) {
+			IntBuffer indicesBuffer, FloatBuffer modelmatrixfb, int brightness) {
 		glBindVertexArray(vaoID);
 		//Bind data
 		glBindBuffer(GL_ARRAY_BUFFER, vboID);
@@ -55,6 +55,8 @@ public class DataUtils {
 			int modelmatrixloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "ModelMatrix");
 			glUniformMatrix4(modelmatrixloc, false, modelmatrixfb);
 		}
+		int brightnessloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "brightness");
+		glUniform1i(brightnessloc, brightness);
 		//Setup pointers
 		glVertexAttribPointer(0, 4, GL_FLOAT, false, 40, 0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 40, 16);

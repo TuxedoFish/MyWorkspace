@@ -152,7 +152,7 @@ public class LevelRenderer {
 	public void render(LevelHolder lh, ShaderHandler sh, TextureHolder th,ArrayList<Block> blocks, DisplaySetup d) {
 		DataUtils util = new DataUtils();
 		
-		util.setup(lh.getData(), lh.getVaoid(), lh.getVboid(), sh, th.getTexid(), 2, indices, modelmatrixfb);
+		util.setup(lh.getData(), lh.getVaoid(), lh.getVboid(), sh, th.getTexid(), 2, indices, modelmatrixfb, 0);
 		
 		glDrawElements(GL_TRIANGLES, lh.getIndices().capacity(), GL_UNSIGNED_INT, 0);
 	}

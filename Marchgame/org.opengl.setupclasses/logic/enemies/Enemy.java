@@ -58,12 +58,15 @@ public class Enemy {
 	private TextureHolder[] textures;
 	private int texturestage;
 	private int speed;
+	private int hit;
+	private int health;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts) {
+			, int width, int pattern, TextureHolder[] ts, int health) {
 		this.width = width/Display.getWidth();
 		this.playerbullets = playerbullets;
+		this.health = health;
 		this.parent = parent;
 		this.pattern = pattern;
 		this.lti = lowesttexid;
@@ -76,6 +79,7 @@ public class Enemy {
 		this.texid = texid;
 		this.player = new Rectangle2D.Float();
 		this.myrect = new Rectangle2D.Float();
+		this.hit = 0;
 		
 		ImageReturn images = new ImageReturn();
 		GridParser gp = new GridParser();
@@ -163,9 +167,14 @@ public class Enemy {
 		
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
-				if(playerbullets.get(i).contains(me.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)) {
+				if(playerbullets.get(i).contains(me.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
+						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
-					stopped = true;
+					health -= 5;
+					hit = 1;
+					if(health <= 0) {
+						stopped = true;
+					}
 				}
 			}
 			if(started) {
@@ -201,14 +210,14 @@ public class Enemy {
 				Vector2f startpos = ep.getPoint(0).getPos();
 				me.setPos(startpos.x, startpos.y + pos.y + 1.0f);
 			}
-			me.render(sh, util);
+			me.render(sh, util, hit);
 		}
 		for(int i=0; i<explosions.size(); i++) {
 			explosion.changeTexture((explosions.get(i).getAge()/5));
 			explosions.get(i).age();
 			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-			explosion.render(sh, util);
+			explosion.render(sh, util, 0);
 			if(explosions.get(i).getAge()>24) {
 				explosions.remove(i);
 				i-=1;
@@ -252,7 +261,7 @@ public class Enemy {
 				bullets.get(i).age();
 				bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
 				bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-				bullet.render(sh, util);
+				bullet.render(sh, util, 0);
 				if(!bullets.get(i).getDestroying()) {
 					if(bullets.get(i).contains(playersprite.getPos(), (float)player.getWidth(), (float)player.getHeight(), d)) {
 						bullets.get(i).setDestroyingSelf(true);
@@ -266,6 +275,7 @@ public class Enemy {
 		}
 	}
 	public void fire(DisplaySetup d) {
+		hit = 0;
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			if(pattern == 1) {
 				for(float i=0; i<2*Math.PI; i+=Math.PI) {

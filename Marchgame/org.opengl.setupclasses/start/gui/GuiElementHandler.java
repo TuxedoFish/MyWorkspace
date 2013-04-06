@@ -106,7 +106,7 @@ public class GuiElementHandler {
 			
 			DataUtils datautil = new DataUtils();
 			if(elements.size() != 0) {
-				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 1, elements.get(i).getIndices(), null);
+				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 1, elements.get(i).getIndices(), null, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}
 		}

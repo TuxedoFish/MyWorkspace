@@ -3,6 +3,7 @@
 uniform sampler2D image; 
 uniform vec4 lightpos;
 uniform vec4 viewDirection;
+uniform int brightness;
 
 in vec2 pass_TextureCoord;
 in vec4 outVertexNormal;
@@ -13,6 +14,11 @@ in int type2;
 out vec4 FragColor;
 
 void main() {
-    vec4 Color = texture2D(image, pass_TextureCoord);
-    FragColor = Color;
+	if(brightness == 1) {
+  	  vec4 Color = texture2D(image, pass_TextureCoord);
+  	  FragColor = vec4(Color.x + 0.75f, Color.y + 0.75f, Color.z + 0.75f, Color.w);
+    } else {
+      vec4 Color = texture2D(image, pass_TextureCoord);
+      FragColor = Color;
+    }
 }

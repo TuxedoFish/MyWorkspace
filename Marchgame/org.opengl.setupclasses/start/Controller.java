@@ -113,6 +113,7 @@ public class Controller {
 	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
 	private int loadpercent = 0;
 	private int prevpercent = 0;
+	private int hit = 0;
 	
 	private InputHandler ih;
 	
@@ -222,15 +223,13 @@ public class Controller {
 		setupshaders(shaderhandler);
 		
 		try {
-			//blocks = parser.parseLevel(images.getImage("level1.png"), 
-				//	new Vector2f(-1.0f, -1.0f));
+			blocks = parser.parseLevel(images.getImage("level1.png"), 
+					new Vector2f(-1.0f, -1.0f));
 			GridParser gp = new GridParser();
-			blocktex = gp.parseGrid(images.getImage("LEVEl1.png"), 640, 5000);
-			currentlevel = new Sprite(images.getImage("LEVEL1.png"), this, 1280, 5000, blocktex, 0, new Vector2f(-1.0f, 8.0f));
-			currentlevel.finish(glGenBuffers(), glGenVertexArrays());
-			levelheight = (images.getImage("LAND.png").getHeight() * 20) / (Display.getHeight());
-			//lr = new LevelRenderer();
-			//blockdata = lr.getLevelData(blocks, blocktex);
+			blocktex = gp.parseGrid(images.getImage("LAND.png"), 20);
+			levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
+			lr = new LevelRenderer();
+			blockdata = lr.getLevelData(blocks, blocktex);
 			
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
 			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
@@ -252,7 +251,7 @@ public class Controller {
 			this.bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f));
 			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 			
-			//lr.update(blocks, display);
+			lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
 			boss.addSprite(boss6, 0, 3, 1000, 1, false);
@@ -302,10 +301,6 @@ public class Controller {
 		
 		ControllerTimer ct = new ControllerTimer(this);
 		
-//		for(int i=0; i<10; i++) {
-//			enemies.add(new Enemy(player, bullets));
-//		}
-		
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
@@ -347,7 +342,7 @@ public class Controller {
 				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 				
 				DataUtils utils = new DataUtils();
-				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 2, bgindicesb, matrix);
+				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 2, bgindicesb, matrix, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 				gui.drawElements(shaderhandler);
 				ih.update(display);
@@ -375,6 +370,7 @@ public class Controller {
 			
 	}
 	public void update() {
+		hit = 0;
 		if(started) {
 			for(int i=0; i<enemies.size(); i++) {
 				enemies.get(i).fire(display);
@@ -383,6 +379,7 @@ public class Controller {
 		}
 	}
 	public void damage(int d) {
+		hit = 1;
 		health -= d;
 	}
 	public FloatBuffer updateBg(Vector2f pos) {
@@ -471,11 +468,11 @@ public class Controller {
 				enemies.get(i).scroll();
 			}
 		}
-		//lr.render(blockdata, sh, blocktex, blocks, d);
+		lr.render(blockdata, sh, blocktex, blocks, d);
 		DataUtils util = new DataUtils();
-		currentlevel.render(sh, util);
 		boss.render(sh, d, util);
-		player.render(sh, util);
+		player.render(sh, util, hit);
+		
 		
 		if(stage >= 35) {
 			stage = 0;
@@ -512,7 +509,7 @@ public class Controller {
 				bullets.get(i).age();
 				bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
 				bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-				bullet.render(sh, util);
+				bullet.render(sh, util, 0);
 			}
 		}
 		for(int i=0; i<explosions.size(); i++) {
@@ -520,7 +517,7 @@ public class Controller {
 			explosions.get(i).age();
 			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-			explosion.render(sh, util);
+			explosion.render(sh, util, 0);
 			if(explosions.get(i).getAge()>24) {
 				explosions.remove(i);
 				i-=1;

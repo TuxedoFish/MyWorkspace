@@ -50,6 +50,7 @@ public class Boss {
 	private Controller parent;
 	private ArrayList<Integer> healths = new ArrayList<Integer>();
 	private ArrayList<EnemyBullet> playerbullets = new ArrayList<EnemyBullet>();
+	private ArrayList<Integer> hit = new ArrayList<Integer>();
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets) {
@@ -110,6 +111,7 @@ public class Boss {
 		this.texids.add(new TexID(lowesttexid, highesttexid, texid));
 		healths.add(health);
 		bps.add(new BossPart(pattern, hittable));
+		hit.add(0);
 	}
 	public void animate() {
 		for(int i=0; i<me.size(); i++) {
@@ -132,6 +134,7 @@ public class Boss {
 	}
 	public void shoot() {
 		for(int i=0; i<me.size(); i++) {
+			hit.set(i, 0);
 			if(bps.get(i).isHittable()) {
 				if(bps.get(i).getPattern() == 1) {
 					for(float j=0.0f; j<2*Math.PI; j+= Math.PI/4) {
@@ -157,6 +160,7 @@ public class Boss {
 						if(!playerbullets.get(i).getDestroying()) {
 							parent.bulletexplode(i);
 							this.healths.set(j, healths.get(j)-5);
+							hit.set(j, 1);
 							if(healths.get(j)<=0) {
 								me.remove(j);
 								myrect.remove(j);
@@ -171,14 +175,14 @@ public class Boss {
 				}
 			}
 			for(int i=0; i<me.size(); i++) {
-				me.get(i).render(sh, util);
+				me.get(i).render(sh, util, 0);
 			}
 			for(int i=0; i<explosions.size(); i++) {
 				explosion.changeTexture((explosions.get(i).getAge()/5));
 				explosions.get(i).age();
 				explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 				epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-				explosion.render(sh, util);
+				explosion.render(sh, util, 0);
 				if(explosions.get(i).getAge()>24) {
 					explosions.remove(i);
 					i-=1;
@@ -216,7 +220,7 @@ public class Boss {
 					bullets.get(i).age();
 					bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
 					bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-					bullet.render(sh, util);
+					bullet.render(sh, util, 0);
 					if(!bullets.get(i).getDestroying()) {
 						if(bullets.get(i).contains(playersprite.getPos(), 
 								(float)player.getWidth(), (float)player.getHeight(), d)) {

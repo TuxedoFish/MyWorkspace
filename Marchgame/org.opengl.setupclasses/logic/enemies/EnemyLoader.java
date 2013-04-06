@@ -82,12 +82,12 @@ public class EnemyLoader extends Thread{
 					int pattern = Integer.valueOf(reader.readLine());
 					if(!keys.contains(parts[0])) {
 						allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-								bullets, texloc, lti, hti, width, pattern, null));
+								bullets, texloc, lti, hti, width, pattern, null, 10));
 						keys.add(parts[0]);
 						textures.add(allenemies.get(allenemies.size()-1).getTextures());
 					} else {
 						allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-								bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0]))));
+								bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 10));
 					}
 				}
 			} catch (IOException e) {
@@ -147,7 +147,7 @@ public class EnemyLoader extends Thread{
 								writer.close();
 							}
 							allenemies.add(new Enemy(new Vector2f(i*25, (enemy.getHeight()*25)-(j*25)), 0, parent, 
-									ep, player, bullets, texture, lti, hti, width, pattern, null));
+									ep, player, bullets, texture, lti, hti, width, pattern, null, 10));
 							if(!colors.contains(c)) {
 								writer2.println(name + " " + (i*25) + " " + ((enemy.getHeight()*25)-(j*25)));
 								names.add(name);

@@ -180,15 +180,13 @@ public class Sprite{
 		currenttexid = texid;
 		datafb = getData(pos, width, height, texid);
 	}
-	public void render(ShaderHandler sh, DataUtils util) {
-		if(any) {
-			FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);
-			Matrix4f.mul(rotmatrix, modelmatrix, new Matrix4f()).store(modelmatrixfb);
-			modelmatrixfb.flip();
+	public void render(ShaderHandler sh, DataUtils util, int brightness) {
+		FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);
+		Matrix4f.mul(rotmatrix, modelmatrix, new Matrix4f()).store(modelmatrixfb);
+		modelmatrixfb.flip();
 			
-			util.setup(datafb, vboID, vaoID, parent.getSh(), textureid, 2, indices, modelmatrixfb);
-			util.drawRectangle();
-		}
+		util.setup(datafb, vboID, vaoID, parent.getSh(), textureid, 2, indices, modelmatrixfb, brightness);
+		util.drawRectangle();
 	}
 	public void rotate(float angle) {
 		modelmatrix.translate(new Vector2f(pos.x, pos.y));
