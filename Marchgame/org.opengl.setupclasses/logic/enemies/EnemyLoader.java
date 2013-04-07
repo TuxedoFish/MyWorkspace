@@ -80,14 +80,17 @@ public class EnemyLoader extends Thread{
 					int hti = Integer.valueOf(reader.readLine());
 					int width = Integer.valueOf(reader.readLine());
 					int pattern = Integer.valueOf(reader.readLine());
+					int health = Integer.valueOf(reader.readLine());
+					int shootspeed = Integer.valueOf(reader.readLine());
+					
 					if(!keys.contains(parts[0])) {
 						allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-								bullets, texloc, lti, hti, width, pattern, null, 10, 750));
+								bullets, texloc, lti, hti, width, pattern, null, health, shootspeed));
 						keys.add(parts[0]);
 						textures.add(allenemies.get(allenemies.size()-1).getTextures());
 					} else {
 						allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-								bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 10, 750));
+								bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), health, shootspeed));
 					}
 				}
 			} catch (IOException e) {
@@ -126,6 +129,9 @@ public class EnemyLoader extends Thread{
 							int hti = Integer.parseInt(reader.readLine());
 							int width = Integer.parseInt(reader.readLine());
 							int pattern = Integer.parseInt(reader.readLine());
+							int health = Integer.parseInt(reader.readLine());
+							int shootspeed = Integer.parseInt(reader.readLine());
+							
 							EnemyPath ep = new EnemyPath();
 							for(int k=0; k<path.getWidth(); k++) {
 								for(int l=0; l<path.getHeight(); l++) {
@@ -144,10 +150,12 @@ public class EnemyLoader extends Thread{
 								writer.println(hti);
 								writer.println(width);
 								writer.println(pattern);
+								writer.println(health);
+								writer.println(shootspeed);
 								writer.close();
 							}
 							allenemies.add(new Enemy(new Vector2f(i*25, (enemy.getHeight()*25)-(j*25)), 0, parent, 
-									ep, player, bullets, texture, lti, hti, width, pattern, null, 10, 750));
+									ep, player, bullets, texture, lti, hti, width, pattern, null, health, shootspeed));
 							if(!colors.contains(c)) {
 								writer2.println(name + " " + (i*25) + " " + ((enemy.getHeight()*25)-(j*25)));
 								names.add(name);
