@@ -52,6 +52,7 @@ public class Boss {
 	private ArrayList<EnemyBullet> playerbullets = new ArrayList<EnemyBullet>();
 	private ArrayList<Integer> hit = new ArrayList<Integer>();
 	private ArrayList<Integer> threadids = new ArrayList<Integer>();
+	private ArrayList<Integer> shootthreadids = new ArrayList<Integer>();
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets) {
@@ -90,6 +91,9 @@ public class Boss {
 			me.get(i).finish(vboids.get(i+1), vaoids.get(i+1));
 		}
 	}
+	public ArrayList<Integer> getShootThreadIDs() {
+		return shootthreadids;
+	}
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
 		p = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p, p);
@@ -107,7 +111,7 @@ public class Boss {
 		}
 	}
 	public void addSprite(Sprite s, int lowesttexid, int highesttexid, int health, int pattern, boolean hittable, 
-			int threadID) {
+			int threadID, int shootthreadid) {
 		me.add(s);
 		myrect.add(new Rectangle2D.Float());
 		this.texids.add(new TexID(lowesttexid, highesttexid, texid));
@@ -115,6 +119,7 @@ public class Boss {
 		bps.add(new BossPart(pattern, hittable));
 		hit.add(0);
 		threadids.add(threadID);
+		shootthreadids.add(shootthreadid);
 	}
 	public void animate() {
 		for(int i=0; i<me.size(); i++) {
@@ -141,11 +146,12 @@ public class Boss {
 	public ArrayList<Integer> getThreadIDs() {
 		return threadids;
 	}
-	public void shoot() {
-		for(int i=0; i<me.size(); i++) {
-			if(bps.get(i).isHittable()) {
-				if(bps.get(i).getPattern() == 1) {
-					for(float j=0.0f; j<2*Math.PI; j+= Math.PI/4) {
+	public void shoot(int index) {
+		int i = shootthreadids.indexOf(index);
+		if(bps.get(i).isHittable()) {
+			if(bps.get(i).getPattern() == 1) {
+				for(float j=0.0f; j<2*Math.PI; j+= Math.PI/4) {
+					if(i < me.size()) {
 						bullets.add(new EnemyBullet(me.get(i).getPos(), j, 40));
 					}
 				}
@@ -170,6 +176,7 @@ public class Boss {
 							this.healths.set(j, healths.get(j)-5);
 							hit.set(j, 1);
 							if(healths.get(j)<=0) {
+								parent.removeThread(shootthreadids.get(j));
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);

@@ -61,11 +61,14 @@ public class Enemy {
 	private int hit;
 	private int health;
 	private int threadindex;
+	private int shootspeed;
+	private int shootthreadindex;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts, int health) {
+			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
 		this.width = width/Display.getWidth();
+		this.shootspeed = shootspeed;
 		this.playerbullets = playerbullets;
 		this.health = health;
 		this.parent = parent;
@@ -113,11 +116,18 @@ public class Enemy {
 			e.printStackTrace();
 		}
 	}
-	public void finish(IntBuffer vboids, IntBuffer vaoids, int index) {
+	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
 		this.explosion.finish(vboids.get(0), vaoids.get(0));
 		this.bullet.finish(vboids.get(1), vaoids.get(1));
 		this.me.finish(vboids.get(2), vaoids.get(2));
-		this.threadindex = index;
+		this.threadindex = index[0];
+		this.shootthreadindex = index[1];
+	}
+	public int getShootThreadID() {
+			return shootthreadindex;
+	}
+	public int getShootSpeed() {
+		return shootspeed;
 	}
 	public TextureHolder[] getTextures() {
 		return textures;

@@ -178,7 +178,8 @@ public class Controller {
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(3);
 			glGenVertexArrays(vaoids);
-			enemies.get(i).finish(vboids, vaoids, ct.addTimeStep(200));
+			enemies.get(i).finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
+					ct.addTimeStep(enemies.get(i).getShootSpeed())});
 		}
 		started = true;
 	}
@@ -265,12 +266,12 @@ public class Controller {
 			lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
-			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200));
-			boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200));
-			boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200));
-			boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200));
-			boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200));
-			boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200));
+			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
+			boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+			boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+			boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+			boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+			boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
 			IntBuffer vboids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
@@ -372,10 +373,10 @@ public class Controller {
 	public void levelselectscreen() {
 		gui.clearElements();
 		ih.clearElements();
-				gui.newButton("button", new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)), 
-						100.0f, 20.0f, ih, this, "levelselected");
-				gui.newString("level1", Color.red, 100, 20, 
-						new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)));
+		gui.newButton("button", new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)), 
+				100.0f, 20.0f, ih, this, "levelselected");
+		gui.newString("level1", Color.red, 100, 20, 
+				new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)));
 			
 	}
 	public void update(int update, int index) {
@@ -396,11 +397,24 @@ public class Controller {
 		}
 		if(update == 1000) {
 			if(started) {
-				for(int i=0; i<enemies.size(); i++) {
+//				for(int i=0; i<enemies.size(); i++) {
+//					enemies.get(i).fire(display);
+//				}
+//				boss.shoot();
+			} 
+		}
+		for(int i=0; i<enemies.size(); i++) {
+			if(enemies.get(i).getShootThreadID() == index) {
+				if(started) {
 					enemies.get(i).fire(display);
 				}
-				boss.shoot();
-			} 
+			}
+		}
+		if(started) {
+			ArrayList<Integer> bossthreadids2 = boss.getShootThreadIDs();
+			if(bossthreadids2.contains(index)) {
+				boss.shoot(index);
+			}
 		}
 	}
 	public void damage(int d) {
@@ -580,5 +594,8 @@ public class Controller {
 	}
 	public float getChangeY() {
 		return changey;
+	}
+	public void removeThread(Integer index) {
+		ct.removeTimeStep(index);
 	}
 }

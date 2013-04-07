@@ -36,4 +36,8 @@ public class ControllerTimer extends Thread{
 			}
 		}
 	}
+	public void removeTimeStep(Integer index) {
+		stages.remove(index);
+		temp.remove(index);
+	}
 }
