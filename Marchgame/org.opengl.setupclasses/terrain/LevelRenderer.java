@@ -28,6 +28,7 @@ public class LevelRenderer {
 	private Matrix4f modelmatrix = new Matrix4f();
 	private FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);
 	private IntBuffer indices;
+	private ArrayList<FloatBuffer> cachedblocks = new ArrayList<>();
 	
 	public LevelRenderer() {
 		modelmatrix.store(modelmatrixfb);
@@ -36,7 +37,13 @@ public class LevelRenderer {
 	public void update(ArrayList<Block> blocks, DisplaySetup d) {
 		indices = getIndices(blocks, d);
 	}
+	public void cacheBlocks(TextureHolder th) {
+		for(int i=0; i<th.size(); i++) {
+			cachedblocks.add(getBlock(i, new Vector2f(0.0f, 0.0f), th, new Vector2f(50, 50)));
+		}
+	}
 	public LevelHolder getLevelData(ArrayList<Block> blocks, TextureHolder th) {
+		cacheBlocks(th);
 		float[] data;
 		FloatBuffer f = BufferUtils.createFloatBuffer(blocks.size() * 40);
 		IntBuffer indices = BufferUtils.createIntBuffer(blocks.size() * 6);
@@ -149,7 +156,7 @@ public class LevelRenderer {
 		
 		return rv;
 	}
-	public void render(LevelHolder lh, ShaderHandler sh, TextureHolder th,ArrayList<Block> blocks, DisplaySetup d) {
+	public void render(LevelHolder lh, ShaderHandler sh, TextureHolder th, ArrayList<Block> blocks, DisplaySetup d) {
 		DataUtils util = new DataUtils();
 		
 		util.setup(lh.getData(), lh.getVaoid(), lh.getVboid(), sh, th.getTexid(), 2, indices, modelmatrixfb, 0);

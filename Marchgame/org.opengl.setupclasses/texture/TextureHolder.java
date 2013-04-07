@@ -25,6 +25,9 @@ public class TextureHolder {
 		
 		TextureUtils util = new TextureUtils();
 	}
+	public int size() {
+		return tex.size();
+	}
 	public void addTexture(Vector2f topleft, float size) {
 		tex.add(new Texture(currenttexid, topleft, size, parentwidth));
 		currenttexid += 1;
@@ -43,7 +46,7 @@ public class TextureHolder {
 	public Vector2f[] getTextureCoords(int texid) {
 		boolean done = false;
 		
-		for(int i = 0; i < tex.size() && done == false; i++) {
+		for(int i = 0; i < tex.size() && !done; i++) {
 			if(tex.get(i).getTexid() == texid) {
 				done = true;
 				return tex.get(i).getTextureCoords();
@@ -53,4 +56,17 @@ public class TextureHolder {
 		System.err.println("cant find texid : " + texid);
 		return null;
 	}
+//	public int getTexID(Vector2f texcoord) {
+//		boolean done = false;
+//		
+//		for(int i = 0; i < tex.size() && !done; i++) {
+//			if(tex.get(i).getTexid() == texid) {
+//				done = true;
+//				return tex.get(i).getTextureCoords();
+//			}
+//		}
+//		
+//		System.err.println("cant find texcoord : " + texcoord);
+//		return 0;
+//	}
 }

@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import texture.TextureHolder;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -47,4 +49,9 @@ public class LevelHolder {
 	public int getTexid() {
 		return texid;
 	}
+//	public void update(TextureHolder th) {
+//		for(int i=0; i<data.capacity()/10; i++) {
+//			data.put(f, );
+//		}
+//	}
 }
