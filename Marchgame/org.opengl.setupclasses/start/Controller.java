@@ -133,10 +133,14 @@ public class Controller {
 	private int selected;
 	private int vely;
 	
+	private ControllerTimer ct;
+	
 	private ColorHandler ch = new ColorHandler(); private GenrealRenderer gh; 
 	private ObjectLoader ol = new ObjectLoader();
 	
 	private DisplaySetup display;
+	
+	private int playerthread;
 	
 	public void mouseChangeUpdate(float changex, float changey, float changez) {
 		if(changex != -1) {
@@ -158,6 +162,9 @@ public class Controller {
 	public void addColor(Color c) {
 		this.texids.add(ch.newCol(c, colors));
 	}
+	public void resetThread(int index) {
+		ct.resetTimeStep(index);
+	}
 	public void startup() {
 		gui.clearElements();
 		ih.clearElements();
@@ -171,7 +178,7 @@ public class Controller {
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(3);
 			glGenVertexArrays(vaoids);
-			enemies.get(i).finish(vboids, vaoids);
+			enemies.get(i).finish(vboids, vaoids, ct.addTimeStep(200));
 		}
 		started = true;
 	}
@@ -222,6 +229,10 @@ public class Controller {
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
 		
+		ct = new ControllerTimer(this);
+		ct.addTimeStep(1000);
+		playerthread = ct.addTimeStep(200);
+		
 		try {
 			blocks = parser.parseLevel(images.getImage("level1.png"), 
 					new Vector2f(-1.0f, -1.0f));
@@ -254,12 +265,12 @@ public class Controller {
 			lr.update(blocks, display);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
-			boss.addSprite(boss6, 0, 3, 1000, 1, false);
-			boss.addSprite(boss1, 0, 3, 50, 1, true);
-			boss.addSprite(boss2, 0, 3, 50, 1, true);
-			boss.addSprite(boss3, 0, 6, 10, 1, true);
-			boss.addSprite(boss4, 0, 6, 10, 1, true);
-			boss.addSprite(boss5, 0, 6, 10, 1, true);
+			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200));
+			boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200));
+			boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200));
+			boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200));
+			boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200));
+			boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200));
 			IntBuffer vboids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
@@ -298,8 +309,6 @@ public class Controller {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		pos = 0.0f;
-		
-		ControllerTimer ct = new ControllerTimer(this);
 		
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
@@ -369,16 +378,33 @@ public class Controller {
 						new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)));
 			
 	}
-	public void update() {
-		hit = 0;
-		if(started) {
-			for(int i=0; i<enemies.size(); i++) {
-				enemies.get(i).fire(display);
+	public void update(int update, int index) {
+		if(update == 200) {
+			if(playerthread == index) {
+				hit = 0;
+			} else {
+				for(int i=0; i<enemies.size(); i++) {
+					if(enemies.get(i).getThreadID() == index) {
+						enemies.get(i).resetBlinking();
+					}
+				}
+				ArrayList<Integer> bossthreadids = boss.getThreadIDs();
+				if(bossthreadids.contains(index)) {
+					boss.resetBlinking(index);
+				}
 			}
-			boss.shoot();
+		}
+		if(update == 1000) {
+			if(started) {
+				for(int i=0; i<enemies.size(); i++) {
+					enemies.get(i).fire(display);
+				}
+				boss.shoot();
+			} 
 		}
 	}
 	public void damage(int d) {
+		ct.resetTimeStep(playerthread);
 		hit = 1;
 		health -= d;
 	}

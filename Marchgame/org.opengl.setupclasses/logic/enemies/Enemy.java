@@ -60,6 +60,7 @@ public class Enemy {
 	private int speed;
 	private int hit;
 	private int health;
+	private int threadindex;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
@@ -112,10 +113,11 @@ public class Enemy {
 			e.printStackTrace();
 		}
 	}
-	public void finish(IntBuffer vboids, IntBuffer vaoids) {
+	public void finish(IntBuffer vboids, IntBuffer vaoids, int index) {
 		this.explosion.finish(vboids.get(0), vaoids.get(0));
 		this.bullet.finish(vboids.get(1), vaoids.get(1));
 		this.me.finish(vboids.get(2), vaoids.get(2));
+		this.threadindex = index;
 	}
 	public TextureHolder[] getTextures() {
 		return textures;
@@ -161,6 +163,12 @@ public class Enemy {
 	public void scroll() {
 		me.changePos(0.0f, 0.005f);
 	}
+	public int getThreadID() {
+		return threadindex;
+	}
+	public void resetBlinking() {
+		hit = 0;
+	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
 		animate();
@@ -171,6 +179,7 @@ public class Enemy {
 						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
 					health -= 5;
+					parent.resetThread(threadindex);
 					hit = 1;
 					if(health <= 0) {
 						stopped = true;
@@ -275,7 +284,6 @@ public class Enemy {
 		}
 	}
 	public void fire(DisplaySetup d) {
-		hit = 0;
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			if(pattern == 1) {
 				for(float i=0; i<2*Math.PI; i+=Math.PI) {
@@ -285,10 +293,7 @@ public class Enemy {
 			if(pattern == 2) {
 				double compassBearing=Math.atan2(me.getPos().y - playersprite.getPos().y, 
 						me.getPos().x - playersprite.getPos().x);
-				if (compassBearing<0)
-		    	{
-		        	compassBearing=Math.PI*2+compassBearing;
-		    	}
+				
 				shoot((float)compassBearing);
 			}
 		}
