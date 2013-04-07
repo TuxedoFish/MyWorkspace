@@ -54,7 +54,7 @@ public class Enemy {
 	private int lti;
 	private int hti;
 	private boolean isup = true;
-	private int width;
+	private float width;
 	private TextureHolder[] textures;
 	private int texturestage;
 	private int speed;
@@ -67,7 +67,7 @@ public class Enemy {
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
-		this.width = width/Display.getWidth();
+		this.width = (float)width/Display.getWidth();
 		this.shootspeed = shootspeed;
 		this.playerbullets = playerbullets;
 		this.health = health;

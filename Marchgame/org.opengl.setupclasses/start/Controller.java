@@ -20,6 +20,7 @@ import logic.GridMaker;
 import logic.GridParser;
 import logic.LevelLoader;
 import logic.enemies.Boss;
+import logic.enemies.Building;
 import logic.enemies.Enemy;
 import logic.enemies.EnemyBullet;
 import logic.enemies.EnemyLoader;
@@ -111,6 +112,8 @@ public class Controller {
 	private ArrayList<EnemyBullet> bullets = new ArrayList<EnemyBullet>();
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
+	private ArrayList<Building> buildings = new ArrayList<Building>();
+	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
 	private int hit = 0;
@@ -264,6 +267,9 @@ public class Controller {
 			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 			
 			lr.update(blocks, display);
+			Building b = new Building("building1.png", bullets, this, 200, 200, new Vector2f(-0.5f, 5.0f), 100);
+			b.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
+			buildings.add(b);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
 			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
@@ -393,15 +399,12 @@ public class Controller {
 				if(bossthreadids.contains(index)) {
 					boss.resetBlinking(index);
 				}
+				for(int i=0; i<buildings.size(); i++) {
+					if(buildings.get(i).getThreadID() == index) {
+						buildings.get(i).resetBlinking();
+					}
+				}
 			}
-		}
-		if(update == 1000) {
-			if(started) {
-//				for(int i=0; i<enemies.size(); i++) {
-//					enemies.get(i).fire(display);
-//				}
-//				boss.shoot();
-			} 
 		}
 		for(int i=0; i<enemies.size(); i++) {
 			if(enemies.get(i).getShootThreadID() == index) {
@@ -468,8 +471,10 @@ public class Controller {
 			}
 	}
 	public void shoot() {
-		bullets.add(new EnemyBullet(new Vector2f(player.getPos().x + (player.getWidth()/(Display.getWidth()*2.0f)), player.getPos().y)
+		if(started) {
+			bullets.add(new EnemyBullet(new Vector2f(player.getPos().x + (player.getWidth()/(Display.getWidth()*2.0f)), player.getPos().y)
 				, (float)Math.PI, 40));
+		}
 	}
 	public void rendergl(ShaderHandler sh, DisplaySetup d, LineCollection lc) {
 		//Enable Transparency
@@ -510,9 +515,10 @@ public class Controller {
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);
 		DataUtils util = new DataUtils();
+		for(int i=0; i<buildings.size(); i++) {
+			buildings.get(i).render(sh, d, util);
+		}
 		boss.render(sh, d, util);
-		player.render(sh, util, hit);
-		
 		
 		if(stage >= 35) {
 			stage = 0;
@@ -572,6 +578,7 @@ public class Controller {
 			ih.clearElements();
 			gui.newString("score : " + health, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 		}
+		player.render(sh, util, hit);
 		gui.drawElements(sh);
 	}
 	public ShaderHandler getSh() {
