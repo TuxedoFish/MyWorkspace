@@ -228,7 +228,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(20, 10);
+		//gm.makeGrid(51, 10);
 		Parser parser = new Parser();
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -240,7 +240,8 @@ public class Controller {
 			blocks = parser.parseLevel(images.getImage("level1.png"), 
 					new Vector2f(-1.0f, -1.0f));
 			GridParser gp = new GridParser();
-			blocktex = gp.parseGrid(images.getImage("LAND.png"), 20);
+			blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
+			blocktex.finish();
 			levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
 			lr = new LevelRenderer(ct.addTimeStep(600));
 			blockdata = lr.getLevelData(blocks, blocktex);
@@ -266,7 +267,7 @@ public class Controller {
 			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 			
 			lr.update(blocks, display);
-			Building b = new Building("building1.png", bullets, this, 200, 200, new Vector2f(-0.5f, 5.0f), 100);
+			Building b = new Building("building3.png", bullets, this, 340, 500, new Vector2f(-0.5f, 5.0f), 100, 167, 250);
 			b.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
 			buildings.add(b);
 			
@@ -389,18 +390,20 @@ public class Controller {
 			if(playerthread == index) {
 				hit = 0;
 			} else {
-				for(int i=0; i<enemies.size(); i++) {
-					if(enemies.get(i).getThreadID() == index) {
-						enemies.get(i).resetBlinking();
+				if(started) {
+					for(int i=0; i<enemies.size(); i++) {
+						if(enemies.get(i).getThreadID() == index) {
+							enemies.get(i).resetBlinking();
+						}
 					}
-				}
-				ArrayList<Integer> bossthreadids = boss.getThreadIDs();
-				if(bossthreadids.contains(index)) {
-					boss.resetBlinking(index);
-				}
-				for(int i=0; i<buildings.size(); i++) {
-					if(buildings.get(i).getThreadID() == index) {
-						buildings.get(i).resetBlinking();
+					ArrayList<Integer> bossthreadids = boss.getThreadIDs();
+					if(bossthreadids.contains(index)) {
+						boss.resetBlinking(index);
+					}
+					for(int i=0; i<buildings.size(); i++) {
+						if(buildings.get(i).getThreadID() == index) {
+							buildings.get(i).resetBlinking();
+						}
 					}
 				}
 			}

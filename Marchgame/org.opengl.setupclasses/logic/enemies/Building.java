@@ -29,7 +29,7 @@ public class Building {
 	private boolean stopped = false;
 	
 	public Building(String loc, ArrayList<EnemyBullet> playerbullets, Controller parent, int width, 
-			int height, Vector2f pos, int health) {
+			int height, Vector2f pos, int health, int imgwidth, int imgheight) {
 		this.playerbullets = playerbullets;
 		this.parent = parent;
 		this.health = health;
@@ -41,8 +41,7 @@ public class Building {
 			System.err.println("err loading building");
 			e.printStackTrace();
 		}
-		
-		TextureHolder texture = gp.parseGrid(img, img.getWidth(), img.getHeight());
+		TextureHolder texture = gp.parseGrid(img, imgwidth, imgheight);
 		me = new Sprite(img, parent, width, height, texture, 0, pos);
 	}
 	public void finish(int vboid, int vaoid, int threadid) {
@@ -65,11 +64,12 @@ public class Building {
 					parent.resetThread(threadid);
 					hit = 1;
 					if(health <= 0) {
+						me.changeTexture(1);
 						stopped = true;
 					}
 				}
 			}
-			me.render(sh, util, hit);
 		}
+		me.render(sh, util, hit);
 	}
 }

@@ -13,17 +13,20 @@ public class TextureHolder {
 	private ArrayList<Texture> tex = new ArrayList<Texture>();
 	private int currenttexid = 0;
 	private BufferedImage img;
+	private int texid;
 	
 	public TextureHolder(float parentsize, BufferedImage img) {
 		this.parentwidth = parentsize;
 		this.parentheight = parentsize;
 		this.img = img;
 	}
+	public void finish() {
+		TextureUtils util = new TextureUtils();
+		texid = util.binddata(img);
+	}
 	public TextureHolder(float parentwidth, float parentheight, BufferedImage img) {
 		this.parentwidth = parentwidth;
 		this.parentheight = parentheight;
-		
-		TextureUtils util = new TextureUtils();
 	}
 	public int size() {
 		return tex.size();
@@ -37,8 +40,7 @@ public class TextureHolder {
 		currenttexid += 1;
 	}
 	public int getTexid() {
-		TextureUtils util = new TextureUtils();
-		return util.binddata(img);
+		return texid;
 	}
 	public BufferedImage getImg() {
 		return img;

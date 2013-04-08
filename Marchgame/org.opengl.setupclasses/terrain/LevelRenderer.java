@@ -118,11 +118,13 @@ public class LevelRenderer {
 		Vector4f eyespace = new Vector4f();
 		
 		for(int i = 0; i < blocks.size(); i++) {
-			realspace = new Vector4f(blocks.get(i).getX(), blocks.get(i).getX(), 0.0f, 1.0f);
+			realspace = new Vector4f(blocks.get(i).getX(), blocks.get(i).getY(), 0.0f, 1.0f);
 			Matrix4f.transform(d.getModelViewMatrixAsMatrix(), realspace, eyespace);
 			
 			if((eyespace.x > -1.1f && eyespace.x < 1.1f)) {
-				blockstoadd.add(i);
+				if((eyespace.y > -1.1f && eyespace.y < 1.1f)) {
+					blockstoadd.add(i);
+				}
 			}
 		}
 		IntBuffer indices = BufferUtils.createIntBuffer(blockstoadd.size() * 6);
@@ -159,9 +161,11 @@ public class LevelRenderer {
 	}
 	public void render(LevelHolder lh, ShaderHandler sh, TextureHolder th, ArrayList<Block> blocks, DisplaySetup d) {
 		DataUtils util = new DataUtils();
+		IntBuffer indices;
+		indices = getIndices(blocks, d);
 		
 		util.setup(lh.getData(), lh.getVaoid(), lh.getVboid(), sh, th.getTexid(), 2, indices, modelmatrixfb, 0);
 		
-		glDrawElements(GL_TRIANGLES, lh.getIndices().capacity(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indices.capacity(), GL_UNSIGNED_INT, 0);
 	}
 }
