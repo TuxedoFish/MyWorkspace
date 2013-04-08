@@ -28,22 +28,17 @@ public class LevelRenderer {
 	private Matrix4f modelmatrix = new Matrix4f();
 	private FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);
 	private IntBuffer indices;
-	private ArrayList<FloatBuffer> cachedblocks = new ArrayList<>();
+	private int threadid;
 	
-	public LevelRenderer() {
+	public LevelRenderer(int threadid) {
+		this.threadid = threadid;
 		modelmatrix.store(modelmatrixfb);
 		modelmatrixfb.flip();
 	}
 	public void update(ArrayList<Block> blocks, DisplaySetup d) {
 		indices = getIndices(blocks, d);
 	}
-	public void cacheBlocks(TextureHolder th) {
-		for(int i=0; i<th.size(); i++) {
-			cachedblocks.add(getBlock(i, new Vector2f(0.0f, 0.0f), th, new Vector2f(50, 50)));
-		}
-	}
 	public LevelHolder getLevelData(ArrayList<Block> blocks, TextureHolder th) {
-		cacheBlocks(th);
 		float[] data;
 		FloatBuffer f = BufferUtils.createFloatBuffer(blocks.size() * 40);
 		IntBuffer indices = BufferUtils.createIntBuffer(blocks.size() * 6);
@@ -76,7 +71,7 @@ public class LevelRenderer {
 		indices.position(0);
 		indices.rewind();
 		
-		return new LevelHolder(f, indices);
+		return new LevelHolder(f, indices, th);
 	}
 	public FloatBuffer getBlock(int texid, Vector2f pos, TextureHolder th, Vector2f inaccsize) {
 		Vector2f realpos = (pos);
@@ -155,6 +150,12 @@ public class LevelRenderer {
 		rv.y = v.y/Display.getHeight();
 		
 		return rv;
+	}
+	public int getThreadID() {
+		return threadid;
+	}
+	public void animate(TextureHolder th, LevelHolder lh) {
+		lh.update(th);
 	}
 	public void render(LevelHolder lh, ShaderHandler sh, TextureHolder th, ArrayList<Block> blocks, DisplaySetup d) {
 		DataUtils util = new DataUtils();

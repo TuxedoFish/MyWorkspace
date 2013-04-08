@@ -56,17 +56,18 @@ public class TextureHolder {
 		System.err.println("cant find texid : " + texid);
 		return null;
 	}
-//	public int getTexID(Vector2f texcoord) {
-//		boolean done = false;
-//		
-//		for(int i = 0; i < tex.size() && !done; i++) {
-//			if(tex.get(i).getTexid() == texid) {
-//				done = true;
-//				return tex.get(i).getTextureCoords();
-//			}
-//		}
-//		
-//		System.err.println("cant find texcoord : " + texcoord);
-//		return 0;
-//	}
+	public int getTexID(Vector2f texcoord) {
+		boolean done = false;
+		
+		for(int i = 0; i < tex.size() && !done; i++) {
+			if(tex.get(i).getTextureCoords()[0].x == texcoord.x &&
+					tex.get(i).getTextureCoords()[0].y == texcoord.y) {
+				done = true;
+				return i;
+			}
+		}
+		
+		System.err.println("cant find texcoord : " + texcoord);
+		return 0;
+	}
 }

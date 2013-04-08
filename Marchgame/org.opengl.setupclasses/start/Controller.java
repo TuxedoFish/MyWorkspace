@@ -234,7 +234,6 @@ public class Controller {
 		setupshaders(shaderhandler);
 		
 		ct = new ControllerTimer(this);
-		ct.addTimeStep(1000);
 		playerthread = ct.addTimeStep(200);
 		
 		try {
@@ -243,7 +242,7 @@ public class Controller {
 			GridParser gp = new GridParser();
 			blocktex = gp.parseGrid(images.getImage("LAND.png"), 20);
 			levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
-			lr = new LevelRenderer();
+			lr = new LevelRenderer(ct.addTimeStep(600));
 			blockdata = lr.getLevelData(blocks, blocktex);
 			
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
@@ -405,6 +404,9 @@ public class Controller {
 					}
 				}
 			}
+		}
+		if(lr != null && index == lr.getThreadID()) {
+			lr.animate(blocktex, blockdata);
 		}
 		for(int i=0; i<enemies.size(); i++) {
 			if(enemies.get(i).getShootThreadID() == index) {
