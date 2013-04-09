@@ -3,6 +3,7 @@ package logic.enemies;
 import images.ImageReturn;
 
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -26,10 +27,9 @@ import start.DisplaySetup;
 import texture.TextureHolder;
 import utils.DataUtils;
 
-public class Enemy {
+public class Enemy extends Sprite{
 	private Vector2f pos;
 	private int texid;
-	private Sprite me;
 	private PathPoint p;
 	private PathPoint lastp;
 	private EnemyPath ep;
@@ -65,7 +65,21 @@ public class Enemy {
 	private int shootthreadindex;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
-			ArrayList<EnemyBullet> playerbullets, String texloc, int lowesttexid, int highesttexid
+			ArrayList<EnemyBullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
+			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
+		super(tex, parent, 100, 100, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
+				((pos.y)/(Display.getHeight()/2.0f))));
+		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
+	}
+	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
+			ArrayList<EnemyBullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
+			, int width, int pattern, GridParser gp, int health, int shootspeed) {
+		super(tex, parent, 100, 100, gp.parseGrid(tex, 49.0f), 0, new Vector2f(((pos.x/Display.getWidth())), 
+				((pos.y)/(Display.getHeight()/2.0f))));
+		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, null, health, shootspeed);
+	}
+	public void setup(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
+			ArrayList<EnemyBullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
 		this.width = (float)width/Display.getWidth();
 		this.shootspeed = shootspeed;
@@ -96,7 +110,6 @@ public class Enemy {
 						0, new Vector2f(0.0f, 0.0f));
 				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, ts[1], 
 						0, new Vector2f(0.0f, 0.0f));
-				me = new Sprite(images.getImage(texloc), parent, 100, 100, ts[2], 0, this.pos);
 			} else {
 				texture = gp.parseGrid(images.getImage("explosion.png"), 29.0f);
 				this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, texture, 
@@ -104,8 +117,7 @@ public class Enemy {
 				texture2 = gp.parseGrid(images.getImage("bullets2.png"), 19.0f);
 				this.bullet = new Sprite(images.getImage("bullets2.png"), parent, 40, 40, texture2, 
 						0, new Vector2f(0.0f, 0.0f));
-				texture3 = gp.parseGrid(images.getImage(texloc), 49.0f);
-				me = new Sprite(images.getImage(texloc), parent, 100, 100, texture3, 0, this.pos);
+				texture3 = gp.parseGrid(tex, 49.0f);
 				textures = new TextureHolder[]{
 						texture, texture2, texture3
 				};
@@ -119,7 +131,7 @@ public class Enemy {
 	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
 		this.explosion.finish(vboids.get(0), vaoids.get(0));
 		this.bullet.finish(vboids.get(1), vaoids.get(1));
-		this.me.finish(vboids.get(2), vaoids.get(2));
+		this.finish(vboids.get(2), vaoids.get(2));
 		this.threadindex = index[0];
 		this.shootthreadindex = index[1];
 	}
@@ -136,14 +148,14 @@ public class Enemy {
 		if(texturestage>speed) {
 			if(isup) {
 				if(hti>texid+1) {
-					me.changeTexture(texid+1);
+					this.changeTexture(texid+1);
 					texid += 1;
 				} else {
 					isup = false;
 				}
 			} else {
 				if(lti<texid-1) {
-					me.changeTexture(texid-1);
+					this.changeTexture(texid-1);
 					texid -= 1;
 				} else {
 					isup = true;
@@ -157,7 +169,7 @@ public class Enemy {
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
 		p = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p, p);
-		Vector4f p2 = new Vector4f((float)me.getPos().x, (float)me.getPos().y, 0.0f, 1.0f);
+		Vector4f p2 = new Vector4f((float)this.getPos().x, (float)this.getPos().y, 0.0f, 1.0f);
 		p2 = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p2, p2);
 		
 		this.player.setRect(p.x, p.y, 
@@ -165,13 +177,13 @@ public class Enemy {
 				(float)playersprite.getHeight()/Display.getHeight());
 		this.myrect.setRect(p2.x - width/2, p2.y, 
 				(float)width, 
-				(float)me.getHeight()/Display.getHeight());
+				(float)this.getHeight()/Display.getHeight());
 	}
 	private void shoot(float rot) {
-		bullets.add(new EnemyBullet(new Vector2f(me.getPos().x+(me.getWidth()/(Display.getWidth()*2.0f)), me.getPos().y), rot, 40));
+		bullets.add(new EnemyBullet(new Vector2f(this.getPos().x+(this.getWidth()/(Display.getWidth()*2.0f)), this.getPos().y), rot, 40));
 	}
 	public void scroll() {
-		me.changePos(0.0f, 0.005f);
+		this.changePos(0.0f, 0.005f);
 	}
 	public int getThreadID() {
 		return threadindex;
@@ -179,13 +191,13 @@ public class Enemy {
 	public void resetBlinking() {
 		hit = 0;
 	}
-	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
+	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
 		animate();
 		
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
-				if(playerbullets.get(i).contains(me.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
+				if(playerbullets.get(i).contains(this.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
 						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
 					health -= 5;
@@ -216,7 +228,7 @@ public class Enemy {
 								Math.pow(p.getPos().y - lastp.getPos().y, 2))*100.0f);
 					}
 				} else {
-					me.changePos((p.getPos().x - lastp.getPos().x)/dist, (p.getPos().y - lastp.getPos().y)/dist);
+					this.changePos((p.getPos().x - lastp.getPos().x)/dist, (p.getPos().y - lastp.getPos().y)/dist);
 					stage += 1;
 				}
 			} else {
@@ -227,9 +239,9 @@ public class Enemy {
 						Math.pow(p.getPos().y - lastp.getPos().y, 2))*10;
 				started = true;
 				Vector2f startpos = ep.getPoint(0).getPos();
-				me.setPos(startpos.x, startpos.y + pos.y + 1.0f);
+				this.setPos(startpos.x, startpos.y + pos.y + 1.0f);
 			}
-			me.render(sh, util, hit);
+			this.render(sh, util, hit);
 		}
 		for(int i=0; i<explosions.size(); i++) {
 			explosion.changeTexture((explosions.get(i).getAge()/5));
@@ -301,8 +313,8 @@ public class Enemy {
 				}
 			}
 			if(pattern == 2) {
-				double compassBearing=Math.atan2(me.getPos().y - playersprite.getPos().y, 
-						me.getPos().x - playersprite.getPos().x);
+				double compassBearing=Math.atan2(this.getPos().y - playersprite.getPos().y, 
+						this.getPos().x - playersprite.getPos().x);
 				
 				shoot((float)compassBearing);
 			}
@@ -310,8 +322,5 @@ public class Enemy {
 	}
 	public int getTexid() {
 		return texid;
-	}
-	public Vector2f getPos() {
-		return pos;
 	}
 }

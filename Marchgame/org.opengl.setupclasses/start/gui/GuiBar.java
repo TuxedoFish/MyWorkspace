@@ -67,8 +67,8 @@ public class GuiBar implements GuiElement{
 		ImageReturn images = new ImageReturn();
 		
 		try {
-			bar = images.getImage("/gui/" + barname + ".png");
-			emptybar = images.getImage("/gui/empty" + barname + ".png");
+			bar = images.getImage("gui/" + barname + ".png");
+			emptybar = images.getImage("gui/empty" + barname + ".png");
 			img = new BufferedImage(emptybar.getWidth(), emptybar.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 			Graphics g = img.getGraphics();
 			
