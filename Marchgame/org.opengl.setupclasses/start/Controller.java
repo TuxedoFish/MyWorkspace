@@ -577,7 +577,7 @@ public class Controller {
 			}
 		}
 		for(int i=0; i<enemies.size(); i++) {
-			enemies.get(i).render(shaderhandler, display, util);
+			enemies.get(i).update(shaderhandler, display, util);
 		}
 		if(prevhealth != health) {
 			prevhealth = health;

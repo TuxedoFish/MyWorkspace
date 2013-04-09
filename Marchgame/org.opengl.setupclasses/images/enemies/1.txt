@@ -3,7 +3,7 @@ ep 188 163 1
 ep 266 260 2
 ep 306 398 3
 ep 306 477 4
-enemy2.png
+Enemy2.png
 0
 15
 20

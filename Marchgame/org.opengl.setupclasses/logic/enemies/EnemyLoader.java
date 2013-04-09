@@ -10,9 +10,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import logic.enemies.troops.Fly;
+import logic.GridParser;
 
 import object.Sprite;
 
@@ -85,14 +87,31 @@ public class EnemyLoader extends Thread{
 					int health = Integer.valueOf(reader.readLine());
 					int shootspeed = Integer.valueOf(reader.readLine());
 					
-					if(!keys.contains(parts[0])) {
-						allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-								bullets, texloc, lti, hti, width, pattern, null, health, shootspeed));
-						keys.add(parts[0]);
-						textures.add(allenemies.get(allenemies.size()-1).getTextures());
-					} else {
-						allenemies.add(new Enemy(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-								bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), health, shootspeed));
+					try {
+						Class<?> enemy = Class.forName("logic.enemies.troops." + texloc.substring(0, texloc.length()-4));
+						if(!keys.contains(parts[0])) {
+							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
+									Sprite.class, ArrayList.class , String.class,
+									int.class, int.class, int.class, int.class,
+									int.class, int.class, ImageReturn.class);
+							allenemies.add((Enemy) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
+									bullets, texloc, lti, hti, width, pattern, health, shootspeed, images));
+							keys.add(parts[0]);
+							textures.add(allenemies.get(allenemies.size()-1).getTextures());
+						} else {
+							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
+									Sprite.class, ArrayList.class , String.class,
+									int.class, int.class, int.class, int.class,
+									TextureHolder[].class, int.class, int.class, ImageReturn.class);
+							allenemies.add((Enemy) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
+									bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
+									health, shootspeed, images));
+						}
+					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | 
+							InstantiationException | IllegalAccessException | IllegalArgumentException | 
+							InvocationTargetException e) {
+						System.err.println("err finding class / constructor");
+						e.printStackTrace();
 					}
 				}
 			} catch (IOException e) {
@@ -156,8 +175,8 @@ public class EnemyLoader extends Thread{
 								writer.println(shootspeed);
 								writer.close();
 							}
-							allenemies.add(new Enemy(new Vector2f(i*25, (enemy.getHeight()*25)-(j*25)), 0, parent, 
-									ep, player, bullets, texture, lti, hti, width, pattern, null, health, shootspeed));
+							//allenemies.add(new Enemy(new Vector2f(i*25, (enemy.getHeight()*25)-(j*25)), 0, parent, 
+									//ep, player, bullets, texture, lti, hti, width, pattern, null, health, shootspeed));
 							if(!colors.contains(c)) {
 								writer2.println(name + " " + (i*25) + " " + ((enemy.getHeight()*25)-(j*25)));
 								names.add(name);

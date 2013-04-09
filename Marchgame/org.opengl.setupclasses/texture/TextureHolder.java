@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import logic.enemies.Enemy;
-import logic.enemies.troops.Fly;
 
 import org.lwjgl.util.vector.Vector2f;
 

@@ -72,9 +72,9 @@ public class GuiButton implements GuiElement{
 		
 		try {
 			imgs = new BufferedImage[] {
-					images.getImage("/gui/" + buttonname+".png"), 
-					images.getImage("/gui/" + buttonname+"hover.png"), 
-					images.getImage("/gui/" + buttonname+"pressed.png"), 
+					images.getImage("gui/" + buttonname+".png"), 
+					images.getImage("gui/" + buttonname+"hover.png"), 
+					images.getImage("gui/" + buttonname+"pressed.png"), 
 			};
 		} catch (IOException e) {
 			System.err.println("err finding button @ " + buttonname);
