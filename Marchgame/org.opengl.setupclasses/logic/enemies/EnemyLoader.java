@@ -60,7 +60,7 @@ public class EnemyLoader extends Thread{
 				String linetest = null;
 				while((linetest=readertest.readLine()) != null) {lines+=1;}
 			} catch (IOException e1) {
-				System.err.println("err 1324567r45253346678");
+				System.err.println("err at EnemyLoader");
 			}
 			
 			try {
