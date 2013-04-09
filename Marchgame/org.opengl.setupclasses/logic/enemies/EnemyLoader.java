@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import logic.enemies.troops.Fly;
+
 import object.Sprite;
 
 import org.lwjgl.util.vector.Vector2f;

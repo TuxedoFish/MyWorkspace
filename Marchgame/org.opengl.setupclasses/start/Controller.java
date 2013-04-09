@@ -267,9 +267,11 @@ public class Controller {
 			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 			
 			lr.update(blocks, display);
-			Building b = new Building("building3.png", bullets, this, 340, 500, new Vector2f(-0.5f, 5.0f), 100, 167, 250);
+			Building b = new Building("building3.png", bullets, this, 340, 500, new Vector2f(-0.9f, 5.0f), 100, 167, 250);
 			b.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
-			buildings.add(b);
+			Building b2 = new Building("building3.png", bullets, this, 340, 500, new Vector2f(-0.9f, 2.0f), 100, 167, 250);
+			b2.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
+			buildings.add(b); buildings.add(b2);
 			
 			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
 			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
