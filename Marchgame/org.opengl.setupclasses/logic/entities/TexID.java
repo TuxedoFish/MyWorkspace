@@ -1,4 +1,4 @@
-package logic.enemies;
+package logic.entities;
 
 public class TexID {
 	private int lowesttexid;

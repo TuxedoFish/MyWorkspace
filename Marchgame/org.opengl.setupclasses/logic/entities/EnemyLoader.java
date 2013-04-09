@@ -1,4 +1,4 @@
-package logic.enemies;
+package logic.entities;
 
 import images.ImageReturn;
 
@@ -88,7 +88,7 @@ public class EnemyLoader extends Thread{
 					int shootspeed = Integer.valueOf(reader.readLine());
 					
 					try {
-						Class<?> enemy = Class.forName("logic.enemies.troops." + texloc.substring(0, texloc.length()-4));
+						Class<?> enemy = Class.forName("logic.entities.troops." + texloc.substring(0, texloc.length()-4));
 						if(!keys.contains(parts[0])) {
 							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 									Sprite.class, ArrayList.class , String.class,

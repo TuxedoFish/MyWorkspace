@@ -1,4 +1,4 @@
-package logic.enemies;
+package logic.entities;
 
 import images.ImageReturn;
 
@@ -22,6 +22,7 @@ import texture.TextureHolder;
 import utils.DataUtils;
 
 public class Boss {
+	private int deathexplosionsleft = 5;
 	private Vector2f pos;
 	private int texid;
 	private ArrayList<Sprite> me = new ArrayList<Sprite>();
@@ -207,9 +208,18 @@ public class Boss {
 					i-=1;
 				}
 			}
-			if(me.size() == 1 && explosions.size() == 0) {
-				parent.toHome();
-				stopped = true;
+			if(me.size() == 1 && explosions.size() <= 10) {
+				if(deathexplosionsleft == 0) {
+					parent.toHome();
+					stopped = true;
+				} else {
+					deathexplosionsleft -= 1;
+					for(int k=0; k<50; k++) {
+						explosions.add(new EnemyBullet(new Vector2f((float)(me.get(0).getPos().x + 
+								(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
+								(Math.random()*myrect.get(0).getHeight()))), 0, 70));
+					}
+				}
 			}
 			boolean changed = true;
 			for(int i=0; i<bullets.size(); i++) {

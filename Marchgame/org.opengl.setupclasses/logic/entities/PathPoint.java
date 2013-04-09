@@ -1,4 +1,4 @@
-package logic.enemies;
+package logic.entities;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;

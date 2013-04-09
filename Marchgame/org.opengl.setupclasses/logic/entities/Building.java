@@ -1,4 +1,4 @@
-package logic.enemies;
+package logic.entities;
 
 import images.ImageReturn;
 

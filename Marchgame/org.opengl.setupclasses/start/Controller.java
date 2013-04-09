@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import logic.GridMaker;
 import logic.GridParser;
 import logic.LevelLoader;
-import logic.enemies.Boss;
-import logic.enemies.Building;
-import logic.enemies.Enemy;
-import logic.enemies.EnemyBullet;
-import logic.enemies.EnemyLoader;
+import logic.entities.Boss;
+import logic.entities.Building;
+import logic.entities.Enemy;
+import logic.entities.EnemyBullet;
+import logic.entities.EnemyLoader;
 
 import object.ColorHandler;
 import object.ObjectLoader;
@@ -485,6 +485,9 @@ public class Controller {
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
+		health = 500;
+		display.changepos(0.0f, player.getPos().y, 0.0f);
+		player.setPos(0.0f, 0.0f);
 	}
 	public void shoot() {
 		if(started) {
@@ -589,10 +592,12 @@ public class Controller {
 			enemies.get(i).update(shaderhandler, display, util);
 		}
 		if(prevhealth != health) {
-			prevhealth = health;
-			gui.clearElements();
-			ih.clearElements();
-			gui.newString("score : " + health, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+			if(started) {
+				prevhealth = health;
+				gui.clearElements();
+				ih.clearElements();
+				gui.newString("score : " + health, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+			}
 		}
 		player.render(sh, util, hit);
 		gui.drawElements(sh);
