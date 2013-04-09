@@ -307,28 +307,11 @@ public class Controller {
 					gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
 					gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 				}
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				
-				glViewport(0, 0, Display.getWidth(), Display.getHeight());
-				//Clears display
-				glClear(GL_COLOR_BUFFER_BIT |
-					GL_DEPTH_BUFFER_BIT);
-				glLoadIdentity();
-				glPushMatrix();
-
-				ARBShaderObjects.glUseProgramObjectARB(shaderhandler.getPrograms().get(0).getId());
-				
-				int viewmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "ViewMatrix");
-				glUniformMatrix4(viewmatrixloc, false, display.getModelViewMatrix());
-				
-				int perspmatrixloc = glGetUniformLocation(shaderhandler.getPrograms().get(0).getId(), "PerspectiveMatrix");
-				glUniformMatrix4(perspmatrixloc, false, display.getProjectionMatrix());
-				
 				FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
 				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 				
 				DataUtils utils = new DataUtils();
+				utils.begin(shaderhandler, display);
 				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 				gui.drawElements(shaderhandler);
@@ -452,34 +435,8 @@ public class Controller {
 		}
 	}
 	public void rendergl(ShaderHandler sh, DisplaySetup d, LineCollection lc) {
-		//Enable Transparency
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		//Clears display
-		glClear(GL_COLOR_BUFFER_BIT |
-			GL_DEPTH_BUFFER_BIT);
-		glLoadIdentity();
-		glPushMatrix();
-
-		ARBShaderObjects.glUseProgramObjectARB(sh.getPrograms().get(0).getId());
-		
-		int projectionmatrixloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "PerspectiveMatrix");
-		glUniformMatrix4(projectionmatrixloc, false, d.getProjectionMatrix());
-		
-		int viewmatrixloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "ViewMatrix");
-		glUniformMatrix4(viewmatrixloc, false, d.getModelViewMatrix());
-		
-		int lightloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "lightpos");
-		int viewdirloc = glGetUniformLocation(sh.getPrograms().get(0).getId(), "viewDirection");
-		
-		Vector4f viewdir = new Vector4f(0.0f, 0.0f, -1.0f, 1.0f);
-		viewdir = Matrix4f.transform(display.getRotMatrix(), viewdir, viewdir);
-		viewdir.normalise();
-		Vector4f light = new Vector4f();
-		glUniform4f(lightloc, light.x, light.y, light.z, light.w);
-		glUniform4f(viewdirloc, viewdir.x, viewdir.y, viewdir.z, viewdir.w);
+		DataUtils util = new DataUtils();
+		util.begin(sh, d);
 		
 		if((d.getPos().y + 0.25f > levelheight*-1)) {
 			display.changepos(0.0f, -0.005f, 0.0f);
@@ -489,7 +446,6 @@ public class Controller {
 			}
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);
-		DataUtils util = new DataUtils();
 		for(int i=0; i<buildings.size(); i++) {
 			buildings.get(i).render(sh, d, util);
 		}
