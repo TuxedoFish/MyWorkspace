@@ -24,6 +24,7 @@ import logic.entities.Building;
 import logic.entities.Enemy;
 import logic.entities.EnemyBullet;
 import logic.entities.EnemyLoader;
+import logic.entities.Player;
 
 import object.ColorHandler;
 import object.ObjectLoader;
@@ -85,44 +86,27 @@ import static org.lwjgl.util.glu.GLU.*;
 
 public class Controller {
 	private int testprogram;
-	private int textureID = 0;
-	private ArrayList<Shape> shapes = new ArrayList<Shape>();
-	private boolean jump;
-	private int stage; private int ministage;
-	private int score;
 	
 	private GuiElementHandler gui;
 	
 	private float changex; private float changey; private float changez;
-	private int health = 500;
 	private int prevhealth = 0;
 	
-	private Sprite player;
-	private Sprite bullet;
-	private Sprite explosion;
-	private boolean move = false;
+	private Player player;
 	private Boss boss;
 	private int levelheight;
 	private EnemyLoader el;
-	private boolean first;
 	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
-	private ArrayList<LineCollection> debug = new ArrayList<LineCollection>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
-	private ArrayList<EnemyBullet> bullets = new ArrayList<EnemyBullet>();
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
-	private int hit = 0;
 	
 	private InputHandler ih;
-	
-	private Vector2f bpos = new Vector2f(0.0f, 0.0f);
-	private Vector2f epos = new Vector2f(0.0f, 0.0f);
 	
 	private TextureHolder blocktex;
 	private LevelHolder blockdata;
@@ -132,10 +116,6 @@ public class Controller {
 	private ShaderHandler shaderhandler;
 	
 	private boolean started = false;
-	
-	private float pos;
-	private int selected;
-	private int vely;
 	
 	private ControllerTimer ct;
 	
@@ -158,10 +138,7 @@ public class Controller {
 		}
 	}
 	public void bulletexplode(int index) {
-		bullets.get(index).setDestroyingSelf(true);
-		explosions.add(new EnemyBullet(bullets.get(index).getPos(), 0.0f, 70));
-		explosions.add(new EnemyBullet(new Vector2f((float)(bullets.get(index).getPos().x + (Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
-		explosions.add(new EnemyBullet(new Vector2f((float)(bullets.get(index).getPos().x + (Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
+		player.bulletexplode(index);
 	}
 	public void addColor(Color c) {
 		this.texids.add(ch.newCol(c, colors));
@@ -173,7 +150,7 @@ public class Controller {
 		gui.clearElements();
 		ih.clearElements();
 		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-		el = new EnemyLoader(true, "level1", this, player, this.bullets, null);
+		el = new EnemyLoader(true, "level1", this, player, player.getBullets(), null);
 	}
 	public void startupfinish() {
 		enemies = el.getEnemies();
@@ -248,14 +225,9 @@ public class Controller {
 			blockdata = lr.getLevelData(blocks, blocktex);
 			
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
-			TextureHolder texture2 = gp.parseGrid(images.getImage("bullets.png"), 19);
-			player = new Sprite(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
-					new Vector2f(0.0f, -0.75f));
+			player = new Player(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
+					new Vector2f(0.0f, -0.75f), this);
 			this.player.finish(glGenBuffers(), glGenVertexArrays());
-			texture = gp.parseGrid(images.getImage("explosion.png"), 29);
-			this.explosion = new Sprite(images.getImage("explosion.png"), this, 70, 70, texture, 
-					0, new Vector2f(0.0f, 0.0f));
-			this.explosion.finish(glGenBuffers(), glGenVertexArrays());
 			texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
 			TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
 			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f));
@@ -264,17 +236,15 @@ public class Controller {
 			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f));
 			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
 			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
-			this.bullet = new Sprite(images.getImage("bullets.png"), this, 40, 40, texture2, 0, new Vector2f(0.0f, 0.0f));
-			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 			
 			lr.update(blocks, display);
-			Building b = new Building("building3.png", bullets, this, 340, 500, new Vector2f(-0.9f, 5.0f), 100, 167, 250);
+			Building b = new Building("building3.png", player.getBullets(), this, 340, 500, new Vector2f(-0.9f, 5.0f), 100, 167, 250);
 			b.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
-			Building b2 = new Building("building3.png", bullets, this, 340, 500, new Vector2f(-0.9f, 2.0f), 100, 167, 250);
+			Building b2 = new Building("building3.png", player.getBullets(), this, 340, 500, new Vector2f(-0.9f, 2.0f), 100, 167, 250);
 			b2.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
 			buildings.add(b); buildings.add(b2);
 			
-			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, bullets);
+			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, player.getBullets());
 			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
 			boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
 			boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
@@ -317,8 +287,6 @@ public class Controller {
 		FloatBuffer bgdatafb = updateBg(new Vector2f(0.0f, 0.0f));
 		
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		
-		pos = 0.0f;
 		
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
@@ -390,8 +358,8 @@ public class Controller {
 	}
 	public void update(int update, int index) {
 		if(update == 200) {
-			if(playerthread == index) {
-				hit = 0;
+			if(playerthread == index && player != null) {
+				player.resetBlinking();
 			} else {
 				if(started) {
 					for(int i=0; i<enemies.size(); i++) {
@@ -430,8 +398,7 @@ public class Controller {
 	}
 	public void damage(int d) {
 		ct.resetTimeStep(playerthread);
-		hit = 1;
-		health -= d;
+		player.damage(d);
 	}
 	public FloatBuffer updateBg(Vector2f pos) {
 		float[] bgdata = {
@@ -467,16 +434,7 @@ public class Controller {
 		return bgdatafb;
 	}
 	public void move(float x, float y) {
-			if(!(player.getPos().x + (player.getWidth()/Display.getWidth()) + x > 0.8f) || x <= 0) {
-				if(!(player.getPos().x - x < -0.95f) || x >= 0) {
-					if(!(player.getPos().y + y > -display.getPos().y + 1.0f) || y <= 0) {
-						if(!(player.getPos().y - (player.getHeight()/Display.getHeight()) + y < -display.getPos().y - 0.8f) || y >= 0) {
-								player.changePos(x, y);
-								//display.changepos(-x, -y, 0.0f);
-						}
-					}
-				}
-			}
+		player.move(x, y, display);
 	}
 	public void toHome() {
 		el = null;
@@ -485,14 +443,12 @@ public class Controller {
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
-		health = 500;
+		player.reset();
 		display.changepos(0.0f, player.getPos().y, 0.0f);
-		player.setPos(0.0f, 0.0f);
 	}
 	public void shoot() {
 		if(started) {
-			bullets.add(new EnemyBullet(new Vector2f(player.getPos().x + (player.getWidth()/(Display.getWidth()*2.0f)), player.getPos().y)
-				, (float)Math.PI, 40));
+			player.shoot();
 		}
 	}
 	public void rendergl(ShaderHandler sh, DisplaySetup d, LineCollection lc) {
@@ -539,67 +495,19 @@ public class Controller {
 		}
 		boss.render(sh, d, util);
 		
-		if(stage >= 35) {
-			stage = 0;
-		}
-		stage += 1;
-		bullet.changeTexture((stage/5));
-		boolean changed = true;
-		for(int i=0; i<bullets.size(); i++) {
-			if(changed) {
-				bullet.changeTexture((stage/5));
-				changed = false;
-			}
-			boolean stopped = false;
-			if(!bullets.get(i).getDestroying()) {
-				bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.sin(bullets.get(i).getRot())/30.0f)), 
-					(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/30.0f))));
-				if(bullets.get(i).getAge() > 100) {
-					bullets.get(i).setDestroyingSelf(true);
-					explosions.add(new EnemyBullet(bullets.get(i).getPos(), 0.0f, 70));
-					changed = true;
-					bullet.changeTexture(8);
-				}
-			} else {
-				if(bullets.get(i).getAge() < bullets.get(i).getLastAge()+20) {
-					bullet.changeTexture(8 + ((bullets.get(i).getAge()-bullets.get(i).getLastAge())/5));
-					changed = true;
-				} else {
-					stopped = true;
-					bullets.remove(i);
-					i-=1;
-				}
-			}
-			if(!stopped) {
-				bullets.get(i).age();
-				bullet.changePos(bullets.get(i).getPos().x-bpos.x, bullets.get(i).getPos().y-bpos.y);
-				bpos = new Vector2f(bullets.get(i).getPos().x, bullets.get(i).getPos().y);
-				bullet.render(sh, util, 0);
-			}
-		}
-		for(int i=0; i<explosions.size(); i++) {
-			explosion.changeTexture((explosions.get(i).getAge()/5));
-			explosions.get(i).age();
-			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
-			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
-			explosion.render(sh, util, 0);
-			if(explosions.get(i).getAge()>24) {
-				explosions.remove(i);
-				i-=1;
-			}
-		}
+		player.render(sh, d, util);
+		
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).update(shaderhandler, display, util);
 		}
-		if(prevhealth != health) {
+		if(prevhealth != player.getHealth()) {
 			if(started) {
-				prevhealth = health;
+				prevhealth = player.getHealth();
 				gui.clearElements();
 				ih.clearElements();
-				gui.newString("score : " + health, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+				gui.newString("score : " + player.getHealth(), Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 			}
 		}
-		player.render(sh, util, hit);
 		gui.drawElements(sh);
 	}
 	public ShaderHandler getSh() {
