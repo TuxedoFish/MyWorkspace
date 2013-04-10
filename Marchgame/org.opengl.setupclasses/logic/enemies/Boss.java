@@ -180,16 +180,12 @@ public class Boss {
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);
-								System.out.println(me.size());
 								if(me.size() == 1) {
 									for(int k=0; k<50; k++) {
 										explosions.add(new EnemyBullet(new Vector2f((float)(me.get(0).getPos().x + 
 												(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
 												(Math.random()*myrect.get(0).getHeight()))), 0, 70));
 									}
-								}
-								if(me.size() == 0) {
-									stopped = true;
 								}
 								j-=1;
 							}
@@ -210,6 +206,10 @@ public class Boss {
 					explosions.remove(i);
 					i-=1;
 				}
+			}
+			if(me.size() == 1 && explosions.size() == 0) {
+				parent.toHome();
+				stopped = true;
 			}
 			boolean changed = true;
 			for(int i=0; i<bullets.size(); i++) {

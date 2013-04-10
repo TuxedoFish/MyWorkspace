@@ -104,6 +104,7 @@ public class Controller {
 	private Boss boss;
 	private int levelheight;
 	private EnemyLoader el;
+	private boolean first;
 	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
@@ -360,7 +361,7 @@ public class Controller {
 				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 				
 				DataUtils utils = new DataUtils();
-				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 2, bgindicesb, matrix, 0);
+				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 				gui.drawElements(shaderhandler);
 				ih.update(display);
@@ -476,6 +477,14 @@ public class Controller {
 					}
 				}
 			}
+	}
+	public void toHome() {
+		el = null;
+		prevpercent = 0; loadpercent = 0;
+		started = false;
+		gui = new GuiElementHandler();
+		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
+		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 	}
 	public void shoot() {
 		if(started) {
