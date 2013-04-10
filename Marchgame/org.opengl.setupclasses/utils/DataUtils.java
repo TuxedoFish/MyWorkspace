@@ -37,9 +37,11 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import object.VertexHandler;
@@ -51,6 +53,50 @@ public class DataUtils {
 			IntBuffer indicesBuffer, FloatBuffer modelmatrixfb, int brightness) {
 		
 		setup(data, vh.getVboId(), vh.getVao(), sh, textureID, type, indicesBuffer, modelmatrixfb, brightness);
+	}
+	public IntBuffer getScreemnIndices() {
+		int[] bgindices = {
+				0, 1, 2,
+				3, 4, 5
+		};
+		IntBuffer bgindicesb = BufferUtils.createIntBuffer(bgindices.length);
+		bgindicesb.put(bgindices);
+		bgindicesb.flip();
+		
+		return bgindicesb;
+	}
+	public FloatBuffer getScreen(Vector2f pos) {
+		float[] bgdata = {
+				//0
+				pos.x-1.0f, pos.y+1.0f, 0.0f, 1.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//1
+				pos.x+1.0f, pos.y+1.0f, 0.0f, 1.0f,
+				1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//2
+				pos.x+1.0f, pos.y-1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//0
+				pos.x-1.0f, pos.y+1.0f, 0.0f, 1.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//2
+				pos.x+1.0f, pos.y-1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f,
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//3
+				pos.x-1.0f, pos.y-1.0f, 0.0f, 1.0f,
+				0.0f, 1.0f,
+				0.0f, 0.0f, 0.0f, 0.0f
+		};
+		FloatBuffer bgdatafb = BufferUtils.createFloatBuffer(bgdata.length);
+		bgdatafb.put(bgdata);
+		bgdatafb.flip();
+		
+		return bgdatafb;
 	}
 	public void begin(ShaderHandler sh, DisplaySetup d) {
 			//Enable Transparency

@@ -7,6 +7,7 @@ import images.ImageReturn;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
@@ -32,9 +33,9 @@ public class Player extends Sprite{
 	private int hit = 0; 
 	private int health = 500;
 	
-	public Player(BufferedImage img, Controller c, int width, int height,
+	public Player(BufferedImage img, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos, Controller parent) {
-		super(img, c, width, height, th, currenttexid, pos);
+		super(img, parent, width, height, th, currenttexid, pos);
 		
 		this.parent  = parent;
 		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
@@ -43,16 +44,19 @@ public class Player extends Sprite{
 			TextureHolder explosiontex = gp.parseGrid(images.getImage("explosion.png"), 29);
 			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, explosiontex, 
 					0, new Vector2f(0.0f, 0.0f));
-			this.explosion.finish(glGenBuffers(), glGenVertexArrays());
 			
 			TextureHolder bullettex = gp.parseGrid(images.getImage("bullets.png"), 19);
 			this.bullet = new Sprite(images.getImage("bullets.png"), parent, 40, 40, bullettex, 0, 
 					new Vector2f(0.0f, 0.0f));
-			this.bullet.finish(glGenBuffers(), glGenVertexArrays());
 		} catch (IOException e) {
 			System.err.println("err generating player sprites");
 			e.printStackTrace();
 		}
+	}
+	public void finish(IntBuffer vboids, IntBuffer vaoids) {
+		finish(vboids.get(0), vaoids.get(0));
+		this.explosion.finish(vboids.get(1), vaoids.get(1));
+		this.bullet.finish(vboids.get(2), vaoids.get(2));
 	}
 	public void reset() {
 		setPos(0.0f, 0.0f);

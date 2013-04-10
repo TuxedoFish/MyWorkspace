@@ -1,5 +1,7 @@
 package logic.entities;
 
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import images.ImageReturn;
 
 import java.awt.Color;
@@ -12,40 +14,65 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
 
 import object.Sprite;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
 import start.Controller;
+import start.ControllerTimer;
+import start.DisplaySetup;
+import terrain.Block;
+import terrain.LevelRenderer;
+import terrain.Parser;
 import texture.TextureHolder;
 
 public class EnemyLoader extends Thread{
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	private ArrayList<Building> buildings = new ArrayList<Building>();
+	private ArrayList<Block> blocks;
+	
+	private Boss boss;
 	private boolean cached;
 	private String level;
 	private Controller parent;
-	private Sprite player;
-	private ArrayList<EnemyBullet> bullets;
+	private Player player;
 	private BufferedImage enemy;
 	private boolean finished = false;
 	private int lines;
+	private ControllerTimer ct;
+	private DisplaySetup display;
 	
-	public EnemyLoader(boolean cached, String level, Controller parent, Sprite player, ArrayList<EnemyBullet> bullets
-			, BufferedImage enemy) {
+	public EnemyLoader(boolean cached, String level, Controller parent
+			, BufferedImage enemy, ControllerTimer ct, DisplaySetup display) {
 		this.level = level;
 		this.parent = parent;
-		this.player = player;
-		this.bullets = bullets;
 		this.enemy = enemy;
 		this.cached = cached;
+		this.ct = ct;
+		this.display = display;
 		this.start();
 	}
 	public ArrayList<Enemy> getEnemies() {
 		return enemies;
+	}
+	public ArrayList<Building> getBuildings() {
+		return buildings;
+	}
+	public Player getPlayer() {
+		return player;
+	}
+	public ArrayList<Block> getBlocks() {
+		return blocks;
+	}
+	public Boss getBoss() {
+		return boss;
 	}
 	@Override
 	public void run() {
@@ -64,7 +91,41 @@ public class EnemyLoader extends Thread{
 			} catch (IOException e1) {
 				System.err.println("err at EnemyLoader");
 			}
-			
+
+			try {
+				Parser parser = new Parser();
+				blocks = parser.parseLevel(images.getImage("level1.png"), 
+						new Vector2f(-1.0f, -1.0f));
+				GridParser gp = new GridParser();
+				
+				TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
+				player = new Player(images.getImage("spaceship.png"), 100, 100, texture, 0,
+						new Vector2f(0.0f, -0.75f), parent);
+				texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
+				TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
+				Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), parent, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f));
+				Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), parent, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f));
+				Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f));
+				Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f));
+				Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
+				Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), parent, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
+				
+				Building b = new Building("building3.png", player.getBullets(), parent, 340, 500, new Vector2f(-0.9f, 5.0f), 100, 167, 250);
+				Building b2 = new Building("building3.png", player.getBullets(), parent, 340, 500, new Vector2f(-0.9f, 2.0f), 100, 167, 250);
+				buildings.add(b); buildings.add(b2);
+				
+				boss = new Boss(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets());
+				boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
+				boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+				boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+				boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+				boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+				boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+			} catch (IOException e1) {
+				System.err.println("err loading img");
+				System.exit(1);
+				e1.printStackTrace();
+			}
 			try {
 				reader2 = images.getFile("enemies/" + level + ".txt");
 				String line = null;
@@ -95,7 +156,7 @@ public class EnemyLoader extends Thread{
 									int.class, int.class, int.class, int.class,
 									int.class, int.class, ImageReturn.class);
 							allenemies.add((Enemy) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-									bullets, texloc, lti, hti, width, pattern, health, shootspeed, images));
+									player.getBullets(), texloc, lti, hti, width, pattern, health, shootspeed, images));
 							keys.add(parts[0]);
 							textures.add(allenemies.get(allenemies.size()-1).getTextures());
 						} else {
@@ -104,7 +165,7 @@ public class EnemyLoader extends Thread{
 									int.class, int.class, int.class, int.class,
 									TextureHolder[].class, int.class, int.class, ImageReturn.class);
 							allenemies.add((Enemy) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-									bullets, texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
+									player.getBullets(), texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
 									health, shootspeed, images));
 						}
 					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | 

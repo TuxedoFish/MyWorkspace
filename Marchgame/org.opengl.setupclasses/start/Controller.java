@@ -89,7 +89,6 @@ public class Controller {
 	
 	private GuiElementHandler gui;
 	
-	private float changex; private float changey; private float changez;
 	private int prevhealth = 0;
 	
 	private Player player;
@@ -126,17 +125,6 @@ public class Controller {
 	
 	private int playerthread;
 	
-	public void mouseChangeUpdate(float changex, float changey, float changez) {
-		if(changex != -1) {
-			this.changex = changex;
-		}
-		if(changey != -1) {
-			this.changey = changey;
-		}
-		if(changez != -1) {
-			this.changez = changez;
-		}
-	}
 	public void bulletexplode(int index) {
 		player.bulletexplode(index);
 	}
@@ -150,9 +138,9 @@ public class Controller {
 		gui.clearElements();
 		ih.clearElements();
 		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-		el = new EnemyLoader(true, "level1", this, player, player.getBullets(), null);
+		el = new EnemyLoader(true, "level1", this, null, ct, display);
 	}
-	public void startupfinish() {
+	public void startupfinish() throws IOException {
 		enemies = el.getEnemies();
 		for(int i=0; i<enemies.size(); i++) {
 			IntBuffer vboids = BufferUtils.createIntBuffer(3);
@@ -162,6 +150,35 @@ public class Controller {
 			enemies.get(i).finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
 					ct.addTimeStep(enemies.get(i).getShootSpeed())});
 		}
+		blocks = el.getBlocks();
+		
+		player = el.getPlayer();
+		IntBuffer vboids = BufferUtils.createIntBuffer(3);
+		glGenBuffers(vboids);
+		IntBuffer vaoids = BufferUtils.createIntBuffer(3);
+		glGenVertexArrays(vaoids);
+		player.finish(vboids, vaoids);
+		
+		boss = el.getBoss();
+		vboids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
+		glGenBuffers(vboids);
+		vaoids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
+		glGenVertexArrays(vaoids);
+		boss.finish(vboids, vaoids);
+		
+		buildings = el.getBuildings();
+		for(int i=0; i<buildings.size(); i++) {
+			buildings.get(i).finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
+		}
+		
+		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
+		blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
+		blocktex.finish();
+		levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
+		lr = new LevelRenderer(ct.addTimeStep(600));
+		blockdata = lr.getLevelData(blocks, blocktex);
+		lr.update(blocks, display);
+		
 		started = true;
 	}
 	public ArrayList<Integer> getColorsID() {
@@ -174,28 +191,6 @@ public class Controller {
 		loadpercent += percent;
 	}
 	public void start() {
-		LineCollection lc = new LineCollection();
-		Vector4f p1;
-		Vector4f p2;
-		Vector4f p3;
-		Vector4f p4;
-		
-		float sizeofsquare = 1.0f;
-		
-		for(float z = -10; z < 0; z += sizeofsquare) {
-			for(float x = -10; x < 10; x += sizeofsquare) {
-				p1 = new Vector4f(x, -0.5f, z, 1.0f);
-				p2 = new Vector4f(x + sizeofsquare, -0.5f, z, 1.0f);
-				p3 = new Vector4f(x + sizeofsquare, -0.5f, z + sizeofsquare, 1.0f);
-				p4 = new Vector4f(x, -0.5f, z + sizeofsquare, 1.0f);
-				
-				lc.addLine(new Line(p1, p2));
-				lc.addLine(new Line(p2, p3));
-				lc.addLine(new Line(p3, p4));
-				lc.addLine(new Line(p4, p1));
-			}
-		}
-		
 		ImageReturn images = new ImageReturn();
 		
 		ContextAttribs contextAtrributes = new ContextAttribs(3, 2);
@@ -214,53 +209,6 @@ public class Controller {
 		ct = new ControllerTimer(this);
 		playerthread = ct.addTimeStep(200);
 		
-		try {
-			blocks = parser.parseLevel(images.getImage("level1.png"), 
-					new Vector2f(-1.0f, -1.0f));
-			GridParser gp = new GridParser();
-			blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
-			blocktex.finish();
-			levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
-			lr = new LevelRenderer(ct.addTimeStep(600));
-			blockdata = lr.getLevelData(blocks, blocktex);
-			
-			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
-			player = new Player(images.getImage("spaceship.png"), this, 100, 100, texture, 0,
-					new Vector2f(0.0f, -0.75f), this);
-			this.player.finish(glGenBuffers(), glGenVertexArrays());
-			texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
-			TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
-			Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f));
-			Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), this, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f));
-			Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f));
-			Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f));
-			Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), this, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
-			Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), this, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
-			
-			lr.update(blocks, display);
-			Building b = new Building("building3.png", player.getBullets(), this, 340, 500, new Vector2f(-0.9f, 5.0f), 100, 167, 250);
-			b.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
-			Building b2 = new Building("building3.png", player.getBullets(), this, 340, 500, new Vector2f(-0.9f, 2.0f), 100, 167, 250);
-			b2.finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
-			buildings.add(b); buildings.add(b2);
-			
-			boss = new Boss(new Vector2f(0.0f, 0.0f), 0, this, null, player, player.getBullets());
-			boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
-			boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-			boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-			boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-			boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-			boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-			IntBuffer vboids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
-			glGenBuffers(vboids);
-			IntBuffer vaoids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
-			glGenVertexArrays(vaoids);
-			boss.finish(vboids, vaoids);
-		} catch (IOException e1) {
-			System.err.println("err loading img");
-			System.exit(1);
-			e1.printStackTrace();
-		}
 		ih = new InputHandler(this);
 		
 		ColorHandler ch = new ColorHandler();
@@ -271,20 +219,13 @@ public class Controller {
 		try {
 			titlescreen = util.binddata(images.getImage("title.png"));
 		} catch (IOException e) {
-			System.err.println("err finding title screen img");
-			System.exit(1);
-			e.printStackTrace();
+			System.err.println("err finding title screen img"); e.printStackTrace();
 		}
-		int[] bgindices = {
-				0, 1, 2,
-				3, 4, 5
-		};
-		IntBuffer bgindicesb = BufferUtils.createIntBuffer(bgindices.length);
-		bgindicesb.put(bgindices);
-		bgindicesb.flip();
 		int bgvbo = glGenBuffers();
 		int bgvao = glGenVertexArrays();
-		FloatBuffer bgdatafb = updateBg(new Vector2f(0.0f, 0.0f));
+		DataUtils utils = new DataUtils();
+		IntBuffer bgindicesb = utils.getScreemnIndices();
+		FloatBuffer bgdatafb = utils.getScreen(new Vector2f(0.0f, 0.0f));
 		
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
@@ -294,11 +235,16 @@ public class Controller {
 		
 		while(!Display.isCloseRequested()) {
 			if(started) {
-				rendergl(shaderhandler, display, lc);
+				rendergl(shaderhandler, display);
 				ih.update(display);
 			} else {
 				if(el != null && el.getFinished()) {
-					this.startupfinish();
+					try {
+						this.startupfinish();
+					} catch (IOException e) {
+						System.err.println("failed to startup");
+						e.printStackTrace();
+					}
 				}
 				if(el != null && prevpercent != loadpercent) {
 					prevpercent = loadpercent;
@@ -310,7 +256,6 @@ public class Controller {
 				FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
 				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 				
-				DataUtils utils = new DataUtils();
 				utils.begin(shaderhandler, display);
 				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -383,39 +328,6 @@ public class Controller {
 		ct.resetTimeStep(playerthread);
 		player.damage(d);
 	}
-	public FloatBuffer updateBg(Vector2f pos) {
-		float[] bgdata = {
-				//0
-				pos.x-1.0f, pos.y+1.0f, 0.0f, 1.0f,
-				0.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 0.0f,
-				//1
-				pos.x+1.0f, pos.y+1.0f, 0.0f, 1.0f,
-				1.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 0.0f,
-				//2
-				pos.x+1.0f, pos.y-1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f,
-				0.0f, 0.0f, 0.0f, 0.0f,
-				//0
-				pos.x-1.0f, pos.y+1.0f, 0.0f, 1.0f,
-				0.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 0.0f,
-				//2
-				pos.x+1.0f, pos.y-1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f,
-				0.0f, 0.0f, 0.0f, 0.0f,
-				//3
-				pos.x-1.0f, pos.y-1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f,
-				0.0f, 0.0f, 0.0f, 0.0f
-		};
-		FloatBuffer bgdatafb = BufferUtils.createFloatBuffer(bgdata.length);
-		bgdatafb.put(bgdata);
-		bgdatafb.flip();
-		
-		return bgdatafb;
-	}
 	public void move(float x, float y) {
 		player.move(x, y, display);
 	}
@@ -426,15 +338,15 @@ public class Controller {
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
-		player.reset();
 		display.changepos(0.0f, player.getPos().y, 0.0f);
+		player.reset();
 	}
 	public void shoot() {
 		if(started) {
 			player.shoot();
 		}
 	}
-	public void rendergl(ShaderHandler sh, DisplaySetup d, LineCollection lc) {
+	public void rendergl(ShaderHandler sh, DisplaySetup d) {
 		DataUtils util = new DataUtils();
 		util.begin(sh, d);
 		
@@ -480,12 +392,6 @@ public class Controller {
 			e.printStackTrace();
 		}
 		 s.finishprogram(testprogram);
-	}
-	public float getChangeX() {
-		return changex;
-	}
-	public float getChangeY() {
-		return changey;
 	}
 	public void removeThread(Integer index) {
 		ct.removeTimeStep(index);
