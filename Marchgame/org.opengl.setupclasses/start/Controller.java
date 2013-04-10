@@ -25,6 +25,7 @@ import logic.entities.Enemy;
 import logic.entities.EnemyBullet;
 import logic.entities.EnemyLoader;
 import logic.entities.Player;
+import logic.entities.troops.Troop;
 
 import object.ColorHandler;
 import object.ObjectLoader;
@@ -99,7 +100,7 @@ public class Controller {
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
 	private ArrayList<Block> blocks = new ArrayList<Block>();
-	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	private ArrayList<Troop> enemies = new ArrayList<Troop>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	
 	private int loadpercent = 0;
@@ -147,8 +148,8 @@ public class Controller {
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(3);
 			glGenVertexArrays(vaoids);
-			enemies.get(i).finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
-					ct.addTimeStep(enemies.get(i).getShootSpeed())});
+			enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
+					ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())});
 		}
 		blocks = el.getBlocks();
 		
@@ -291,8 +292,8 @@ public class Controller {
 			} else {
 				if(started) {
 					for(int i=0; i<enemies.size(); i++) {
-						if(enemies.get(i).getThreadID() == index) {
-							enemies.get(i).resetBlinking();
+						if(enemies.get(i).getEnemy().getThreadID() == index) {
+							enemies.get(i).getEnemy().resetBlinking();
 						}
 					}
 					ArrayList<Integer> bossthreadids = boss.getThreadIDs();
@@ -311,9 +312,9 @@ public class Controller {
 			lr.animate(blocktex, blockdata);
 		}
 		for(int i=0; i<enemies.size(); i++) {
-			if(enemies.get(i).getShootThreadID() == index) {
+			if(enemies.get(i).getEnemy().getShootThreadID() == index) {
 				if(started) {
-					enemies.get(i).fire(display);
+					enemies.get(i).shoot(display);
 				}
 			}
 		}
@@ -329,7 +330,9 @@ public class Controller {
 		player.damage(d);
 	}
 	public void move(float x, float y) {
-		player.move(x, y, display);
+		if(started) {
+			player.move(x, y, display);
+		}
 	}
 	public void toHome() {
 		el = null;
@@ -338,7 +341,8 @@ public class Controller {
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
-		display.changepos(0.0f, player.getPos().y, 0.0f);
+		display.changepos(0.0f, -display.getPos().y, 0.0f);
+		System.out.println(display.getPos());
 		player.reset();
 	}
 	public void shoot() {
@@ -354,7 +358,7 @@ public class Controller {
 			display.changepos(0.0f, -0.005f, 0.0f);
 			player.changePos(0.0f, 0.005f);
 			for(int i=0; i<enemies.size(); i++) {
-				enemies.get(i).scroll();
+				enemies.get(i).getEnemy().scroll();
 			}
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);
@@ -366,7 +370,7 @@ public class Controller {
 		player.render(sh, d, util);
 		
 		for(int i=0; i<enemies.size(); i++) {
-			enemies.get(i).update(shaderhandler, display, util);
+			enemies.get(i).render(shaderhandler, display, util);
 		}
 		if(prevhealth != player.getHealth()) {
 			if(started) {

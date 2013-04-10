@@ -40,6 +40,7 @@ public class Enemy extends Sprite{
 	private int index;
 	private int pattern = 2;
 	private boolean stopped = false;
+	private boolean scroll = true;
 	private ArrayList<EnemyBullet> bullets = new ArrayList<EnemyBullet>();
 	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
 	private Sprite bullet;
@@ -77,6 +78,9 @@ public class Enemy extends Sprite{
 		super(tex, parent, 100, 100, gp.parseGrid(tex, 49.0f), 0, new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f))));
 		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, null, health, shootspeed);
+	}
+	public void setScroll(boolean b) {
+		scroll = b;
 	}
 	public void setup(Vector2f pos, int texid, Controller parent, EnemyPath ep, Sprite player, 
 			ArrayList<EnemyBullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
@@ -166,7 +170,7 @@ public class Enemy extends Sprite{
 			texturestage += 1;
 		}
 	}
-	public void update(DisplaySetup d) {
+	public void updateColl(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
 		p = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p, p);
 		Vector4f p2 = new Vector4f((float)this.getPos().x, (float)this.getPos().y, 0.0f, 1.0f);
@@ -183,7 +187,9 @@ public class Enemy extends Sprite{
 		bullets.add(new EnemyBullet(new Vector2f(this.getPos().x+(this.getWidth()/(Display.getWidth()*2.0f)), this.getPos().y), rot, 40));
 	}
 	public void scroll() {
-		this.changePos(0.0f, 0.005f);
+		if(scroll) {
+			this.changePos(0.0f, 0.005f);
+		}
 	}
 	public int getThreadID() {
 		return threadindex;
@@ -191,23 +197,8 @@ public class Enemy extends Sprite{
 	public void resetBlinking() {
 		hit = 0;
 	}
-	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
-		update(d);
-		animate();
-		
+	public void followPath(DisplaySetup d) {
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
-			for(int i=0; i<playerbullets.size(); i++) {
-				if(playerbullets.get(i).contains(this.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
-						&& !playerbullets.get(i).getDestroying()) {
-					parent.bulletexplode(i);
-					health -= 5;
-					parent.resetThread(threadindex);
-					hit = 1;
-					if(health <= 0) {
-						stopped = true;
-					}
-				}
-			}
 			if(started) {
 				if(stage >= dist) {
 					index += 1;
@@ -240,6 +231,25 @@ public class Enemy extends Sprite{
 				started = true;
 				Vector2f startpos = ep.getPoint(0).getPos();
 				this.setPos(startpos.x, startpos.y + pos.y + 1.0f);
+			}
+		}
+	}
+	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
+		updateColl(d);
+		animate();
+		
+		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
+			for(int i=0; i<playerbullets.size(); i++) {
+				if(playerbullets.get(i).contains(this.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
+						&& !playerbullets.get(i).getDestroying()) {
+					parent.bulletexplode(i);
+					health -= 5;
+					parent.resetThread(threadindex);
+					hit = 1;
+					if(health <= 0) {
+						stopped = true;
+					}
+				}
 			}
 			this.render(sh, util, hit);
 		}

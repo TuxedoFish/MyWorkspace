@@ -59,7 +59,7 @@ public class Player extends Sprite{
 		this.bullet.finish(vboids.get(2), vaoids.get(2));
 	}
 	public void reset() {
-		setPos(0.0f, 0.0f);
+		setPos(0.0f, -0.75f);
 		health = 500;
 	}
 	public int getHealth() {

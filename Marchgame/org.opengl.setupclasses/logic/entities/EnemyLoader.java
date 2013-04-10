@@ -18,6 +18,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
+import logic.entities.troops.Troop;
 
 import object.Sprite;
 
@@ -34,7 +35,7 @@ import terrain.Parser;
 import texture.TextureHolder;
 
 public class EnemyLoader extends Thread{
-	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	private ArrayList<Troop> enemies = new ArrayList<Troop>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	private ArrayList<Block> blocks;
 	
@@ -59,7 +60,7 @@ public class EnemyLoader extends Thread{
 		this.display = display;
 		this.start();
 	}
-	public ArrayList<Enemy> getEnemies() {
+	public ArrayList<Troop> getEnemies() {
 		return enemies;
 	}
 	public ArrayList<Building> getBuildings() {
@@ -76,7 +77,7 @@ public class EnemyLoader extends Thread{
 	}
 	@Override
 	public void run() {
-		ArrayList<Enemy> allenemies = new ArrayList<Enemy>();
+		ArrayList<Troop> allenemies = new ArrayList<Troop>();
 		if(cached) {
 			ArrayList<String> keys = new ArrayList<String>();
 			ArrayList<TextureHolder[]> textures = new ArrayList<TextureHolder[]>();
@@ -155,16 +156,16 @@ public class EnemyLoader extends Thread{
 									Sprite.class, ArrayList.class , String.class,
 									int.class, int.class, int.class, int.class,
 									int.class, int.class, ImageReturn.class);
-							allenemies.add((Enemy) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
+							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
 									player.getBullets(), texloc, lti, hti, width, pattern, health, shootspeed, images));
 							keys.add(parts[0]);
-							textures.add(allenemies.get(allenemies.size()-1).getTextures());
+							textures.add(allenemies.get(allenemies.size()-1).getEnemy().getTextures());
 						} else {
 							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 									Sprite.class, ArrayList.class , String.class,
 									int.class, int.class, int.class, int.class,
 									TextureHolder[].class, int.class, int.class, ImageReturn.class);
-							allenemies.add((Enemy) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
+							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
 									player.getBullets(), texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
 									health, shootspeed, images));
 						}

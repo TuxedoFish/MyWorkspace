@@ -9,14 +9,17 @@ import object.Sprite;
 
 import org.lwjgl.util.vector.Vector2f;
 
+import shader.ShaderHandler;
 import start.Controller;
+import start.DisplaySetup;
 import texture.TextureHolder;
+import utils.DataUtils;
 import logic.GridParser;
 import logic.entities.Enemy;
 import logic.entities.EnemyBullet;
 import logic.entities.EnemyPath;
 
-public class Enemy1 extends Enemy{
+public class Enemy1 extends Enemy implements Troop{
 	public Enemy1(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Sprite player, ArrayList<EnemyBullet> playerbullets, String texloc,
 			int lowesttexid, int highesttexid, int width, int pattern,
@@ -30,5 +33,17 @@ public class Enemy1 extends Enemy{
 			int shootspeed, ImageReturn images) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
 				highesttexid, width, pattern, new GridParser(), health, shootspeed);
+	}
+	@Override
+	public Enemy getEnemy() {
+		return this;
+	}
+	@Override
+	public void shoot(DisplaySetup d) {
+		this.fire(d);
+	}
+	@Override
+	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
+		update(sh, d, util);
 	}
 }
