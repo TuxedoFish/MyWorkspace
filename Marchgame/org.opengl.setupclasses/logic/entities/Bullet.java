@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector4f;
 
 import start.DisplaySetup;
 
-public class EnemyBullet {
+public class Bullet {
 	private Vector2f pos;
 	private float rot;
 	private int texid = 0;
@@ -16,7 +16,7 @@ public class EnemyBullet {
 	private int lastage = 0;
 	private float radius;
 	
-	public EnemyBullet(Vector2f pos, float rot, float radius) {
+	public Bullet(Vector2f pos, float rot, float radius) {
 		this.rot = rot;
 		this.pos = pos;
 		this.radius = radius/Display.getWidth();

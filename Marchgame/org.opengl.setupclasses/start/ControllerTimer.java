@@ -14,8 +14,8 @@ public class ControllerTimer extends Thread{
 	}
 	public int addTimeStep(int timestep) {
 		stages.add(timestep);
-		temp.add(0);
 		disabled.add(false);
+		temp.add(0);
 		return stages.size()-1;
 	}
 	public void resetTimeStep(int index) {
@@ -26,7 +26,7 @@ public class ControllerTimer extends Thread{
 		while(true) {
 			try {
 				Thread.sleep(1);
-				for(int  i=0; i<temp.size(); i++) {
+				for(int i=0; i<temp.size(); i++) {
 					if(!disabled.get(i)) {
 						temp.set(i, temp.get(i) + 1);
 						if(temp.get(i) >= stages.get(i)) {

@@ -153,7 +153,7 @@ public class EnemyLoader extends Thread{
 						Class<?> enemy = Class.forName("logic.entities.troops." + texloc.substring(0, texloc.length()-4));
 						if(!keys.contains(parts[0])) {
 							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
-									Sprite.class, ArrayList.class , String.class,
+									Player.class, ArrayList.class , String.class,
 									int.class, int.class, int.class, int.class,
 									int.class, int.class, ImageReturn.class);
 							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
@@ -162,7 +162,7 @@ public class EnemyLoader extends Thread{
 							textures.add(allenemies.get(allenemies.size()-1).getEnemy().getTextures());
 						} else {
 							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
-									Sprite.class, ArrayList.class , String.class,
+									Player.class, ArrayList.class , String.class,
 									int.class, int.class, int.class, int.class,
 									TextureHolder[].class, int.class, int.class, ImageReturn.class);
 							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 

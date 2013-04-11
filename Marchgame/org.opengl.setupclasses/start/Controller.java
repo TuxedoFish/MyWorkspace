@@ -22,7 +22,7 @@ import logic.LevelLoader;
 import logic.entities.Boss;
 import logic.entities.Building;
 import logic.entities.Enemy;
-import logic.entities.EnemyBullet;
+import logic.entities.Bullet;
 import logic.entities.EnemyLoader;
 import logic.entities.Player;
 import logic.entities.troops.Troop;

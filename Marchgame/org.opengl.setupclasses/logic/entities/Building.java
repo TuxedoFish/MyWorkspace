@@ -19,7 +19,7 @@ import texture.TextureHolder;
 import utils.DataUtils;
 
 public class Building {
-	private ArrayList<EnemyBullet> playerbullets;
+	private ArrayList<Bullet> playerbullets;
 	private Sprite me;
 	private int hit;
 	private Controller parent;
@@ -28,7 +28,7 @@ public class Building {
 	private int health;
 	private boolean stopped = false;
 	
-	public Building(String loc, ArrayList<EnemyBullet> playerbullets, Controller parent, int width, 
+	public Building(String loc, ArrayList<Bullet> playerbullets, Controller parent, int width, 
 			int height, Vector2f pos, int health, int imgwidth, int imgheight) {
 		this.playerbullets = playerbullets;
 		this.parent = parent;

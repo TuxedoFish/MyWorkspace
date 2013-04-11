@@ -23,8 +23,8 @@ import texture.TextureHolder;
 import utils.DataUtils;
 
 public class Player extends Sprite{
-	private ArrayList<EnemyBullet> bullets = new ArrayList<EnemyBullet>();
-	private ArrayList<EnemyBullet> explosions = new ArrayList<EnemyBullet>();
+	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	private ArrayList<Bullet> explosions = new ArrayList<Bullet>();
 	private Sprite explosion;
 	private Sprite bullet;
 	private Controller parent;
@@ -86,10 +86,10 @@ public class Player extends Sprite{
 	}
 	public void bulletexplode(int index) {
 		bullets.get(index).setDestroyingSelf(true);
-		explosions.add(new EnemyBullet(bullets.get(index).getPos(), 0.0f, 70));
-		explosions.add(new EnemyBullet(new Vector2f((float)(bullets.get(index).getPos().x + 
+		explosions.add(new Bullet(bullets.get(index).getPos(), 0.0f, 70));
+		explosions.add(new Bullet(new Vector2f((float)(bullets.get(index).getPos().x + 
 				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
-		explosions.add(new EnemyBullet(new Vector2f((float)(bullets.get(index).getPos().x + 
+		explosions.add(new Bullet(new Vector2f((float)(bullets.get(index).getPos().x + 
 				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
@@ -110,7 +110,7 @@ public class Player extends Sprite{
 					(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/30.0f))));
 				if(bullets.get(i).getAge() > 100) {
 					bullets.get(i).setDestroyingSelf(true);
-					explosions.add(new EnemyBullet(bullets.get(i).getPos(), 0.0f, 70));
+					explosions.add(new Bullet(bullets.get(i).getPos(), 0.0f, 70));
 					changed = true;
 					bullet.changeTexture(8);
 				}
@@ -145,10 +145,10 @@ public class Player extends Sprite{
 		render(sh, util, hit);
 	}
 	public void shoot() {
-		bullets.add(new EnemyBullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
+		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
 			, (float)Math.PI, 40));
 	}
-	public ArrayList<EnemyBullet> getBullets() {
+	public ArrayList<Bullet> getBullets() {
 		return bullets;
 	}
 }
