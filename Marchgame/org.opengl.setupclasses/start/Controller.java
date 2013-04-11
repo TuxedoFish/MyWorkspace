@@ -106,6 +106,7 @@ public class Controller {
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	
 	private ScoreHandler sch;
+	private int score = 0;
 	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
@@ -176,7 +177,7 @@ public class Controller {
 			buildings.get(i).finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
 		}
 		
-		sch = new ScoreHandler(this);
+		sch = new ScoreHandler(this, player);
 		sch.finish(glGenBuffers(), glGenVertexArrays());
 		
 		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
@@ -199,7 +200,7 @@ public class Controller {
 		loadpercent += percent;
 	}
 	public void addScorePellet(Vector2f pos, int score) {
-		sch.add(new ScorePellet(score, pos));
+		sch.add(new ScorePellet(score, pos, 0));
 	}
 	public void start() {
 		ImageReturn images = new ImageReturn();
@@ -212,7 +213,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		//gm.makeGrid(50, 10);
+		gm.makeGrid(21, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -353,6 +354,7 @@ public class Controller {
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
 		player.reset();
+		score = 0;
 	}
 	public void shoot() {
 		if(started) {
@@ -386,14 +388,18 @@ public class Controller {
 				prevhealth = player.getHealth();
 				gui.clearElements();
 				ih.clearElements();
-				gui.newString("score : " + player.getHealth(), Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+				gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+				gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
 			}
 		}
-		sch.render(sh, util);
+		sch.render(sh, display, util);
 		gui.drawElements(sh);
 	}
 	public ShaderHandler getSh() {
 		return shaderhandler;
+	}
+	public void score(int score) {
+		this.score += score;
 	}
 	public void setupshaders(ShaderHandler s) {
 		testprogram = s.createprogram();

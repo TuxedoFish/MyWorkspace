@@ -66,8 +66,6 @@ public class BulletHandler extends ArrayList<Bullet>{
 		textstage += 1;
 		boolean changed = true;
 		for(int i=0; i<size(); i++) {
-			get(i).setPos(new Vector2f(get(i).getPos().x, 
-					get(i).getPos().y + 0.005f));
 			if(changed) {
 				bullet.changeTexture((textstage/5));
 				changed = false;
