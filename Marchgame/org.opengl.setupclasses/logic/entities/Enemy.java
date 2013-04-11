@@ -56,6 +56,8 @@ public class Enemy extends Sprite{
 	private float togo = -1;
 	private boolean onscreen = false;
 	
+	private int animationstyle = 1;
+	
 	private ArrayList<EnemyBullet> playerbullets = new ArrayList<EnemyBullet>();
 	private int lti;
 	private int hti;
@@ -137,6 +139,9 @@ public class Enemy extends Sprite{
 			e.printStackTrace();
 		}
 	}
+	public void setAnimationSpeed(int speed) {
+		this.speed = speed;
+	}
 	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
 		this.explosion.finish(vboids.get(0), vaoids.get(0));
 		this.bullet.finish(vboids.get(1), vaoids.get(1));
@@ -156,16 +161,22 @@ public class Enemy extends Sprite{
 	public void animate() {
 		if(texturestage>speed) {
 			if(isup) {
-				if(hti>texid+1) {
+				if(texid<hti) {
 					this.changeTexture(texid+1);
 					texid += 1;
 				} else {
 					isup = false;
 				}
 			} else {
-				if(lti<texid-1) {
-					this.changeTexture(texid-1);
-					texid -= 1;
+				if(texid>lti) {
+					if(animationstyle == 1) {
+						this.changeTexture(texid-1);
+						texid -= 1;
+					}
+					if(animationstyle == 2) {
+						this.changeTexture(0);
+						texid = 0;
+					}
 				} else {
 					isup = true;
 				}
@@ -174,6 +185,9 @@ public class Enemy extends Sprite{
 		} else {
 			texturestage += 1;
 		}
+	}
+	public void setAnimationStyle(int style) {
+		this.animationstyle = style;
 	}
 	public void updateColl(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);

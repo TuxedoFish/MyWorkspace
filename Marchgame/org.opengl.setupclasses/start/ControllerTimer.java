@@ -6,6 +6,7 @@ public class ControllerTimer extends Thread{
 	private Controller parent;
 	private ArrayList<Integer> temp = new ArrayList<Integer>();
 	private ArrayList<Integer> stages = new ArrayList<Integer>();
+	private ArrayList<Boolean> disabled = new ArrayList<Boolean>();
 	
 	public ControllerTimer(Controller parent) {
 		this.parent = parent;
@@ -14,6 +15,7 @@ public class ControllerTimer extends Thread{
 	public int addTimeStep(int timestep) {
 		stages.add(timestep);
 		temp.add(0);
+		disabled.add(false);
 		return stages.size()-1;
 	}
 	public void resetTimeStep(int index) {
@@ -25,10 +27,12 @@ public class ControllerTimer extends Thread{
 			try {
 				Thread.sleep(1);
 				for(int  i=0; i<temp.size(); i++) {
-					temp.set(i, temp.get(i) + 1);
-					if(temp.get(i) >= stages.get(i)) {
-						temp.set(i, 0);
-						parent.update(stages.get(i), i);
+					if(!disabled.get(i)) {
+						temp.set(i, temp.get(i) + 1);
+						if(temp.get(i) >= stages.get(i)) {
+							temp.set(i, 0);
+							parent.update(stages.get(i), i);
+						}
 					}
 				}
 			} catch (InterruptedException e) {
@@ -37,7 +41,6 @@ public class ControllerTimer extends Thread{
 		}
 	}
 	public void removeTimeStep(Integer index) {
-		stages.remove(index);
-		temp.remove(index);
+		disabled.set(index, true);
 	}
 }
