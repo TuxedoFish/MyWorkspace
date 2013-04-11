@@ -51,6 +51,11 @@ public class Enemy extends Sprite{
 	private Rectangle2D myrect;
 	private Sprite playersprite;
 	private Controller parent;
+	
+	private float direction = -1;
+	private float togo = -1;
+	private boolean onscreen = false;
+	
 	private ArrayList<EnemyBullet> playerbullets = new ArrayList<EnemyBullet>();
 	private int lti;
 	private int hti;
@@ -234,11 +239,26 @@ public class Enemy extends Sprite{
 			}
 		}
 	}
+	public void swirlAround() {
+		  if(togo == -1) {
+			  direction = (float)(Math.random()*2.0f*Math.PI);
+			  togo = 10.0f;
+		  }
+		  if(togo <= 0 || getPos().x >= 1.0f || getPos().x <= -1.0f) {
+			  direction -= Math.PI/4.0f;
+			  togo = 10.0f;
+		  } else {
+			  changePos((float)Math.cos(direction)/200.0f, (float)Math.sin(direction)/200.0f);
+			  togo -= 1.0f; 
+		  }
+	}
 	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		updateColl(d);
 		animate();
-		
-		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
+		if(Math.abs(d.getPos().y) + 1.0f > pos.y) {
+			onscreen = true;
+		}
+		if(!stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
 				if(playerbullets.get(i).contains(this.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
 						&& !playerbullets.get(i).getDestroying()) {

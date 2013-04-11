@@ -342,7 +342,6 @@ public class Controller {
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
-		System.out.println(display.getPos());
 		player.reset();
 	}
 	public void shoot() {
