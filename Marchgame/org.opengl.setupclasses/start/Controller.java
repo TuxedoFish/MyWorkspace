@@ -25,6 +25,8 @@ import logic.entities.Enemy;
 import logic.entities.Bullet;
 import logic.entities.EnemyLoader;
 import logic.entities.Player;
+import logic.entities.ScoreHandler;
+import logic.entities.ScorePellet;
 import logic.entities.troops.Troop;
 
 import object.ColorHandler;
@@ -103,6 +105,8 @@ public class Controller {
 	private ArrayList<Troop> enemies = new ArrayList<Troop>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	
+	private ScoreHandler sch;
+	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
 	
@@ -172,6 +176,9 @@ public class Controller {
 			buildings.get(i).finish(glGenBuffers(), glGenVertexArrays(), ct.addTimeStep(200));
 		}
 		
+		sch = new ScoreHandler(this);
+		sch.finish(glGenBuffers(), glGenVertexArrays());
+		
 		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
 		blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
 		blocktex.finish();
@@ -191,6 +198,9 @@ public class Controller {
 	public void loadupdate(int percent) {
 		loadpercent += percent;
 	}
+	public void addScorePellet(Vector2f pos, int score) {
+		sch.add(new ScorePellet(score, pos));
+	}
 	public void start() {
 		ImageReturn images = new ImageReturn();
 		
@@ -202,8 +212,8 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(50, 10);
-		Parser parser = new Parser();
+		//gm.makeGrid(50, 10);
+		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
 		
@@ -379,6 +389,7 @@ public class Controller {
 				gui.newString("score : " + player.getHealth(), Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 			}
 		}
+		sch.render(sh, util);
 		gui.drawElements(sh);
 	}
 	public ShaderHandler getSh() {
