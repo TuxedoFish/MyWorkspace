@@ -153,9 +153,9 @@ public class Controller {
 	public void startupfinish() throws IOException {
 		enemies = el.getEnemies();
 		for(int i=0; i<enemies.size(); i++) {
-			IntBuffer vboids = BufferUtils.createIntBuffer(3);
+			IntBuffer vboids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenBuffers(vboids);
-			IntBuffer vaoids = BufferUtils.createIntBuffer(3);
+			IntBuffer vaoids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenVertexArrays(vaoids);
 			enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
 					ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())});
@@ -397,7 +397,7 @@ public class Controller {
 		if(prevhealth != player.getHealth() && started) {
 			prevhealth = player.getHealth();
 			gui.removeElement(healthid);
-			if((int)(((float)player.getHealth()/500.0f)*100.0f) > 0) {
+			if((int)(((float)player.getHealth()/500.0f)*100.0f) > 1) {
 				healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
 			} else {
 				healthid = gui.newString("dead", Color.red, 50, 50, new Vector2f(0.1f, 0.75f));

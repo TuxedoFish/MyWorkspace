@@ -54,6 +54,7 @@ public class Enemy extends Sprite{
 	private int animationstyle = 1;
 	
 	private ArrayList<Bullet> playerbullets = new ArrayList<Bullet>();
+	private ArrayList<Gun> guns = new ArrayList<Gun>();
 	private int lti;
 	private int hti;
 	private boolean isup = true;
@@ -137,6 +138,19 @@ public class Enemy extends Sprite{
 		this.finish(vboids.get(2), vaoids.get(2));
 		this.threadindex = index[0];
 		this.shootthreadindex = index[1];
+		for(int i=0; i<guns.size(); i++) {
+			guns.get(i).finish(vboids.get(2+i), vaoids.get(2+i));
+		}
+	}
+	public BulletHandler getBulletHandler() {
+		return bullets;
+	}
+	public void addGun(Gun g, boolean visible) {
+		guns.add(g);
+		guns.get(guns.size()-1).setVisible(visible);
+	}
+	public int getAmountOfGuns() {
+		return guns.size();
 	}
 	public int getShootThreadID() {
 			return shootthreadindex;
@@ -193,9 +207,6 @@ public class Enemy extends Sprite{
 				(float)width, 
 				(float)this.getHeight()/Display.getHeight());
 	}
-	private void shoot(float rot) {
-		bullets.add(new Bullet(new Vector2f(this.getPos().x+(this.getWidth()/(Display.getWidth()*2.0f)), this.getPos().y), rot, 40));
-	}
 	public void scroll() {
 		if(scroll) {
 			this.changePos(0.0f, 0.005f);
@@ -232,11 +243,11 @@ public class Enemy extends Sprite{
 					this.changePos((p.getPos().x - lastp.getPos().x)/dist, (p.getPos().y - lastp.getPos().y)/dist);
 					if(animationstyle == 3) {
 						float direction = (float) Math.atan2(p.getPos().y - lastp.getPos().y, p.getPos().x - lastp.getPos().x);
-						int texture = (int)(direction/(Math.PI/4))+2;
+						int texture = 6-(int)(direction/(Math.PI/4));
 						if(texture < 0) {
 							texture += 8;
 						}
-						if(texture > 8) {
+						if(texture > 7) {
 							texture -= 8;
 						}
 						this.changeTexture(texture);
@@ -289,21 +300,21 @@ public class Enemy extends Sprite{
 				}
 			}
 			this.render(sh, util, hit);
+			for(int i=0; i<guns.size(); i++) {
+				guns.get(i).update(getPos(), (float)myrect.getWidth(), (float)myrect.getHeight());
+				if(guns.get(i).isVisible()) {
+					guns.get(i).render(sh, util, 0);
+					guns.get(i).animate();
+				}
+			}
 		}
 		bullets.render(sh, d, util);
 	}
 	public void fire(DisplaySetup d) {
-		if(onscreen && !stopped) {
-			if(pattern == 1) {
-				for(float i=0; i<2*Math.PI; i+=Math.PI) {
-					shoot((float)(i+(2*Math.PI)));
-				}
-			}
-			if(pattern == 2) {
-				double compassBearing=Math.atan2(this.getPos().y - playersprite.getPos().y, 
-						this.getPos().x - playersprite.getPos().x);
-				
-				shoot((float)compassBearing);
+		for(int i=0; i<guns.size(); i++) {
+			if(!stopped) {
+				guns.get(i).update(getPos(), (float)myrect.getWidth(), (float)myrect.getHeight());
+				guns.get(i).fire();
 			}
 		}
 	}

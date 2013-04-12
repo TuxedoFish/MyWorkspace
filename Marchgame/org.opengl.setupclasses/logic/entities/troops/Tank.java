@@ -9,6 +9,7 @@ import logic.GridParser;
 import logic.entities.Enemy;
 import logic.entities.Bullet;
 import logic.entities.EnemyPath;
+import logic.entities.Gun;
 import logic.entities.Player;
 import object.Sprite;
 
@@ -31,6 +32,11 @@ public class Tank extends Enemy implements Troop {
 		//setScroll(false);
 		setAnimationSpeed(10);
 		setAnimationStyle(3);
+		
+		GridParser gp = new GridParser();
+		TextureHolder guntex = gp.parseGrid(images.getImage("gun1.png"), 20.0f);
+		addGun(new Gun(images.getImage("gun1.png"), parent, 50, 50, guntex, 0, new Vector2f(0.0f, 0.0f), 
+				getEnemy().getBulletHandler(), 2, player), true);
 		//setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 	}
 	public Tank(Vector2f pos, int texid, Controller parent, EnemyPath ep,
@@ -42,6 +48,11 @@ public class Tank extends Enemy implements Troop {
 		//setScroll(false);
 		setAnimationSpeed(10);
 		setAnimationStyle(3);
+		
+		GridParser gp = new GridParser();
+		TextureHolder guntex = gp.parseGrid(images.getImage("gun1.png"), 20.0f);
+		addGun(new Gun(images.getImage("gun1.png"), parent, 50, 50, guntex, 0, new Vector2f(0.0f, 0.0f), 
+				getEnemy().getBulletHandler(), 2, player), true);
 		//setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 	}
 	@Override
