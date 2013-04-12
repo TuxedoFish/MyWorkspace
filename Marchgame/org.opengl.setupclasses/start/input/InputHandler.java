@@ -22,7 +22,8 @@ public class InputHandler {
 	private boolean move;
 	private Controller parent;
 	private boolean started = false;
-	ArrayList<GuiButton> buttons = new ArrayList<GuiButton>();
+	private ArrayList<GuiButton> buttons = new ArrayList<GuiButton>();
+	private ArrayList<Integer> indexs = new ArrayList<Integer>();
 	
 	public InputHandler(Controller parent) {
 		this.parent = parent;
@@ -31,8 +32,13 @@ public class InputHandler {
 	public float neg(float f) {
 		return f * -1;
 	}
-	public void addButton(GuiButton button) {
+	public void addButton(GuiButton button, int index) {
 		buttons.add(button);
+		indexs.add(index);
+	}
+	public void removeElement(int index) {
+		buttons.remove(indexs.indexOf(index));
+		indexs.remove(indexs.indexOf(index));
 	}
 	public boolean contains(Vector2f mouse, Rectangle2D bounds) {
 		if(mouse.x > bounds.getX() && mouse.x < bounds.getX() + bounds.getWidth()) {

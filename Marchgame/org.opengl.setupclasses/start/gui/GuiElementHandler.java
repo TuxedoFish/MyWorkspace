@@ -68,7 +68,7 @@ public class GuiElementHandler {
 	public GuiElementHandler() {
 		texid = glGenTextures();
 	}
-	public void newString(String str, Color c, float  width, float height, Vector2f topleft) {
+	public int newString(String str, Color c, float  width, float height, Vector2f topleft) {
 		elements.add(new GuiString(str, c, new Vector2f(topleft.x, topleft.y), 
 				width, height, topleft));
 		
@@ -78,15 +78,21 @@ public class GuiElementHandler {
 		if(r.getHeight()/(Display.getHeight()/2.0f) > maxheight) {
 			maxheight = (float)r.getHeight()/(Display.getHeight()/2.0f);
 		}
+		return elements.size()-1;
 	}
-	public void newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
+	public int newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
 			String eventmessage) {
 		GuiButton button = new GuiButton(loc, pos, width, height, parent, eventmessage);
 		elements.add(button);
-		ih.addButton(button);
+		ih.addButton(button, elements.size()-1);
+		return (elements.size()-1);
 	}
-	public void newBar(String barname, Vector2f pos, int percent) {
+	public int newBar(String barname, Vector2f pos, int percent) {
 		elements.add(new GuiBar(barname, pos, percent));
+		return elements.size()-1;
+	}
+	public void removeElement(int index) {
+		elements.remove(index);
 	}
 	public void newLine() {
 		nextx = 0.0f;

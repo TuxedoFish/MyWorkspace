@@ -107,6 +107,10 @@ public class Controller {
 	
 	private ScoreHandler sch;
 	private int score = 0;
+	private int prevscore = 0;
+	
+	private int healthid;
+	private int scoreid;
 	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
@@ -187,6 +191,13 @@ public class Controller {
 		lr = new LevelRenderer(ct.addTimeStep(600));
 		blockdata = lr.getLevelData(blocks, blocktex);
 		lr.update(blocks, display);
+		
+		prevhealth = player.getHealth();
+		prevscore = score;
+		gui.clearElements();
+		ih.clearElements();
+		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+		healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
 		
 		started = true;
 	}
@@ -384,13 +395,14 @@ public class Controller {
 			enemies.get(i).render(shaderhandler, display, util);
 		}
 		if(prevhealth != player.getHealth()) {
-			if(started) {
-				prevhealth = player.getHealth();
-				gui.clearElements();
-				ih.clearElements();
-				gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
-				gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
-			}
+			prevhealth = player.getHealth();
+			gui.removeElement(healthid);
+			healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
+		}
+		if(prevscore != score) {
+			prevscore = score;
+			gui.removeElement(scoreid);
+			scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 		}
 		sch.render(sh, display, util);
 		gui.drawElements(sh);
