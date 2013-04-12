@@ -357,9 +357,9 @@ public class Controller {
 		}
 	}
 	public void toHome() {
+		started = false;
 		el = null;
 		prevpercent = 0; loadpercent = 0;
-		started = false;
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
@@ -394,12 +394,16 @@ public class Controller {
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).render(shaderhandler, display, util);
 		}
-		if(prevhealth != player.getHealth()) {
+		if(prevhealth != player.getHealth() && started) {
 			prevhealth = player.getHealth();
 			gui.removeElement(healthid);
-			healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
+			if((int)(((float)player.getHealth()/500.0f)*100.0f) > 0) {
+				healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
+			} else {
+				healthid = gui.newString("dead", Color.red, 50, 50, new Vector2f(0.1f, 0.75f));
+			}
 		}
-		if(prevscore != score) {
+		if(prevscore != score && started) {
 			prevscore = score;
 			gui.removeElement(scoreid);
 			scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));

@@ -58,11 +58,14 @@ public class GuiElementHandler {
 	private float nextx = 0;
 	private float nexty = 0;
 	
+	private int currentindex = 0;
+	
 	private float maxheight = 0;
 	
 	private int vboId = glGenBuffers();
 	private int vaoId = glGenVertexArrays();
 	
+	private ArrayList<Integer> keys = new ArrayList<Integer>();
 	private ArrayList<GuiElement> elements = new ArrayList<GuiElement>();
 	
 	public GuiElementHandler() {
@@ -78,21 +81,31 @@ public class GuiElementHandler {
 		if(r.getHeight()/(Display.getHeight()/2.0f) > maxheight) {
 			maxheight = (float)r.getHeight()/(Display.getHeight()/2.0f);
 		}
-		return elements.size()-1;
+		
+		currentindex += 1;
+		keys.add(currentindex);
+		return currentindex;
 	}
 	public int newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
 			String eventmessage) {
 		GuiButton button = new GuiButton(loc, pos, width, height, parent, eventmessage);
 		elements.add(button);
 		ih.addButton(button, elements.size()-1);
-		return (elements.size()-1);
+		
+		currentindex += 1;
+		keys.add(currentindex);
+		return currentindex;
 	}
 	public int newBar(String barname, Vector2f pos, int percent) {
 		elements.add(new GuiBar(barname, pos, percent));
-		return elements.size()-1;
+		
+		currentindex += 1;
+		keys.add(currentindex);
+		return currentindex;
 	}
 	public void removeElement(int index) {
-		elements.remove(index);
+		elements.remove(keys.indexOf(index));
+		keys.remove(keys.indexOf(index));
 	}
 	public void newLine() {
 		nextx = 0.0f;
@@ -104,6 +117,7 @@ public class GuiElementHandler {
 		nexty = 0.0f;
 		maxheight = 0.0f;
 		elements.clear();
+		keys.clear();
 	}
 	public void drawElements(ShaderHandler sh) {
 		for(int i=0; i<10 && i<elements.size();i++) {
