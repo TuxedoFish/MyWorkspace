@@ -178,7 +178,14 @@ public class Sprite{
 	}
 	public void changeTexture(int texid) {
 		currenttexid = texid;
-		datafb = getData(pos, width, height, texid);
+		Vector2f[] tc = th.getTextureCoords(texid);
+		datafb.put(4, tc[0].x); datafb.put(5, tc[0].y);
+		datafb.put(14, tc[1].x); datafb.put(15, tc[1].y);
+		datafb.put(24, tc[2].x); datafb.put(25, tc[2].y);
+		
+		datafb.put(34, tc[0].x); datafb.put(35, tc[0].y);
+		datafb.put(44, tc[2].x); datafb.put(45, tc[2].y);
+		datafb.put(54, tc[3].x); datafb.put(55, tc[3].y);
 	}
 	public void render(ShaderHandler sh, DataUtils util, int brightness) {
 		FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);

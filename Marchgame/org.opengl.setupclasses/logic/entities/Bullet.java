@@ -35,14 +35,11 @@ public class Bullet {
 		Vector2f p2 = new Vector2f(pos.x + width, pos.y);
 		Vector2f p3 = new Vector2f(pos.x + width, pos.y - height);
 		Vector2f p4 = new Vector2f(pos.x, pos.y - height);
-		float d1 = (float)Math.sqrt(Math.pow(pos.x - this.pos.x, 2) + Math.pow(pos.y - this.pos.y, 2));
-		float d2 = (float)Math.sqrt(Math.pow(p2.x - this.pos.x, 2) + Math.pow(p2.y - this.pos.y, 2));
-		float d3 = (float)Math.sqrt(Math.pow(p3.x - this.pos.x, 2) + Math.pow(p3.y - this.pos.y, 2));
-		float d4 = (float)Math.sqrt(Math.pow(p4.x - this.pos.x, 2) + Math.pow(p4.y - this.pos.y, 2));
-		
-		Vector4f tempos = new Vector4f(this.pos.x + (radius/Display.getWidth()), 
-				this.pos.y - (radius/Display.getHeight()), 0.0f, 1.0f);
-		tempos = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), tempos, tempos);
+		float yconv = Display.getWidth()/Display.getHeight();
+		float d1 = (float)Math.sqrt(Math.pow(pos.x - (this.pos.x+(radius/2)), 2) + Math.pow(pos.y - (this.pos.y-(radius*yconv/2)), 2));
+		float d2 = (float)Math.sqrt(Math.pow(p2.x - (this.pos.x+(radius/2)), 2) + Math.pow(p2.y - (this.pos.y-(radius*yconv/2)), 2));
+		float d3 = (float)Math.sqrt(Math.pow(p3.x - (this.pos.x+(radius/2)), 2) + Math.pow(p3.y - (this.pos.y-(radius*yconv/2)), 2));
+		float d4 = (float)Math.sqrt(Math.pow(p4.x - (this.pos.x+(radius/2)), 2) + Math.pow(p4.y - (this.pos.y-(radius*yconv/2)), 2));
 		
 		if(d1<radius || d2<radius || d3<radius || d4<radius) {
 			return true;
