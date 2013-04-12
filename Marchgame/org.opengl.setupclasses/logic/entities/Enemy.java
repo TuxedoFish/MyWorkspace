@@ -148,31 +148,33 @@ public class Enemy extends Sprite{
 		return textures;
 	}
 	public void animate() {
-		if(texturestage>speed) {
-			if(isup) {
-				if(texid<hti) {
-					this.changeTexture(texid+1);
-					texid += 1;
+		if(animationstyle < 3) {
+			if(texturestage>speed) {
+				if(isup) {
+					if(texid<hti) {
+						this.changeTexture(texid+1);
+						texid += 1;
+					} else {
+						isup = false;
+					}
 				} else {
-					isup = false;
+					if(texid>lti) {
+						if(animationstyle == 1) {
+							this.changeTexture(texid-1);
+							texid -= 1;
+						}
+						if(animationstyle == 2) {
+							this.changeTexture(0);
+							texid = 0;
+						}
+					} else {
+						isup = true;
+					}
 				}
+				texturestage = 0;
 			} else {
-				if(texid>lti) {
-					if(animationstyle == 1) {
-						this.changeTexture(texid-1);
-						texid -= 1;
-					}
-					if(animationstyle == 2) {
-						this.changeTexture(0);
-						texid = 0;
-					}
-				} else {
-					isup = true;
-				}
+				texturestage += 1;
 			}
-			texturestage = 0;
-		} else {
-			texturestage += 1;
 		}
 	}
 	public void setAnimationStyle(int style) {
@@ -228,6 +230,17 @@ public class Enemy extends Sprite{
 					}
 				} else {
 					this.changePos((p.getPos().x - lastp.getPos().x)/dist, (p.getPos().y - lastp.getPos().y)/dist);
+					if(animationstyle == 3) {
+						float direction = (float) Math.atan2(p.getPos().y - lastp.getPos().y, p.getPos().x - lastp.getPos().x);
+						int texture = (int)(direction/(Math.PI/4))+2;
+						if(texture < 0) {
+							texture += 8;
+						}
+						if(texture > 8) {
+							texture -= 8;
+						}
+						this.changeTexture(texture);
+					}
 					stage += 1;
 				}
 			} else {

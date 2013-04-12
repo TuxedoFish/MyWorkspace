@@ -28,10 +28,10 @@ public class Tank extends Enemy implements Troop {
 			TextureHolder[] ts, int health, int shootspeed, ImageReturn images) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
 				highesttexid, width, pattern, ts, health, shootspeed);
-		setScroll(false);
+		//setScroll(false);
 		setAnimationSpeed(10);
-		setAnimationStyle(2);
-		setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
+		setAnimationStyle(3);
+		//setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 	}
 	public Tank(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets, String texloc,
@@ -39,10 +39,10 @@ public class Tank extends Enemy implements Troop {
 			int shootspeed, ImageReturn images) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
 				highesttexid, width, pattern, new GridParser(), health, shootspeed);
-		setScroll(false);
+		//setScroll(false);
 		setAnimationSpeed(10);
-		setAnimationStyle(2);
-		setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
+		setAnimationStyle(3);
+		//setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 	}
 	@Override
 	public Enemy getEnemy() {
@@ -55,6 +55,6 @@ public class Tank extends Enemy implements Troop {
 	@Override
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(sh, d, util);
-		//swirlAround();
+		followPath(d);
 	}
 }
