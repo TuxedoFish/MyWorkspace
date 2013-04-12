@@ -136,6 +136,7 @@ public class Controller {
 	private DisplaySetup display;
 	
 	private int playerthread;
+	private int playershootthreadid;
 	
 	public void bulletexplode(int index) {
 		player.bulletexplode(index);
@@ -164,6 +165,7 @@ public class Controller {
 		}
 		blocks = el.getBlocks();
 		
+		playershootthreadid = ct.addTimeStep(200);
 		player = el.getPlayer();
 		IntBuffer vboids = BufferUtils.createIntBuffer(3);
 		glGenBuffers(vboids);
@@ -332,6 +334,9 @@ public class Controller {
 				}
 			}
 		}
+		if(index == playershootthreadid) {
+			ih.shoot();
+		}
 		if(lr != null && index == lr.getThreadID()) {
 			lr.animate(blocktex, blockdata);
 		}
@@ -350,9 +355,11 @@ public class Controller {
 		}
 		for(int i=0; i<scorethreadids.size(); i++) {
 			if(scorethreadids.get(i) == index) {
-				gui.removeElement(scoretextids.get(i));
-				scoretextids.remove(i);
-				scorethreadids.remove(i);
+				if(started) {
+					gui.removeElement(scoretextids.get(i));
+					scoretextids.remove(i);
+					scorethreadids.remove(i);
+				}
 			}
 		}
 	}
@@ -375,6 +382,8 @@ public class Controller {
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
 		player.reset();
 		score = 0;
+		scoretextids.clear();
+		scorethreadids.clear();
 	}
 	public void shoot() {
 		if(started) {

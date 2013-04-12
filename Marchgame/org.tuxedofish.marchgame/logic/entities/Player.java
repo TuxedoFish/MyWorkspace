@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import logic.GridParser;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector4f;
 
 import object.Sprite;
 import shader.ShaderHandler;
@@ -106,13 +108,14 @@ public class Player extends Sprite{
 			}
 			boolean stopped = false;
 			if(!bullets.get(i).getDestroying()) {
-				bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.sin(bullets.get(i).getRot())/30.0f)), 
-					(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/30.0f))));
-				if(bullets.get(i).getAge() > 100) {
-					bullets.get(i).setDestroyingSelf(true);
-					explosions.add(new Bullet(bullets.get(i).getPos(), 0.0f, 70));
-					changed = true;
-					bullet.changeTexture(8);
+				bullets.get(i).setPos(new Vector2f((float)(bullets.get(i).getPos().x - (Math.sin(bullets.get(i).getRot())/20.0f)), 
+					(float)(bullets.get(i).getPos().y - (Math.cos(bullets.get(i).getRot())/20.0f))));
+				
+				Vector4f bulletp = new Vector4f(bullets.get(i).getPos().x, bullets.get(i).getPos().y, 0.0f, 1.0f);
+				Matrix4f.transform(d.getModelViewMatrixAsMatrix(), bulletp, bulletp);
+				if(bulletp.x >= 1.1f || bulletp.x <= -1.1f || bulletp.y >= 1.1f || bulletp.y <= -1.1f) {
+					bullets.remove(i);
+					stopped = true;
 				}
 			} else {
 				if(bullets.get(i).getAge() < bullets.get(i).getLastAge()+20) {
@@ -147,6 +150,10 @@ public class Player extends Sprite{
 	public void shoot() {
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
 			, (float)Math.PI, 40));
+		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
+		, (float)(Math.PI + (Math.PI/25)), 40));
+		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
+		, (float)(Math.PI - (Math.PI/25)), 40));
 	}
 	public ArrayList<Bullet> getBullets() {
 		return bullets;

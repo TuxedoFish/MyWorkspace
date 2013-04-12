@@ -77,10 +77,8 @@ public class BulletHandler extends ArrayList<Bullet>{
 				Vector4f bulletp = new Vector4f(get(i).getPos().x, get(i).getPos().y, 0.0f, 1.0f);
 				Matrix4f.transform(d.getModelViewMatrixAsMatrix(), bulletp, bulletp);
 				if(bulletp.x >= 1.1f || bulletp.x <= -1.1f || bulletp.y >= 1.1f || bulletp.y <= -1.1f) {
-					get(i).setDestroyingSelf(true);
-					explosions.add(new Bullet(get(i).getPos(), 0.0f, 70));
-					changed = true;
-					bullet.changeTexture(8);
+					remove(i);
+					stopped = true;
 				}
 			} else {
 				if(get(i).getAge() < get(i).getLastAge()+20) {

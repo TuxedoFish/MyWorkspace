@@ -52,6 +52,11 @@ public class InputHandler {
 	public void clearElements() {
 		buttons.clear();
 	}
+	public void shoot() {
+		if(mousedown) {
+			parent.shoot();
+		}
+	}
 	public void update(DisplaySetup d) {
 		Vector2f mousepos = new Vector2f(Mouse.getX(), Mouse.getY());
 		for(int i=0; i<buttons.size(); i++) {
@@ -67,7 +72,6 @@ public class InputHandler {
 		}
 		if(Mouse.isButtonDown(0)) {
 			if(!mousedown) {
-				parent.shoot();
 				mousedown = true;
 			}
 		} else {

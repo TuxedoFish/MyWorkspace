@@ -125,7 +125,7 @@ public class GuiElementHandler {
 			texutil.binddata(elements.get(i).getImg(), texid);
 			
 			DataUtils datautil = new DataUtils();
-			if(elements.size() != 0) {
+			if(elements.size() > i) {
 				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 1, elements.get(i).getIndices(), null, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}
