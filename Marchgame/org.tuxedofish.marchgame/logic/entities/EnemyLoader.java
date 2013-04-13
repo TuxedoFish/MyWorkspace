@@ -99,7 +99,7 @@ public class EnemyLoader extends Thread{
 						new Vector2f(-1.0f, -1.0f));
 				GridParser gp = new GridParser();
 				
-				TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 29);
+				TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 50);
 				player = new Player(images.getImage("spaceship.png"), 100, 100, texture, 0,
 						new Vector2f(0.0f, -0.75f), parent);
 				texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);

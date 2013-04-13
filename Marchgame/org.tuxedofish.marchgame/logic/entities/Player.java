@@ -34,6 +34,7 @@ public class Player extends Sprite{
 	private Vector2f bpos = new Vector2f(0.0f, 0.0f); private Vector2f epos = new Vector2f(0.0f, 0.0f);
 	private int hit = 0; 
 	private int health = 500;
+	private int currenttex = 0;
 	
 	public Player(BufferedImage img, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos, Controller parent) {
@@ -95,6 +96,13 @@ public class Player extends Sprite{
 				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
+		if(currenttex<4) {
+			changeTexture(currenttex);
+			currenttex+=1;
+		} else {
+			changeTexture(currenttex);
+			currenttex = 0;
+		}
 		if(stage >= 35) {
 			stage = 0;
 		}

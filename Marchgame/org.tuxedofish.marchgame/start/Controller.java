@@ -228,7 +228,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(21, 10);
+		//gm.makeGrid(51, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -439,7 +439,7 @@ public class Controller {
 		Matrix4f.transform(display.getModelViewMatrixAsMatrix(), realplayerpos, realplayerpos);
 
 		scoretextids.add(gui.newString(Integer.toString(score), Color.BLUE, 50, 50, new Vector2f(realplayerpos.x, realplayerpos.y)));
-		scorethreadids.add(ct.addTimeStep(1500));
+		scorethreadids.add(ct.addTimeStep(500));
 	}
 	public void setupshaders(ShaderHandler s) {
 		testprogram = s.createprogram();
