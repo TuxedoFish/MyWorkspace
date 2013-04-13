@@ -104,6 +104,8 @@ public class Controller {
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private ArrayList<Troop> enemies = new ArrayList<Troop>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
+	private ArrayList<Integer> scoretextids = new ArrayList<Integer>();
+	private ArrayList<Integer> scorethreadids = new ArrayList<Integer>();
 	
 	private ScoreHandler sch;
 	private int score = 0;
@@ -346,6 +348,13 @@ public class Controller {
 				boss.shoot(index);
 			}
 		}
+		for(int i=0; i<scorethreadids.size(); i++) {
+			if(scorethreadids.get(i) == index) {
+				gui.removeElement(scoretextids.get(i));
+				scoretextids.remove(i);
+				scorethreadids.remove(i);
+			}
+		}
 	}
 	public void damage(int d) {
 		ct.resetTimeStep(playerthread);
@@ -416,6 +425,12 @@ public class Controller {
 	}
 	public void score(int score) {
 		this.score += score;
+
+		Vector4f realplayerpos = new Vector4f(player.getPos().x, player.getPos().y, 0.0f, 1.0f);
+		Matrix4f.transform(display.getModelViewMatrixAsMatrix(), realplayerpos, realplayerpos);
+
+		scoretextids.add(gui.newString(Integer.toString(score), Color.BLUE, 50, 50, new Vector2f(realplayerpos.x, realplayerpos.y)));
+		scorethreadids.add(ct.addTimeStep(1500));
 	}
 	public void setupshaders(ShaderHandler s) {
 		testprogram = s.createprogram();
