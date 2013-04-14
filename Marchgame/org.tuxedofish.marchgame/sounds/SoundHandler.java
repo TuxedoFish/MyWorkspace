@@ -6,6 +6,7 @@ import java.io.InputStream;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 
 public class SoundHandler {
 	public static synchronized void playSound(final String url) {
@@ -17,6 +18,8 @@ public class SoundHandler {
 	          
 	          Clip clip = AudioSystem.getClip();
 	          clip.open(audio2);
+	          FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+	          volume.setValue(-15);
 	          clip.start(); 
 	        } catch (Exception e) {
 	          System.err.println(e.getMessage());
