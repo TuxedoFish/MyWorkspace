@@ -408,6 +408,7 @@ public class Controller {
 		boss.render(sh, d, util);
 		
 		player.render(sh, d, util);
+		player.setMovement(ih.getMovement());
 		
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).render(shaderhandler, display, util);

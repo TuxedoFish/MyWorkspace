@@ -46,7 +46,6 @@ public class InputHandler {
 				return true;
 			}
 		}
-		
 		return false;
 	}
 	public void clearElements() {
@@ -56,6 +55,18 @@ public class InputHandler {
 		if(mousedown) {
 			parent.shoot();
 		}
+	}
+	public int getMovement() {
+		if((rightdown && leftdown) || (!rightdown && !leftdown)) {
+			return 0;
+		}
+		if(rightdown) {
+			return 2;
+		}
+		if(leftdown) {
+			return 1;
+		}
+		return 0;
 	}
 	public void update(DisplaySetup d) {
 		Vector2f mousepos = new Vector2f(Mouse.getX(), Mouse.getY());

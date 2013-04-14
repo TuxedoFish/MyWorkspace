@@ -36,6 +36,7 @@ public class Player extends Sprite{
 	private int hit = 0; 
 	private int health = 500;
 	private int currenttex = 0;
+	private int movement = 0;
 	private SoundHandler sounds = new SoundHandler();
 	
 	public Player(BufferedImage img, int width, int height,
@@ -83,6 +84,7 @@ public class Player extends Sprite{
 				if(!(getPos().y + y > -display.getPos().y + 1.0f) || y <= 0) {
 					if(!(getPos().y - (getHeight()/Display.getHeight()) + y < -display.getPos().y - 0.8f) || y >= 0) {
 							changePos(x, y);
+							changeTexture(5);
 							//display.changepos(-x, -y, 0.0f);
 					}
 				}
@@ -97,12 +99,15 @@ public class Player extends Sprite{
 		explosions.add(new Bullet(new Vector2f((float)(bullets.get(index).getPos().x + 
 				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
 	}
+	public void setMovement(int movement) {
+		this.movement = movement;
+	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		if(currenttex<4) {
-			changeTexture(currenttex);
+			changeTexture((movement*5)+currenttex);
 			currenttex+=1;
 		} else {
-			changeTexture(currenttex);
+			changeTexture((movement*5)+currenttex);
 			currenttex = 0;
 		}
 		if(stage >= 35) {
