@@ -40,6 +40,9 @@ public class ControllerTimer extends Thread{
 			}
 		}
 	}
+	public int getThreadDuration(int threadid) {
+		return temp.get(threadid);
+	}
 	public void removeTimeStep(Integer index) {
 		disabled.set(index, true);
 	}

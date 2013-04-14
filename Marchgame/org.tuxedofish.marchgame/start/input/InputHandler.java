@@ -14,20 +14,16 @@ import start.gui.GuiButton;
 import start.gui.GuiElement;
 
 public class InputHandler {
-	private boolean leftdown, rightdown, forwarddown, backdown, rotleftdown, rotrightdown, up, down;
-	private boolean mousedown = false,  mousescrolldown;
-	private float lastx, lasty;
-	private float lblastx, lblasty;
-	private float xhome, yhome;
-	private boolean move;
+	private boolean leftdown, rightdown, up, down;
+	private boolean mousedown = false;
 	private Controller parent;
-	private boolean started = false;
 	private ArrayList<GuiButton> buttons = new ArrayList<GuiButton>();
 	private ArrayList<Integer> indexs = new ArrayList<Integer>();
+	private int shootduration;
 	
 	public InputHandler(Controller parent) {
 		this.parent = parent;
-		leftdown = false; rightdown = false; backdown = false; forwarddown = false;
+		leftdown = false; rightdown = false;
 	}
 	public float neg(float f) {
 		return f * -1;
@@ -54,6 +50,9 @@ public class InputHandler {
 	public void shoot() {
 		if(mousedown) {
 			parent.shoot();
+			shootduration = 0;
+		} else {
+			shootduration += 200;
 		}
 	}
 	public int getMovement() {
@@ -83,6 +82,11 @@ public class InputHandler {
 		}
 		if(Mouse.isButtonDown(0)) {
 			if(!mousedown) {
+				if(shootduration >= 200) {
+					parent.shoot();
+					parent.resetThread(parent.getPlayerShootThreadId());
+					shootduration = 0;
+				}
 				mousedown = true;
 			}
 		} else {

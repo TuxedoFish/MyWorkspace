@@ -31,10 +31,18 @@ import org.lwjgl.util.vector.Vector2f;
 public class TextureUtils {
 	public int binddata(BufferedImage img) {
 		int textureID = glGenTextures();
-		binddata(img, textureID);
+		binddata(img, textureID, loadtexture(img));
+        return textureID;
+	}
+	public int binddata(BufferedImage img, ByteBuffer imgdata) {
+		int textureID = glGenTextures();
+		binddata(img, textureID, imgdata);
         return textureID;
 	}
 	public void binddata(BufferedImage img, int textureID) {
+		binddata(img, textureID, loadtexture(img));
+	}
+	public void binddata(BufferedImage img, int textureID, ByteBuffer imgdata) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID); //Bind texture ID
 		
@@ -48,9 +56,9 @@ public class TextureUtils {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         
         //Send texel data to OpenGL
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, img.getWidth(), img.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, loadtexture(img));
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, img.getWidth(), img.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	}
-	private ByteBuffer loadtexture(BufferedImage texture) {
+	public ByteBuffer loadtexture(BufferedImage texture) {
 		 int[] pixels = new int[texture.getWidth() * texture.getHeight()];
 	     texture.getRGB(0, 0, texture.getWidth(), texture.getHeight(), pixels, 0, texture.getWidth());
 

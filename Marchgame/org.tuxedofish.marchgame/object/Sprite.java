@@ -73,9 +73,13 @@ public class Sprite{
 	private int currenttexid;
 	
 	private Controller parent;
+	private ByteBuffer imgdata;
 	
 	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int currenttexid, 
 			Vector2f pos) {
+		TextureUtils util = new TextureUtils();
+		imgdata = util.loadtexture(img);
+		
 		parent = c;
 		any = true;
 		this.th = th;
@@ -94,7 +98,7 @@ public class Sprite{
 		this.vboID = vboid;
 		this.vaoID = vaoid;
 		TextureUtils util = new TextureUtils();
-		this.textureid = util.binddata(texture);
+		this.textureid = util.binddata(texture, imgdata);
 	}
 	public int getWidth() {
 		return width;

@@ -374,9 +374,15 @@ public class Controller {
 			}
 		}
 	}
+	public int getPlayerShootThreadId() {
+		return playershootthreadid;
+	}
 	public void damage(int d) {
 		ct.resetTimeStep(playerthread);
 		player.damage(d);
+	}
+	public int getThreadDuration(int threadid) {
+		return ct.getThreadDuration(threadid);
 	}
 	public void move(float x, float y) {
 		if(started) {
