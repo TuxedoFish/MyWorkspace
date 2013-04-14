@@ -15,6 +15,10 @@ import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.util.glu.GLU.*;
 
+import images.ImageReturn;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -26,6 +30,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+
+import utils.TextureUtils;
 
 public class DisplaySetup {
 	private FloatBuffer projectionbuffer = BufferUtils.createFloatBuffer(16);
@@ -55,12 +61,21 @@ public class DisplaySetup {
 			//Creates a display to work with
 			Display.setDisplayMode(new DisplayMode(w, h));
 			Display.setVSyncEnabled(true);
-			Display.setTitle("Shader Setup");
+			Display.setTitle("March Game");
+			
+			ImageReturn images = new ImageReturn(); TextureUtils util = new TextureUtils();
+			ByteBuffer[] logo = new ByteBuffer[]{util.loadtexture(images.getImage("gui\\logo16x.png")), 
+					util.loadtexture(images.getImage("gui\\logo32x.png")), util.loadtexture(images.getImage("gui\\logo128x.png"))};
+			Display.setIcon(logo);
+			
 			Display.create();
 		} catch (LWJGLException e) {
 			System.err.println("error setting display up");
 			e.printStackTrace();
 			System.exit(1);
+		} catch (IOException e) {
+			System.err.println("error setting display up");
+			e.printStackTrace();
 		}
 		ModelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
 		//Defines the areas of the display

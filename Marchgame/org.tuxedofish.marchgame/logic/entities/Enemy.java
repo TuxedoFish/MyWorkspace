@@ -293,7 +293,7 @@ public class Enemy extends Sprite{
 					health -= 5;
 					parent.resetThread(threadindex);
 					hit = 1;
-					if(health <= 0) {
+					if(health <= 0 && !stopped) {
 						parent.addScorePellet(getPos(), 20);
 						stopped = true;
 					}

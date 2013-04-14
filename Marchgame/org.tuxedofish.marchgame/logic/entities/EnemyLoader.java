@@ -131,8 +131,10 @@ public class EnemyLoader extends Thread{
 				Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
 				Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), parent, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
 				
-				Building b = new Building("building3.png", player.getBullets(), parent, 340, 500, new Vector2f(-0.9f, 5.0f), 100, 167, 250);
-				Building b2 = new Building("building3.png", player.getBullets(), parent, 340, 500, new Vector2f(-0.9f, 2.0f), 100, 167, 250);
+				Building b = new Building(images.getImage("building3.png"), player.getBullets(), parent, 
+						340, 500, new Vector2f(-0.9f, 5.0f), 100, gp.parseGrid(images.getImage("building3.png"), 167, 250));
+				Building b2 = new Building(images.getImage("building3.png"), player.getBullets(), parent, 
+						340, 500, new Vector2f(-0.9f, 2.0f), 100, gp.parseGrid(images.getImage("building3.png"), 167, 250));
 				buildings.add(b); buildings.add(b2);
 				
 				boss = new Boss(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets());

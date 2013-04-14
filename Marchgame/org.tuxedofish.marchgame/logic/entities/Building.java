@@ -18,9 +18,8 @@ import start.DisplaySetup;
 import texture.TextureHolder;
 import utils.DataUtils;
 
-public class Building {
+public class Building extends Sprite{
 	private ArrayList<Bullet> playerbullets;
-	private Sprite me;
 	private int hit;
 	private Controller parent;
 	private BufferedImage img;
@@ -28,24 +27,16 @@ public class Building {
 	private int health;
 	private boolean stopped = false;
 	
-	public Building(String loc, ArrayList<Bullet> playerbullets, Controller parent, int width, 
-			int height, Vector2f pos, int health, int imgwidth, int imgheight) {
+	public Building(BufferedImage img, ArrayList<Bullet> playerbullets, Controller parent, int width, 
+			int height, Vector2f pos, int health, TextureHolder texture) {
+		super(img, parent, width, height, texture, 0, pos);
+		
 		this.playerbullets = playerbullets;
 		this.parent = parent;
 		this.health = health;
-		ImageReturn images = new ImageReturn();
-		GridParser gp = new GridParser();
-		try {
-			img = images.getImage(loc);
-		} catch (IOException e) {
-			System.err.println("err loading building");
-			e.printStackTrace();
-		}
-		TextureHolder texture = gp.parseGrid(img, imgwidth, imgheight);
-		me = new Sprite(img, parent, width, height, texture, 0, pos);
 	}
 	public void finish(int vboid, int vaoid, int threadid) {
-		me.finish(vboid, vaoid);
+		finish(vboid, vaoid);
 		this.threadid = threadid;
 	}
 	public int getThreadID() {
@@ -57,19 +48,23 @@ public class Building {
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		if(!stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
-				if(playerbullets.get(i).contains(me.getPos(), (float)me.getWidth()/Display.getWidth(), 
-						(float)me.getHeight()/Display.getHeight(), d) && !playerbullets.get(i).getDestroying()) {
+				if(playerbullets.get(i).contains(getPos(), (float)getWidth()/Display.getWidth(), 
+						(float)getHeight()/Display.getHeight(), d) && !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
 					health -= 5;
 					parent.resetThread(threadid);
 					hit = 1;
 					if(health <= 0) {
-						me.changeTexture(1);
+						for(int j=0; j<20; j++) {
+							parent.addScorePellet(new Vector2f((float)(getPos().x + (Math.random()*((float)getWidth()/Display.getWidth()))), 
+									(float)(getPos().y - (Math.random()*((float)getHeight()/Display.getHeight())))), 5);
+						}
+						changeTexture(1);
 						stopped = true;
 					}
 				}
 			}
 		}
-		me.render(sh, util, hit);
+		render(sh, util, hit);
 	}
 }
