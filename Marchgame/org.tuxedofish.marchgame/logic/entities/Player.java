@@ -19,6 +19,7 @@ import org.lwjgl.util.vector.Vector4f;
 
 import object.Sprite;
 import shader.ShaderHandler;
+import sounds.SoundHandler;
 import start.Controller;
 import start.DisplaySetup;
 import texture.TextureHolder;
@@ -35,6 +36,7 @@ public class Player extends Sprite{
 	private int hit = 0; 
 	private int health = 500;
 	private int currenttex = 0;
+	private SoundHandler sounds = new SoundHandler();
 	
 	public Player(BufferedImage img, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos, Controller parent) {
@@ -156,6 +158,7 @@ public class Player extends Sprite{
 		render(sh, util, hit);
 	}
 	public void shoot() {
+		sounds.playSound("shoot.wav");
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
 			, (float)Math.PI, 40));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
