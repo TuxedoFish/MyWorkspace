@@ -103,15 +103,15 @@ public class Boss {
 		}
 	}
 	public void addSprite(Sprite s, int lowesttexid, int highesttexid, int health, int pattern, boolean hittable, 
-			int threadID, int shootthreadid) {
+			int threadID, int[] shootthreadids, int[] shootlengths) {
 		me.add(s);
 		myrect.add(new Rectangle2D.Float());
 		this.texids.add(new TexID(lowesttexid, highesttexid, texid));
 		healths.add(health);
-		bps.add(new BossPart(pattern, hittable));
+		bps.add(new BossPart(pattern, hittable, shootthreadids, shootlengths));
 		hit.add(0);
 		threadids.add(threadID);
-		shootthreadids.add(shootthreadid);
+		this.shootthreadids.add(shootthreadids[0]);
 	}
 	public void animate() {
 		for(int i=0; i<me.size(); i++) {
@@ -140,15 +140,34 @@ public class Boss {
 	}
 	public void shoot(int index) {
 		int i = shootthreadids.indexOf(index);
-		if(bps.get(i).isHittable()) {
-			if(bps.get(i).getPattern() == 1) {
-				for(float j=0.0f; j<2*Math.PI; j+= Math.PI/4) {
-					if(i < me.size()) {
-						bullets.add(new Bullet(me.get(i).getPos(), j, 40));
+		if(i<me.size()) {
+			if(bps.get(i).isHittable()) {
+				if(bps.get(i).getPattern() == 1) {
+					double compassBearing=Math.atan2(me.get(i).getPos().y - playersprite.getPos().y, 
+							me.get(i).getPos().x - playersprite.getPos().x);
+					shoot((float)compassBearing, i);
+					
+					bps.get(i).changeShootStage();
+					int[] shootlengths = bps.get(i).getShootLengths();
+					int[] shootids = bps.get(i).getShootThreads();
+					
+					if(bps.get(i).getShootStage() >= shootlengths[bps.get(i).getShootPattern()]) {
+						if(bps.get(i).getShootPattern()+1<shootids.length) {
+							bps.get(i).setShootPattern(bps.get(i).getShootPattern()+1);
+							shootthreadids.set(i, shootids[bps.get(i).getShootPattern()]);
+						} else {
+							shootthreadids.set(i, shootids[0]);
+							bps.get(i).setShootPattern(0);
+						}
+						bps.get(i).resetShootStage();
 					}
 				}
 			}
 		}
+	}
+	private void shoot(float rot, int index) {
+		bullets.add(new Bullet(new Vector2f(me.get(index).getPos().x+(me.get(index).getWidth()/(Display.getWidth()*2.0f)), 
+				me.get(index).getPos().y), rot, 40));
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
@@ -168,7 +187,6 @@ public class Boss {
 							this.healths.set(j, healths.get(j)-5);
 							hit.set(j, 1);
 							if(healths.get(j)<=0) {
-								parent.removeThread(shootthreadids.get(j));
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);

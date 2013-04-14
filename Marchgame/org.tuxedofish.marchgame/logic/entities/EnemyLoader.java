@@ -136,12 +136,18 @@ public class EnemyLoader extends Thread{
 				buildings.add(b); buildings.add(b2);
 				
 				boss = new Boss(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets());
-				boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), ct.addTimeStep(800));
-				boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-				boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-				boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-				boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
-				boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200), ct.addTimeStep(800));
+				boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
+						new int[]{1, 4});
+				boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
+						new int[]{1, 4});
+				boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
+						new int[]{1, 4});
+				boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
+						new int[]{1, 4});
+				boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
+						new int[]{1, 4});
+				boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
+						new int[]{1, 4});
 			} catch (IOException e1) {
 				System.err.println("err loading img");
 				System.exit(1);
