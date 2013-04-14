@@ -22,6 +22,7 @@ import object.Sprite;
 import physics.OctreeCollision;
 import physics.Rectangle3D;
 import shader.ShaderHandler;
+import sounds.SoundHandler;
 import start.Controller;
 import start.DisplaySetup;
 import texture.TextureHolder;
@@ -294,6 +295,7 @@ public class Enemy extends Sprite{
 					parent.resetThread(threadindex);
 					hit = 1;
 					if(health <= 0 && !stopped) {
+						SoundHandler.playSound("explosion.wav");
 						parent.addScorePellet(getPos(), 20);
 						stopped = true;
 					}

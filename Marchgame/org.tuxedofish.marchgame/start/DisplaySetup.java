@@ -67,7 +67,6 @@ public class DisplaySetup {
 			ByteBuffer[] logo = new ByteBuffer[]{util.loadtexture(images.getImage("gui\\logo16x.png")), 
 					util.loadtexture(images.getImage("gui\\logo32x.png")), util.loadtexture(images.getImage("gui\\logo128x.png"))};
 			Display.setIcon(logo);
-			
 			Display.create();
 		} catch (LWJGLException e) {
 			System.err.println("error setting display up");

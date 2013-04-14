@@ -16,6 +16,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import shader.ShaderHandler;
+import sounds.SoundHandler;
 import start.Controller;
 import start.DisplaySetup;
 import texture.TextureHolder;
@@ -190,6 +191,7 @@ public class Boss {
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);
+								SoundHandler.playSound("explosion.wav");
 								if(me.size() == 1) {
 									for(int k=0; k<50; k++) {
 										bullets.addExplosion(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
@@ -213,6 +215,7 @@ public class Boss {
 					stopped = true;
 				} else {
 					deathexplosionsleft -= 1;
+					SoundHandler.playSound("explosion.wav");
 					for(int k=0; k<50; k++) {
 						bullets.explosions.add(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
 								(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
