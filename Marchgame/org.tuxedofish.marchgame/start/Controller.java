@@ -50,6 +50,8 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import data.DataHandler;
+
 import physics.OctreeCollision;
 import physics.Rectangle3D;
 
@@ -99,6 +101,9 @@ public class Controller {
 	private int levelheight;
 	private EnemyLoader el;
 	
+	private int highscore;
+	private int highscoreid;
+	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
 	private ArrayList<Block> blocks = new ArrayList<Block>();
@@ -123,10 +128,13 @@ public class Controller {
 	private LevelHolder blockdata;
 	private LevelRenderer lr;
 	private Sprite currentlevel;
+	private int level;
 	
 	private ShaderHandler shaderhandler;
 	
 	private boolean started = false;
+	
+	private DataHandler dh = new DataHandler();
 	
 	private ControllerTimer ct;
 	
@@ -202,6 +210,8 @@ public class Controller {
 		ih.clearElements();
 		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 		healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
+		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
+		highscore = el.getHighScore();
 		
 		started = true;
 	}
@@ -299,6 +309,7 @@ public class Controller {
 			this.levelselectscreen();
 		}
 		if(message.equals("levelselected")) {
+			level=1;
 			this.startup();
 		}
 	}
@@ -381,6 +392,7 @@ public class Controller {
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
 		player.reset();
+		dh.update("highscores.txt", new String[] {Integer.toString(level)+" "+score});
 		score = 0;
 		scoretextids.clear();
 		scorethreadids.clear();
@@ -426,6 +438,11 @@ public class Controller {
 			prevscore = score;
 			gui.removeElement(scoreid);
 			scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+			if(score > highscore) {
+				highscore = score;
+				gui.removeElement(highscoreid);
+				highscoreid = gui.newString("highscore : " + highscore, Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
+			}
 		}
 		sch.render(sh, display, util);
 		gui.drawElements(sh);

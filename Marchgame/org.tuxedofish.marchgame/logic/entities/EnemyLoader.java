@@ -26,6 +26,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
+import data.DataHandler;
+
 import start.Controller;
 import start.ControllerTimer;
 import start.DisplaySetup;
@@ -49,6 +51,7 @@ public class EnemyLoader extends Thread{
 	private int lines;
 	private ControllerTimer ct;
 	private DisplaySetup display;
+	private int highscore;
 	
 	public EnemyLoader(boolean cached, String level, Controller parent
 			, BufferedImage enemy, ControllerTimer ct, DisplaySetup display) {
@@ -62,6 +65,9 @@ public class EnemyLoader extends Thread{
 	}
 	public ArrayList<Troop> getEnemies() {
 		return enemies;
+	}
+	public int getHighScore() {
+		return highscore;
 	}
 	public ArrayList<Building> getBuildings() {
 		return buildings;
@@ -92,7 +98,21 @@ public class EnemyLoader extends Thread{
 			} catch (IOException e1) {
 				System.err.println("err at EnemyLoader");
 			}
-
+			
+			int levelno = Integer.parseInt((String)level.subSequence(5, level.length()));
+			DataHandler dh = new DataHandler();
+			ArrayList<String> scores = dh.read("highscores.txt");
+			highscore = 0;
+			
+			for(int i=0; i<scores.size(); i++) {
+				if(scores.get(i).startsWith(Integer.toString(levelno))) {
+					String[] parts = scores.get(i).split(" ");
+					if(Integer.parseInt(parts[1]) > highscore) {
+						highscore = Integer.parseInt(parts[1]);
+					}
+				}
+			}
+			
 			try {
 				Parser parser = new Parser();
 				blocks = parser.parseLevel(images.getImage("level1.png"), 
