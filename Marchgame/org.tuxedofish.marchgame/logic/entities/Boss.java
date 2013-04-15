@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import javax.sound.sampled.Clip;
+
 import logic.GridParser;
 import object.Sprite;
 
@@ -50,9 +52,12 @@ public class Boss {
 	private ArrayList<Integer> hit = new ArrayList<Integer>();
 	private ArrayList<Integer> threadids = new ArrayList<Integer>();
 	private ArrayList<Integer> shootthreadids = new ArrayList<Integer>();
+	private SoundHandler sounds = new SoundHandler();
+	private Clip explosionsound;
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets) {
+		explosionsound = sounds.loadClip("explosion.wav");
 		this.playerbullets = playerbullets;
 		this.parent = parent;
 		this.pos = new Vector2f(((pos.x/Display.getWidth())*2.0f)-1.0f, 
@@ -191,7 +196,7 @@ public class Boss {
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);
-								SoundHandler.playSound("explosion.wav");
+								SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
 								if(me.size() == 1) {
 									for(int k=0; k<50; k++) {
 										bullets.addExplosion(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
@@ -215,7 +220,7 @@ public class Boss {
 					stopped = true;
 				} else {
 					deathexplosionsleft -= 1;
-					SoundHandler.playSound("explosion.wav");
+					SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
 					for(int k=0; k<50; k++) {
 						bullets.explosions.add(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
 								(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 

@@ -1,23 +1,23 @@
 package sounds;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundHandler {
-	public static synchronized void playSound(final String url) {
-	    new Thread(new Runnable() { // the wrapper thread is unnecessary, unless it blocks on the Clip finishing, see comments
+	public static synchronized void playSound(final Clip clip, final AudioInputStream audio) {
+		new Thread(new Runnable() {
 	      public void run() {
 	        try {
-	          InputStream myStream = new BufferedInputStream(getClass().getResourceAsStream(url)); 
-	          AudioInputStream audio2 = AudioSystem.getAudioInputStream(myStream);
-	          
 	          Clip clip = AudioSystem.getClip();
-	          clip.open(audio2);
+	          clip.open(audio);
 	          FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 	          volume.setValue(-15);
 	          clip.start(); 
@@ -25,6 +25,27 @@ public class SoundHandler {
 	          System.err.println(e.getMessage());
 	        }
 	      }
-	    }).start();
-	  }
+		}).start();
+	}
+	public Clip loadClip(String url) {
+        try {
+	        return AudioSystem.getClip();
+		} catch (LineUnavailableException e) {
+			System.err.println("couldnt load sound");
+			e.printStackTrace();
+			System.exit(1);
+			return null;
+		}
+	}
+	public AudioInputStream getAudioStream(String url) {
+		try {
+			InputStream myStream = new BufferedInputStream(getClass().getResourceAsStream(url)); 
+			return AudioSystem.getAudioInputStream(myStream);
+		} catch (UnsupportedAudioFileException | IOException e) {
+			e.printStackTrace();
+			System.err.println("err loading sound");
+			System.exit(1);
+			return null;
+		}
+	}
 }

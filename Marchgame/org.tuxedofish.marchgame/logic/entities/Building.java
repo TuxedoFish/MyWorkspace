@@ -56,7 +56,7 @@ public class Building extends Sprite{
 					parent.resetThread(threadid);
 					hit = 1;
 					if(health <= 0) {
-						SoundHandler.playSound("explosion.wav");
+						//SoundHandler.playSound("explosion.wav");
 						for(int j=0; j<20; j++) {
 							parent.addScorePellet(new Vector2f((float)(getPos().x + (Math.random()*((float)getWidth()/Display.getWidth()))), 
 									(float)(getPos().y - (Math.random()*((float)getHeight()/Display.getHeight())))), 5);

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import javax.sound.sampled.Clip;
+
 import logic.GridParser;
 
 import org.lwjgl.opengl.Display;
@@ -69,6 +71,9 @@ public class Enemy extends Sprite{
 	private int shootspeed;
 	private int shootthreadindex;
 	
+	private SoundHandler sounds = new SoundHandler();
+	private Clip explosionsound;
+	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
@@ -89,6 +94,7 @@ public class Enemy extends Sprite{
 	public void setup(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
+		explosionsound = sounds.loadClip("explosion.wav");
 		this.width = (float)width/Display.getWidth();
 		this.shootspeed = shootspeed;
 		this.playerbullets = playerbullets;
@@ -295,7 +301,7 @@ public class Enemy extends Sprite{
 					parent.resetThread(threadindex);
 					hit = 1;
 					if(health <= 0 && !stopped) {
-						SoundHandler.playSound("explosion.wav");
+						SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
 						parent.addScorePellet(getPos(), 20);
 						stopped = true;
 					}

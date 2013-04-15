@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+
 import logic.GridParser;
 
 import org.lwjgl.opengl.Display;
@@ -38,6 +41,7 @@ public class Player extends Sprite{
 	private int currenttex = 0;
 	private int movement = 0;
 	private SoundHandler sounds = new SoundHandler();
+	private Clip shootsound;
 	
 	public Player(BufferedImage img, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos, Controller parent) {
@@ -45,7 +49,9 @@ public class Player extends Sprite{
 		
 		this.parent  = parent;
 		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
-
+		
+		shootsound = sounds.loadClip("shoot.wav");
+		
 		try {
 			TextureHolder explosiontex = gp.parseGrid(images.getImage("explosion.png"), 29);
 			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, explosiontex, 
@@ -163,7 +169,7 @@ public class Player extends Sprite{
 		render(sh, util, hit);
 	}
 	public void shoot() {
-		SoundHandler.playSound("shoot.wav");
+		SoundHandler.playSound(shootsound, sounds.getAudioStream("shoot.wav"));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
 			, (float)Math.PI, 40));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
