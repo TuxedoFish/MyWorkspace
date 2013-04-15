@@ -53,8 +53,8 @@ public class Player extends Sprite{
 		shootsound = sounds.loadClip("shoot.wav");
 		
 		try {
-			TextureHolder explosiontex = gp.parseGrid(images.getImage("explosion.png"), 29);
-			this.explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, explosiontex, 
+			TextureHolder explosiontex = gp.parseGrid(images.getImage("SegaExplosions.png"), 100.0f);
+			this.explosion = new Sprite(images.getImage("SegaExplosions.png"), parent, 100, 100, explosiontex, 
 					0, new Vector2f(0.0f, 0.0f));
 			
 			TextureHolder bullettex = gp.parseGrid(images.getImage("bullets.png"), 19);
@@ -161,7 +161,7 @@ public class Player extends Sprite{
 			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
 			explosion.render(sh, util, 0);
-			if(explosions.get(i).getAge()>24) {
+			if(explosions.get(i).getAge()>39) {
 				explosions.remove(i);
 				i-=1;
 			}

@@ -71,8 +71,8 @@ public class Boss {
 		GridParser gp = new GridParser();
 		TextureHolder bullettex, explosiontex;
 		try {
-			explosiontex = gp.parseGrid(images.getImage("explosion.png"), 29);
-			bullettex = gp.parseGrid(images.getImage("bullets2.png"), 19);
+			explosiontex = gp.parseGrid(images.getImage("SegaExplosions.png"), 100.0f);
+			bullettex = gp.parseGrid(images.getImage("bullets2.png"), 19.0f);
 			bullets = new BulletHandler(bullettex, explosiontex, "bullets2", parent, player);
 		} catch (IOException e) {
 			System.err.println("err at enemy");

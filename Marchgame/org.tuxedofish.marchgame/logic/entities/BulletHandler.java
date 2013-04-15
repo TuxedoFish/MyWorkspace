@@ -35,7 +35,7 @@ public class BulletHandler extends ArrayList<Bullet>{
 		this.player = player;
 		try {
 			bullet = new Sprite(images.getImage(bulletname + ".png"), parent, 40, 40, bullettex, 0, new Vector2f(0.0f, 0.0f));
-			explosion = new Sprite(images.getImage("explosion.png"), parent, 70, 70, explosiontex, 0, new Vector2f(0.0f, 0.0f));
+			explosion = new Sprite(images.getImage("SegaExplosions.png"), parent, 100, 100, explosiontex, 0, new Vector2f(0.0f, 0.0f));
 		} catch (IOException e) {
 			System.err.println("err in BulletHandler");
 			e.printStackTrace();
@@ -55,7 +55,7 @@ public class BulletHandler extends ArrayList<Bullet>{
 			explosion.changePos(explosions.get(i).getPos().x-epos.x, explosions.get(i).getPos().y-epos.y);
 			epos = new Vector2f(explosions.get(i).getPos().x, explosions.get(i).getPos().y);
 			explosion.render(sh, util, 0);
-			if(explosions.get(i).getAge()>24) {
+			if(explosions.get(i).getAge()>39) {
 				explosions.remove(i);
 				i-=1;
 			}

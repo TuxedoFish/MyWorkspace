@@ -238,7 +238,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		//gm.makeGrid(51, 10);
+		gm.makeGrid(101, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
