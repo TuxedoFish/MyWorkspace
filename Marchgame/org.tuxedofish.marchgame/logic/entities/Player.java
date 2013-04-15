@@ -163,7 +163,7 @@ public class Player extends Sprite{
 		render(sh, util, hit);
 	}
 	public void shoot() {
-		sounds.playSound("shoot.wav");
+		SoundHandler.playSound("shoot.wav");
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
 			, (float)Math.PI, 40));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)

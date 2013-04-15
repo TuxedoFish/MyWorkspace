@@ -53,6 +53,7 @@ public class GuiBar implements GuiElement{
 	private Rectangle2D bounds;
 	private BufferedImage emptybar;
 	private BufferedImage bar;
+	private int texid;
 	
 	public GuiBar(String barname, Vector2f pos, int percent) {
 		this.pos = pos;
@@ -80,6 +81,9 @@ public class GuiBar implements GuiElement{
 			System.err.println("err finding button @ " + barname);
 			e.printStackTrace();
 		}
+		
+		TextureUtils util = new TextureUtils();
+		texid = util.binddata(img);
 		
 		float[] data = {
 				pos.x, pos.y, 0.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
@@ -121,5 +125,9 @@ public class GuiBar implements GuiElement{
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
+	}
+	@Override
+	public int getTextureId() {
+		return texid;
 	}
 }

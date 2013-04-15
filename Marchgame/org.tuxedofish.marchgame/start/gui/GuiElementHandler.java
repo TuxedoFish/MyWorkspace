@@ -68,19 +68,25 @@ public class GuiElementHandler {
 	private ArrayList<Integer> keys = new ArrayList<Integer>();
 	private ArrayList<GuiElement> elements = new ArrayList<GuiElement>();
 	
+	private ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+	private ArrayList<Rectangle2D> bounds = new ArrayList<Rectangle2D>();
+	private ArrayList<String> content = new ArrayList<String>();
+	
 	public GuiElementHandler() {
 		texid = glGenTextures();
 	}
 	public int newString(String str, Color c, float  width, float height, Vector2f topleft) {
-		elements.add(new GuiString(str, c, new Vector2f(topleft.x, topleft.y), 
+		if(!content.contains(str)) {
+			elements.add(new GuiString(str, c, new Vector2f(topleft.x, topleft.y), 
 				width, height, topleft));
-		
-		Rectangle2D r = elements.get(elements.size()-1).getBounds();
-		nextx += ((float)r.getWidth()/(float)Display.getWidth())*2.0f;
-		
-		if(r.getHeight()/(Display.getHeight()/2.0f) > maxheight) {
-			maxheight = (float)r.getHeight()/(Display.getHeight()/2.0f);
+			content.add(str);
+			images.add(elements.get(elements.size()-1).getImg());
+			bounds.add(elements.get(elements.size()-1).getBounds());
+		} else {
+			elements.add(new GuiString(images.get(content.indexOf(str)), bounds.get(content.indexOf(str)), c, 
+					new Vector2f(topleft.x, topleft.y), width, height, topleft));
 		}
+		
 		
 		currentindex += 1;
 		keys.add(currentindex);
@@ -121,12 +127,9 @@ public class GuiElementHandler {
 	}
 	public void drawElements(ShaderHandler sh) {
 		for(int i=0; i<elements.size();i++) {
-			TextureUtils texutil = new TextureUtils();
-			texutil.binddata(elements.get(i).getImg(), texid);
-			
 			DataUtils datautil = new DataUtils();
 			if(elements.size() > i) {
-				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 1, elements.get(i).getIndices(), null, 0);
+				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 1, elements.get(i).getIndices(), null, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}
 		}

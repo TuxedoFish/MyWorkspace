@@ -51,7 +51,42 @@ public class GuiString implements GuiElement{
 	private IntBuffer indicesfb;
 	private FloatBuffer datafb;
 	private Rectangle2D bounds;
+	private int texid;
 	
+	public GuiString(BufferedImage img, Rectangle2D r, Color c, Vector2f pos, float width, float height, Vector2f topleft) {
+		this.pos = pos;
+		this.img = img;
+		TextureUtils util = new TextureUtils();
+		texid = util.binddata(img);
+		
+		int[] indices = {
+				0, 1, 2,
+				2, 3, 0
+		};
+		indicesfb = BufferUtils.createIntBuffer(indices.length);
+		indicesfb.put(indices);
+		indicesfb.flip();
+		
+		float[] data = {
+				pos.x, pos.y, -1.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
+				
+				pos.x + (float)((r.getWidth()/Display.getWidth())*3), pos.y, -1.0f, 1.0f, 	 1.0f, 0.0f, 
+				0.0f, 0.0f, 0.0f, 1.0f,
+				
+				pos.x + (float)((r.getWidth()/Display.getWidth())*3), pos.y - (float)((r.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 
+				1.0f, 1.0f, 
+				0.0f, 0.0f, 0.0f, 1.0f,
+				
+				pos.x, pos.y - (float)((r.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 	0.0f, 1.0f, 
+				0.0f, 0.0f, 0.0f, 1.0f,
+		};
+		
+		datafb = BufferUtils.createFloatBuffer(data.length);
+		datafb.put(data);
+		datafb.rewind();
+		
+		this.bounds = r;
+	}
 	public GuiString(String str, Color c, Vector2f pos, float width, float height, Vector2f topleft) {
 		this.pos = pos;
 		int[] indices = {
@@ -103,6 +138,9 @@ public class GuiString implements GuiElement{
 		g.setColor(c);
 		g.drawString(str, 0, (int)r.getHeight()/4*3);
 		g.dispose();
+
+		TextureUtils util = new TextureUtils();
+		texid = util.binddata(img);
 		
 		float[] data = {
 				pos.x, pos.y, -1.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
@@ -144,5 +182,9 @@ public class GuiString implements GuiElement{
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
+	}
+	@Override
+	public int getTextureId() {
+		return texid;
 	}
 }

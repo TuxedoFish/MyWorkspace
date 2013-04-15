@@ -54,6 +54,7 @@ public class GuiButton implements GuiElement{
 	private int current = 0;
 	private Controller parent;
 	private String message;
+	private int[] texids;
 	
 	public GuiButton(String buttonname, Vector2f pos, float width, float height, Controller parent, 
 			String eventmessage) {
@@ -75,6 +76,12 @@ public class GuiButton implements GuiElement{
 					images.getImage("gui/" + buttonname+".png"), 
 					images.getImage("gui/" + buttonname+"hover.png"), 
 					images.getImage("gui/" + buttonname+"pressed.png"), 
+			};
+			TextureUtils util = new TextureUtils();
+			texids = new int[] {
+					util.binddata(imgs[0]),
+					util.binddata(imgs[1]),
+					util.binddata(imgs[2])
 			};
 		} catch (IOException e) {
 			System.err.println("err finding button @ " + buttonname);
@@ -127,5 +134,9 @@ public class GuiButton implements GuiElement{
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
+	}
+	@Override
+	public int getTextureId() {
+		return texids[current];
 	}
 }

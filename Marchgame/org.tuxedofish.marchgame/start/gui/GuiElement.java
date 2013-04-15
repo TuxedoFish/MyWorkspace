@@ -14,6 +14,7 @@ public interface GuiElement {
 	public FloatBuffer getData();
 	public IntBuffer getIndices();
 	public Rectangle2D getBounds();
+	public int getTextureId();
 	
 	public void setImg(BufferedImage img);
 	public void setPos(Vector2f pos);
