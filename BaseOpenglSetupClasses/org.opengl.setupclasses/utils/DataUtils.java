@@ -21,25 +21,26 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import object.VertexHandler;
 import shader.ShaderHandler;
 
 public class DataUtils {
 	public void setup(FloatBuffer data, VertexHandler vh, ShaderHandler sh, int textureID, int type, 
-			ByteBuffer indicesBuffer) {
-		
+			IntBuffer indicesBuffer) {
 		setup(data, vh.getVboId(), vh.getVao(), sh, textureID, type, indicesBuffer);
 	}
 	public void setup(FloatBuffer data, int vboID, int vaoID, ShaderHandler sh, int textureID, int type, 
-			ByteBuffer indicesBuffer) {
+			IntBuffer indicesBuffer) {
 		glBindVertexArray(vaoID);
 		//Bind data
 		glBindBuffer(GL_ARRAY_BUFFER, vboID);
 		glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW);
+		//Bind indices
 		if(type == 2) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glGenBuffers());
-		    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 		}
 		//Bind arrays
 		glEnableVertexAttribArray(0);

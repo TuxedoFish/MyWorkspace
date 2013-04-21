@@ -1,16 +1,14 @@
 #version 400
  
 layout(location = 0) in vec4 VertexPosition;
-layout(location = 1) in vec2 VertexTextureCoordinate;
 layout(location = 2) in vec4 VertexNormal;
+layout(location = 1) in vec2 VertexTextureCoordinate;
 
 out vec2 pass_TextureCoord;
 out vec4 position;
 out vec3 varyingNormalDirection;
 out mat4 v_inv;
-out vec4 color;
 
-uniform sampler2D image; 
 uniform mat4 PerspectiveMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
@@ -41,7 +39,7 @@ struct material
   vec4 specular;
   float shininess;
 };
-vec4 texCol = texture2D(image, pass_TextureCoord);
+vec4 texCol = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 material mymaterial = material(
   texCol,
   texCol,
@@ -51,6 +49,7 @@ material mymaterial = material(
  
 void main(void)
 {
+  pass_TextureCoord = VertexTextureCoordinate;
   if(type == 1) {
   mat4 mvp = PerspectiveMatrix*ViewMatrix*ModelMatrix;
   vec3 normalDirection = normalize(vec3(VertexNormal));
@@ -103,10 +102,8 @@ void main(void)
         * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)),
               mymaterial.shininess);
     }
-  		color = vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
   		gl_Position = mvp * VertexPosition;
     } else {
-    	color = texture2D(image, pass_TextureCoord);
   		gl_Position = VertexPosition;
     }
 }

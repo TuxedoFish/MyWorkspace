@@ -89,7 +89,7 @@ public class GuiElementHandler {
 		maxheight = 0.0f;
 		elements.clear();
 	}
-	public void drawElements(String str, Vector2f pos, ShaderHandler sh) {
+	public void drawElements(ShaderHandler sh) {
 		for(int i=0; i<elements.size();i++) {
 			TextureUtils texutil = new TextureUtils();
 			texutil.binddata(elements.get(i).getImg(), texid);
@@ -97,7 +97,7 @@ public class GuiElementHandler {
 			DataUtils datautil = new DataUtils();
 			datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, texid, 2, elements.get(i).getIndices());
 	
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 	}
 }

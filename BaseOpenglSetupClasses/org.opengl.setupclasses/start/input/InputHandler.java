@@ -99,10 +99,6 @@ public class InputHandler {
 				
 				lblastx = Mouse.getX();
 				lblasty = Mouse.getY();
-				
-				if(!parent.getGui().istouching(Mouse.getX(), Mouse.getY())) {
-					parent.mouseUpdate(Mouse.getX(), Mouse.getY());
-				}
 			}
 			
 			mousedown = false;

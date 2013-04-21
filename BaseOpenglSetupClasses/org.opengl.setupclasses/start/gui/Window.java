@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -44,7 +45,7 @@ public class Window {
 	private FloatBuffer windowdata;
 	private ShaderHandler sh;
 	private int vboID = glGenBuffers(), vaoID = glGenVertexArrays();
-	private byte[] indices = {};
+	private int[] indices = {};
 	private Rectangle leftbox, rightbox, topbox, bottombox, movebox, wholebox;
 	private Boolean left, right, top, bottom, move;
 	private boolean resizable = true;
@@ -85,15 +86,15 @@ public class Window {
 		
 		wholebox = new Rectangle((int)p1.x, (int)p3.y, (int)Math.abs(p4.x - p3.x), (int)(Math.abs(p2.y - p3.y)));
 	}
-	private byte[] getIndices() {
-		byte[] indices = {
+	private int[] getIndices() {
+		int[] indices = {
 				0, 1, 2,
 				2, 3, 0,
 		};
 		
 		return indices;
 	}
-	private float[] makeWindow(int textureID, Vector4f topleft, float width, float height, byte[] indices) {
+	private float[] makeWindow(int textureID, Vector4f topleft, float width, float height, int[] indices) {
 		float[] rectdata = {
 				//MAIN
 				topleft.x, topleft.y, topleft.z, topleft.w, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,	
@@ -125,17 +126,17 @@ public class Window {
 	public void draw() {
 		//Bind to a Vertex Array Object
 		int indicesCount = indices.length;
-		ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(indicesCount);
+		IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indicesCount);
 		indicesBuffer.put(indices);
 		indicesBuffer.flip();
-				
+		
 		DataUtils util = new DataUtils();
 		
         util.setup(windowdata, vboID, vaoID, sh, texID, 2, indicesBuffer);
         
-		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_BYTE, 0);
+		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
 		
-		gui.drawElements("je ne sais pas le francais", new Vector2f(0.5f, 0.5f), sh);
+		gui.drawElements(sh);
 	}
 	public void mouseTests(int x, int y, float chgx, float chgy) {
 		right = rightbox.contains(new Point(x, y));

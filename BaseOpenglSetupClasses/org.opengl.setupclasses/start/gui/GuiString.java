@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.text.AttributedString;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -43,17 +44,17 @@ import utils.TextureUtils;
 public class GuiString implements GuiElement{
 	private BufferedImage img;
 	private Vector2f pos;
-	private ByteBuffer indicesfb;
+	private IntBuffer indicesfb;
 	private FloatBuffer datafb;
 	private Rectangle2D bounds;
 	
 	public GuiString(String str, Color c, Vector2f pos, float width, float height, Vector2f topleft) {
 		this.pos = pos;
-		byte[] indices = {
+		int[] indices = {
 				0, 1, 2,
 				2, 3, 0
 		};
-		indicesfb = BufferUtils.createByteBuffer(indices.length);
+		indicesfb = BufferUtils.createIntBuffer(indices.length);
 		indicesfb.put(indices);
 		indicesfb.flip();
 		
@@ -112,7 +113,7 @@ public class GuiString implements GuiElement{
 	public FloatBuffer getData() {
 		return datafb;
 	}
-	public ByteBuffer getIndices() {
+	public IntBuffer getIndices() {
 		return indicesfb;
 	}
 	public BufferedImage getImg() {

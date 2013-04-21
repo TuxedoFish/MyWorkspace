@@ -37,7 +37,6 @@ public class LowLevelObject {
 					vh.newvertex(points[1], texcoords[1], norms[1]),
 					vh.newvertex(points[2], texcoords[2], norms[2]));
 		}
-		
 		if(!tc) th.getTextureAtlas().updatetexcoods(th.getShape());
 	}
 }

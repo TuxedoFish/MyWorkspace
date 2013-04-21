@@ -79,11 +79,6 @@ public class Controller {
 			this.changez = changez;
 		}
 	}
-	public void mouseUpdate(int xpos, int ypos) {
-		for(int i = 0; i < shapes.size(); i++) {
-			shapes.get(i).mouseUpdate(xpos, ypos, display);
-		}
-	}
 	public void addColor(Color c) {
 		this.coltexids.add(ch.newCol(c, colors));
 	}
@@ -121,7 +116,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		ShaderHandler shaderhandler = new ShaderHandler();
-		Shape triangle = new Shape();
+		Shape triangle = new Shape("");
 		InputHandler ih = new InputHandler(this);
 		
 		ColorHandler ch = new ColorHandler();
@@ -132,7 +127,7 @@ public class Controller {
 
 		shapes.add(triangle);
 		try {
-			shapes.add(ol.loadModel("bunny.obj").createUsable());
+			shapes.add(ol.loadModel("church.obj").createUsable());
 		} catch (IOException e) {
 			System.err.println("ERROROROROOR : " + e.getLocalizedMessage());
 			System.exit(1);

@@ -1,9 +1,11 @@
 #version 400
 
-in vec4 color;
+uniform sampler2D image; 
+
+in vec2 pass_TextureCoord;
 
 out vec4 FragColor;
 
 void main() {
-  	FragColor = color;
+  	FragColor = texture2D(image, pass_TextureCoord);
 }

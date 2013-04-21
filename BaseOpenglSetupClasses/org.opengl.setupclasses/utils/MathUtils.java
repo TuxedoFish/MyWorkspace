@@ -4,15 +4,41 @@ import java.util.ArrayList;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 public class MathUtils {
-	public Vector4f scaleVector(Vector4f vector, int scalar) {
+	public Vector4f scaleVector(Vector4f vector, float scalar) {
 		return new Vector4f(vector.x * scalar,
 		vector.y * scalar,
 		vector.z * scalar, 1.0f);
 	}
-
+	public Vector3f scaleVector(Vector3f vector, float scalar) {
+		return new Vector3f(vector.x * scalar,
+		vector.y * scalar,
+		vector.z * scalar);
+	}
+	public Vector3f addVectors(Vector3f[] vs) {
+		Vector3f dest = new Vector3f(vs[0].x, vs[0].y, vs[0].z);
+		for(int i=1; i<vs.length;i++) {
+			dest = new Vector3f(dest.x + vs[i].x, dest.y + vs[i].y, dest.y + vs[i].y);
+		}
+		return dest;
+	}
+	public Vector3f negateVectors(Vector3f[] vs) {
+		Vector3f dest = new Vector3f(vs[0].x, vs[0].y, vs[0].z);
+		for(int i=1; i<vs.length;i++) {
+			dest = new Vector3f(dest.x - vs[i].x, dest.y - vs[i].y, dest.y - vs[i].y);
+		}
+		return dest;
+	}
+	public Vector4f negateVectors(Vector4f[] vs) {
+		Vector4f dest = new Vector4f(vs[0].x, vs[0].y, vs[0].z, 1.0f);
+		for(int i=1; i<vs.length;i++) {
+			dest = new Vector4f(dest.x - vs[i].x, dest.y - vs[i].y, dest.z - vs[i].z, 1.0f);
+		}
+		return dest;
+	}
 	public Vector4f floatToInt(Vector4f pos) {
 		pos.x = (int)((pos.x + 1.0) * (Display.getWidth()/2));
 		pos.y = (int)((pos.y + 1.0) * (Display.getHeight()/2));
@@ -87,5 +113,24 @@ public class MathUtils {
 	public float distancebetween(Vector4f pointa, Vector4f pointb) {
 		float distance = (float) Math.sqrt(Math.pow(Math.abs(pointa.x - pointb.x), 2) + Math.pow(Math.abs(pointa.y - pointb.y), 2) + Math.pow(Math.abs(pointa.z - pointb.z), 2)); 
 		return distance;
+	}
+	public Vector3f multiplyVector(Vector3f a, Vector3f b) {
+		return new Vector3f(a.x*b.x, a.y*b.y, a.z*b.z);
+	}
+	public boolean isBigger(Vector3f a, Vector3f b) {
+		double alength = Math.cbrt(Math.pow(a.x, 2) + Math.pow(a.y, 2) + Math.pow(a.z, 2));
+		double blength = Math.cbrt(Math.pow(b.x, 2) + Math.pow(b.y, 2) + Math.pow(b.z, 2));
+		if(alength>blength) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public Vector4f addVectors(Vector4f[] vs) {
+		Vector4f dest = new Vector4f(vs[0].x, vs[0].y, vs[0].z, 1.0f);
+		for(int i=1; i<vs.length;i++) {
+			dest = new Vector4f(dest.x + vs[i].x, dest.y + vs[i].y, dest.y + vs[i].y, 1.0f);
+		}
+		return dest;
 	}
 }
