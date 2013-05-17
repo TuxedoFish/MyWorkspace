@@ -90,7 +90,7 @@ public class ObjectLoader {
 			if(line.startsWith("map_d ")) map_d = line.split(" ")[1];
 			if(line.startsWith("map_Ka ")) map_ka = line.split(" ")[1];
 			if(line.startsWith("map_Ks ")) map_ks = line.split(" ")[1];
-			if(line.startsWith("map_Kd ")) texture =  ImageIO.read(getClass().getResourceAsStream(line.split(" ")[1]));
+			if(line.startsWith("map_Kd ")) texture = ImageIO.read(getClass().getResourceAsStream(line.split(" ")[1]));
 			if(line.startsWith("Ka ")) ka = new Vector3f(Float.parseFloat(line.split(" ")[1]), Float.parseFloat(line.split(" ")[2]),
 					Float.parseFloat(line.split(" ")[3]));
 			if(line.startsWith("Ks ")) ks = new Vector3f(Float.parseFloat(line.split(" ")[1]), Float.parseFloat(line.split(" ")[2]),

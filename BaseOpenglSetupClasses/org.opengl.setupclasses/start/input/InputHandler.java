@@ -15,6 +15,7 @@ public class InputHandler {
 	private float xhome, yhome;
 	private boolean move;
 	private Controller parent;
+	private boolean down, up;
 	
 	public InputHandler(Controller parent) {
 		this.parent = parent;
@@ -52,6 +53,7 @@ public class InputHandler {
 				    	if (Keyboard.getEventKey() == Keyboard.KEY_S)  forwarddown = true;
 				    	if (Keyboard.getEventKey() == Keyboard.KEY_W)  backdown = true;
 						if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = true;
+						if (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT)  up = true;
 						
 				    	} else {
 				    		if (Keyboard.getEventKey() == Keyboard.KEY_A)  leftdown = false;
@@ -60,6 +62,7 @@ public class InputHandler {
 				    		if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = false;
 				    		if (Keyboard.getEventKey() == Keyboard.KEY_Q)  rotleftdown = false;
 				    		if (Keyboard.getEventKey() == Keyboard.KEY_E)  rotrightdown = false;
+				    		if (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT)  up = false;
 				      }	
 				}
 			}
@@ -122,6 +125,9 @@ public class InputHandler {
 			    	if (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT)	parent.mouseChangeUpdate(-1, -1, 0);
 			    	if (Keyboard.getEventKey() == Keyboard.KEY_TAB)	parent.mouseChangeUpdate(-1, -1, 0);
 		      }	
+		}
+		if(up) {
+			 d.changepos(0.0f, -0.01f, 0.0f);
 		}
 		if(leftdown) {
 			float rot = d.getxrot() - 90;

@@ -85,6 +85,9 @@ public class EnemyLoader extends Thread{
 	public void run() {
 		ArrayList<Troop> allenemies = new ArrayList<Troop>();
 		if(cached) {
+			ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+			ArrayList<Constructor<?>> constructors = new ArrayList<Constructor<?>>();
+			ArrayList<String> loadedclasses = new ArrayList<String>();
 			ArrayList<String> keys = new ArrayList<String>();
 			ArrayList<TextureHolder[]> textures = new ArrayList<TextureHolder[]>();
 			
@@ -178,21 +181,35 @@ public class EnemyLoader extends Thread{
 					int shootspeed = Integer.valueOf(reader.readLine());
 					
 					try {
-						Class<?> enemy = Class.forName("logic.entities.troops." + texloc.substring(0, texloc.length()-4));
+						Class<?> enemy = null;
+						if(!loadedclasses.contains(texloc.substring(0, texloc.length()-4))) {
+							enemy = Class.forName("logic.entities.troops." + texloc.substring(0, texloc.length()-4));
+						} else {
+							enemy = classes.get(loadedclasses.indexOf(texloc.substring(0, texloc.length()-4)));
+						}
 						if(!keys.contains(parts[0])) {
-							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
-									Player.class, ArrayList.class , String.class,
-									int.class, int.class, int.class, int.class,
-									int.class, int.class, ImageReturn.class);
+							Constructor<?> con = null;
+							con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
+								Player.class, ArrayList.class , String.class,
+								int.class, int.class, int.class, int.class,
+								int.class, int.class, ImageReturn.class);
 							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
 									player.getBullets(), texloc, lti, hti, width, pattern, health, shootspeed, images));
 							keys.add(parts[0]);
 							textures.add(allenemies.get(allenemies.size()-1).getEnemy().getTextures());
 						} else {
-							Constructor<?> con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
+							Constructor<?> con = null;
+							if(!loadedclasses.contains(texloc.substring(0, texloc.length()-4))) {
+								con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 									Player.class, ArrayList.class , String.class,
 									int.class, int.class, int.class, int.class,
 									TextureHolder[].class, int.class, int.class, ImageReturn.class);
+								loadedclasses.add(texloc.substring(0, texloc.length()-4));
+								classes.add(enemy);
+								constructors.add(con);
+							} else {
+								con = constructors.get(loadedclasses.indexOf(texloc.substring(0, texloc.length()-4)));
+							}
 							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
 									player.getBullets(), texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
 									health, shootspeed, images));

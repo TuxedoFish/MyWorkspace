@@ -54,7 +54,8 @@ public class Object {
 				
 				s.newTriangle(v, n, tc, 0, Color.RED, false);
 			} else {
-				s.newTriangle(v, n, s.getTexCoords(), 0, Color.RED, true);
+				s.newTriangle(v, n, s.getTexCoords(), 0, Color.RED, false);
+				s.setoc(true);
 			}
 		}
 		if(mtl != null) {

@@ -13,19 +13,19 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundHandler {
 	public static synchronized void playSound(final Clip clip, final AudioInputStream audio) {
-		new Thread(new Runnable() {
-	      public void run() {
-	        try {
-	          Clip clip = AudioSystem.getClip();
-	          clip.open(audio);
-	          FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-	          volume.setValue(-15);
-	          clip.start(); 
-	        } catch (Exception e) {
-	          System.err.println(e.getMessage());
-	        }
-	      }
-		}).start();
+//		new Thread(new Runnable() {
+//	      public void run() {
+//	        try {
+//	          Clip clip = AudioSystem.getClip();
+//	          clip.open(audio);
+//	          FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+//	          volume.setValue(-15);
+//	          clip.start(); 
+//	        } catch (Exception e) {
+//	          System.err.println(e.getMessage());
+//	        }
+//	      }
+//		}).start();
 	}
 	public Clip loadClip(String url) {
         try {

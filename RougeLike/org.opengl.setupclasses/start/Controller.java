@@ -193,7 +193,7 @@ public class Controller {
 		
 		try {
 			dc = new DungeonCreator();
-			blocks = dc.getBlocks();
+			//blocks = dc.getBlocks();
 			GridParser gp = new GridParser();
 			
 			TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 30.0f);
@@ -424,7 +424,7 @@ public class Controller {
 		player.render(sh);
 		
 		int tempsize = blocks.size();
-		dc.update(display);
+		//dc.update(display);
 		if(blocks.size() != tempsize) {
 			blockdata = lr.getLevelData(blocks, blocktex);
 			lr.update(blocks, display);
