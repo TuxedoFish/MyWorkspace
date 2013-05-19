@@ -33,6 +33,7 @@ public class InputHandler {
 	private Cursor pointing;
 	private Cursor pulling;
 	private Vector2f lastpos = new Vector2f(-1.0f, -1.0f);
+	private boolean levelmap = false;
 	
 	public InputHandler(Controller parent) {
 		this.parent = parent;
@@ -43,6 +44,9 @@ public class InputHandler {
 	public void addMarker(GuiMarker m, int index) {
 		markers.add(m);
 		indexsmarker.add(index);
+	}
+	public void atLevelMap(boolean b) {
+		levelmap = b;
 	}
 	public Cursor newCursor(String cursor) {
 		ImageReturn images = new ImageReturn();
@@ -56,10 +60,10 @@ public class InputHandler {
 			}
 			ib.flip();
 			
-			return new Cursor(16, 16, 0, 0, 1, ib, null);
+			return new Cursor(16, 16, 15, 1, 1, ib, null);
 		} catch (LWJGLException | IOException e) {
 			e.printStackTrace();
-			return null;
+			return null; 
 		}
 	}
 	public float neg(float f) {
@@ -126,10 +130,10 @@ public class InputHandler {
 				if(Mouse.isButtonDown(0) && !mousedown) {
 					markers.get(i).pressed();
 				} else {
-					markers.get(i).mouseupdate(true);
+					markers.get(i).mouseupdate(true, d);
 				}
 			} else {
-				markers.get(i).mouseupdate(false);
+				markers.get(i).mouseupdate(false, d);
 			}
 		}
 		if(Mouse.isButtonDown(0)) {
@@ -139,27 +143,29 @@ public class InputHandler {
 					parent.resetThread(parent.getPlayerShootThreadId());
 					shootduration = 0;
 				}
-//				try {
-//					//Mouse.setNativeCursor(pulling);
-//				} catch (LWJGLException e) {
-//					e.printStackTrace();
-//				}
+				try {
+					Mouse.setNativeCursor(pulling);
+				} catch (LWJGLException e) {
+					e.printStackTrace();
+				}
 				mousedown = true;
 			}
 			if((lastpos.x < 0.0f)) {
 				lastpos = new Vector2f(Mouse.getX(), Mouse.getY());
 			} else {
-				d.changepos(((float)Mouse.getX()-(float)lastpos.x)/(float)Display.getWidth(), 
+				if(levelmap) {
+					d.changepos(((float)Mouse.getX()-(float)lastpos.x)/(float)Display.getWidth(), 
 						((float)Mouse.getY()-(float)lastpos.y)/(float)Display.getHeight(), 0.0f);
+				}
 				lastpos.x = Mouse.getX();
 				lastpos.y = Mouse.getY();
 			}
 		} else {
-//			try {
-//				//Mouse.setNativeCursor(pointing);
-//			} catch (LWJGLException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				Mouse.setNativeCursor(pointing);
+			} catch (LWJGLException e) {
+				e.printStackTrace();
+			}
 			lastpos = new Vector2f(-1.0f, -1.0f);
 			mousedown = false;
 		}

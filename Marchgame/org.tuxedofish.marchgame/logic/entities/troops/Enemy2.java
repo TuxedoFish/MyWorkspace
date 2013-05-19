@@ -3,6 +3,7 @@ package logic.entities.troops;
 import images.ImageReturn;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import object.Sprite;
@@ -27,9 +28,9 @@ public class Enemy2 extends Enemy implements Troop{
 	public Enemy2(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets, String texloc,
 			int lowesttexid, int highesttexid, int width, int pattern,
-			TextureHolder[] ts, int health, int shootspeed, ImageReturn images) throws IOException {
+			TextureHolder[] ts, int health, int shootspeed, ImageReturn images, String name, ByteBuffer imgdata) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
-				highesttexid, width, pattern, ts, health, shootspeed);
+				highesttexid, width, pattern, ts, health, shootspeed, name, imgdata);
 		GridParser gp = new GridParser();
 		TextureHolder guntex = gp.parseGrid(images.getImage("gun1.png"), 20.0f);
 		addGun(new Gun(images.getImage("gun1.png"), parent, 50, 50, guntex, 0, new Vector2f(0.0f, 0.0f), 
@@ -38,9 +39,9 @@ public class Enemy2 extends Enemy implements Troop{
 	public Enemy2(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets, String texloc,
 			int lowesttexid, int highesttexid, int width, int pattern, int health, 
-			int shootspeed, ImageReturn images) throws IOException {
+			int shootspeed, ImageReturn images, String name) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
-				highesttexid, width, pattern, new GridParser(), health, shootspeed);
+				highesttexid, width, pattern, new GridParser(), health, shootspeed, name);
 		GridParser gp = new GridParser();
 		TextureHolder guntex = gp.parseGrid(images.getImage("gun1.png"), 20.0f);
 		addGun(new Gun(images.getImage("gun1.png"), parent, 50, 50, guntex, 0, new Vector2f(0.0f, 0.0f), 

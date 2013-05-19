@@ -109,6 +109,8 @@ public class Controller {
 	private int highscore;
 	private int highscoreid;
 	
+	private boolean elements = false;
+	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
 	private ArrayList<Block> blocks = new ArrayList<Block>();
@@ -163,22 +165,37 @@ public class Controller {
 		ct.resetTimeStep(index);
 	}
 	public void startup() {
+		display.changepos(-display.getPos().x, -display.getPos().y, 0.0f);
 		levelmap = false;
+		elements = false;
 		gui.clearElements();
 		ih.clearElements();
 		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 		el = new EnemyLoader(true, "level1", this, null, ct, display);
 	}
 	public void startupfinish() throws IOException {
+		ArrayList<Integer> texids = new ArrayList<Integer>();
+		ArrayList<String> names = new ArrayList<String>();
+		
 		enemies = el.getEnemies();
 		for(int i=0; i<enemies.size(); i++) {
 			IntBuffer vboids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenVertexArrays(vaoids);
-			enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
-					ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())});
+			if(names.contains(enemies.get(i).getEnemy().getName())) {
+				enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
+						ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())}, 
+						texids.get(names.indexOf(enemies.get(i).getEnemy().getName())));
+			} else {
+				texids.add(enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
+					ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())}, null));
+				names.add(enemies.get(i).getEnemy().getName());
+			}
 		}
+		texids.clear();
+		names.clear();
+		
 		blocks = el.getBlocks();
 		
 		playershootthreadid = ct.addTimeStep(200);
@@ -214,11 +231,13 @@ public class Controller {
 		
 		prevhealth = player.getHealth();
 		prevscore = score;
+		elements = false;
 		gui.clearElements();
 		ih.clearElements();
 		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 		healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
 		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
+		elements = true;
 		highscore = el.getHighScore();
 		
 		started = true;
@@ -260,9 +279,11 @@ public class Controller {
 		texids.add(ch.newCol(Color.BLUE, colors));
 		TextureUtils util = new TextureUtils();
 		int titlescreen = 0;
+		int loadscreen = 0;
 		
 		try {
 			titlescreen = util.binddata(images.getImage("title.png"));
+			loadscreen = util.binddata(images.getImage("loadscreen.png"));
 		} catch (IOException e) {
 			System.err.println("err finding title screen img"); e.printStackTrace();
 		}
@@ -277,6 +298,7 @@ public class Controller {
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
+		elements = true;
 		
 		Sprite map = null;
 		
@@ -305,6 +327,7 @@ public class Controller {
 				}
 				if(el != null && prevpercent != loadpercent) {
 					prevpercent = loadpercent;
+					elements = false;
 					gui.clearElements();
 					ih.clearElements();
 					gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
@@ -315,7 +338,11 @@ public class Controller {
 				
 				utils.begin(shaderhandler, display);
 				if(!levelmap) {
-					utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
+					if(el!=null) {
+						utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
+					} else {
+						utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
+					}
 					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 				} else {
 					map.render(shaderhandler, dutils, 0);
@@ -328,20 +355,31 @@ public class Controller {
 		}
 		ct.interrupt();
 	}
+	public boolean isLevelMap() {
+		return levelmap;
+	}
 	public void action(String message) {
 		if(message.equals("start")) {
 			levelmap = true;
+			ih.atLevelMap(true);
 			this.levelselectscreen();
 		}
 		if(message.equals("levelselected")) {
+			levelmap = false;
+			ih.atLevelMap(false);
 			level=1;
 			this.startup();
+			for(int i=0; i<markers.size(); i++) {
+				markers.get(i).finish();
+			}
 		}
 	}
 	public void levelselectscreen() {
+		elements = false;
 		gui.clearElements();
 		ih.clearElements();
 		markers.add(gui.newMarker("marker", new Vector2f(0.0f, 0.0f), 20, 20, ih, this, "levelselected", ct.addTimeStep(100), 4));
+		elements = true;
 	}
 	public void update(int update, int index) {
 		if(update == 200) {
@@ -419,9 +457,11 @@ public class Controller {
 		started = false;
 		el = null;
 		prevpercent = 0; loadpercent = 0;
+		elements = false;
 		gui = new GuiElementHandler();
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
+		elements = true;
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
 		player.reset();
 		dh.update("highscores.txt", new String[] {Integer.toString(level)+" "+score});
@@ -482,6 +522,9 @@ public class Controller {
 	public ShaderHandler getSh() {
 		return shaderhandler;
 	}
+	public boolean isElements() {
+		return elements;
+	}
 	public void score(int score) {
 		this.score += score;
 
@@ -502,6 +545,12 @@ public class Controller {
 			e.printStackTrace();
 		}
 		 s.finishprogram(testprogram);
+	}
+	public int addString(String str, Vector2f pos) {
+		return gui.newStringAtPos(str, Color.RED, pos);
+	}
+	public void removeElement(Integer index) {
+		gui.removeElement(index);
 	}
 	public void removeThread(Integer index) {
 		ct.removeTimeStep(index);

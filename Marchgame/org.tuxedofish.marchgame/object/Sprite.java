@@ -94,11 +94,40 @@ public class Sprite{
 		datafb = getData(this.pos, width, height, currenttexid);
 		indices = getIndices(0);
 	}
-	public void finish(int vboid, int vaoid) {
+	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int currenttexid, 
+			Vector2f pos, ByteBuffer imgdata) {
+		this.imgdata = imgdata;
+		
+		parent = c;
+		any = true;
+		this.th = th;
+		texture = img;
+		
+		modelmatrix.translate(pos);
+		this.currenttexid = currenttexid;
+		
+		this.width = width;
+		this.height = height;
+		this.pos = pos;
+		datafb = getData(this.pos, width, height, currenttexid);
+		indices = getIndices(0);
+	}
+	public int finish(int vboid, int vaoid) {
 		this.vboID = vboid;
 		this.vaoID = vaoid;
 		TextureUtils util = new TextureUtils();
-		this.textureid = util.binddata(texture, imgdata);
+		return this.textureid = util.binddata(texture, imgdata);
+	}
+	public BufferedImage getImage() {
+		return texture;
+	}
+	public ByteBuffer getImageData() {
+		return imgdata;
+	}
+	public void finish(int vboid, int vaoid, int textureid) {
+		this.vboID = vboid;
+		this.vaoID = vaoid;
+		this.textureid = textureid;
 	}
 	public int getWidth() {
 		return width;

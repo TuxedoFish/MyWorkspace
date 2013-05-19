@@ -46,6 +46,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 
 import start.Controller;
+import start.DisplaySetup;
 import texture.TextureHolder;
 import utils.TextureUtils;
 
@@ -66,6 +67,8 @@ public class GuiMarker implements GuiElement{
 	private int currenttexid = 0;
 	private FloatBuffer matrixfb;
 	private Matrix4f matrix;
+	private int stringindex;
+	private boolean finished = false;
 	
 	public GuiMarker(String markername, Vector2f pos, float width, float height, Controller parent, 
 			String eventmessage, int animationid, int textures) {
@@ -163,8 +166,21 @@ public class GuiMarker implements GuiElement{
 	public BufferedImage getImg() {
 		return img;
 	}
-	public void mouseupdate(boolean mouseover) {
-		animation = mouseover;
+	public void mouseupdate(boolean mouseover, DisplaySetup d) {
+		if(parent.isLevelMap() && !finished) {
+			if(mouseover && !animation) {
+				stringindex = parent.addString("level1", new Vector2f(pos.x+0.06f+d.getPos().x, pos.y+d.getPos().y));
+			}
+			if(animation && !mouseover) {
+				if(parent.isElements()) {
+					parent.removeElement(stringindex);
+				}
+			}
+			animation = mouseover;
+		}
+	}
+	public void finish() {
+		finished = true;
 	}
 	public void setImg(BufferedImage img) {
 		this.img = img;

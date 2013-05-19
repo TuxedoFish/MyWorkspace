@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -87,6 +88,7 @@ public class EnemyLoader extends Thread{
 		if(cached) {
 			ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 			ArrayList<Constructor<?>> constructors = new ArrayList<Constructor<?>>();
+			ArrayList<ByteBuffer> imgdatas = new ArrayList<ByteBuffer>();
 			ArrayList<String> loadedclasses = new ArrayList<String>();
 			ArrayList<String> keys = new ArrayList<String>();
 			ArrayList<TextureHolder[]> textures = new ArrayList<TextureHolder[]>();
@@ -192,18 +194,19 @@ public class EnemyLoader extends Thread{
 							con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 								Player.class, ArrayList.class , String.class,
 								int.class, int.class, int.class, int.class,
-								int.class, int.class, ImageReturn.class);
+								int.class, int.class, ImageReturn.class, String.class);
 							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-									player.getBullets(), texloc, lti, hti, width, pattern, health, shootspeed, images));
+									player.getBullets(), texloc, lti, hti, width, pattern, health, shootspeed, images, texloc.substring(0, texloc.length()-4)));
 							keys.add(parts[0]);
 							textures.add(allenemies.get(allenemies.size()-1).getEnemy().getTextures());
+							imgdatas.add(allenemies.get(allenemies.size()-1).getEnemy().getImageData());
 						} else {
 							Constructor<?> con = null;
 							if(!loadedclasses.contains(texloc.substring(0, texloc.length()-4))) {
 								con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 									Player.class, ArrayList.class , String.class,
 									int.class, int.class, int.class, int.class,
-									TextureHolder[].class, int.class, int.class, ImageReturn.class);
+									TextureHolder[].class, int.class, int.class, ImageReturn.class, String.class, ByteBuffer.class);
 								loadedclasses.add(texloc.substring(0, texloc.length()-4));
 								classes.add(enemy);
 								constructors.add(con);
@@ -212,7 +215,8 @@ public class EnemyLoader extends Thread{
 							}
 							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
 									player.getBullets(), texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
-									health, shootspeed, images));
+									health, shootspeed, images, texloc.substring(0, texloc.length()-4), 
+									imgdatas.get(loadedclasses.indexOf(texloc.substring(0, texloc.length()-4)))));
 						}
 					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | 
 							InstantiationException | IllegalAccessException | IllegalArgumentException | 

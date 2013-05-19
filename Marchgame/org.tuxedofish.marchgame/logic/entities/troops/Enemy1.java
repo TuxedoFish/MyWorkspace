@@ -3,6 +3,7 @@ package logic.entities.troops;
 import images.ImageReturn;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import object.Sprite;
@@ -24,16 +25,16 @@ public class Enemy1 extends Enemy implements Troop{
 	public Enemy1(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets, String texloc,
 			int lowesttexid, int highesttexid, int width, int pattern,
-			TextureHolder[] ts, int health, int shootspeed, ImageReturn images) throws IOException {
+			TextureHolder[] ts, int health, int shootspeed, ImageReturn images, String name, ByteBuffer imgdata) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
-				highesttexid, width, pattern, ts, health, shootspeed);
+				highesttexid, width, pattern, ts, health, shootspeed, name, imgdata);
 	}
 	public Enemy1(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets, String texloc,
 			int lowesttexid, int highesttexid, int width, int pattern, int health, 
-			int shootspeed, ImageReturn images) throws IOException {
+			int shootspeed, ImageReturn images, String name) throws IOException {
 		super(pos, texid, parent, ep, player, playerbullets, images.getImage(texloc), lowesttexid,
-				highesttexid, width, pattern, new GridParser(), health, shootspeed);
+				highesttexid, width, pattern, new GridParser(), health, shootspeed, name);
 	}
 	@Override
 	public Enemy getEnemy() {

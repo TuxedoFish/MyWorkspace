@@ -92,6 +92,24 @@ public class GuiElementHandler {
 		keys.add(currentindex);
 		return currentindex;
 	}
+	public int newStringAtPos(String str, Color c, Vector2f pos) {
+		elements.add(new GuiString(str, c, new Vector2f(pos.x, pos.y), 
+			10, 10, pos));
+		content.add(str);
+		images.add(elements.get(elements.size()-1).getImg());
+		bounds.add(elements.get(elements.size()-1).getBounds());
+	
+		currentindex += 1;
+		keys.add(currentindex);
+		
+		Rectangle2D r = elements.get(elements.size()-1).getBounds();
+		nextx += ((float)r.getWidth()/(Display.getWidth()/3.0f));
+		
+		if(r.getHeight()/(Display.getHeight()/2.0f) > maxheight) {
+			maxheight = (float)r.getHeight()/(Display.getHeight()/2.0f);
+		}
+		return currentindex;
+	}
 	public int newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
 			String eventmessage) {
 		GuiButton button = new GuiButton(loc, pos, width, height, parent, eventmessage);

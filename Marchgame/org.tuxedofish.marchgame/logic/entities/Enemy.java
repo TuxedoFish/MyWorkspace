@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -70,23 +71,29 @@ public class Enemy extends Sprite{
 	private int threadindex;
 	private int shootspeed;
 	private int shootthreadindex;
+	private String name;
 	
 	private SoundHandler sounds = new SoundHandler();
 	private Clip explosionsound;
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
+			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, String name, ByteBuffer imgdata) {
 		super(tex, parent, 100, 100, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
-				((pos.y)/(Display.getHeight()/2.0f))));
+				((pos.y)/(Display.getHeight()/2.0f))), imgdata);
 		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
+		this.name = name;
 	}
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
-			, int width, int pattern, GridParser gp, int health, int shootspeed) {
+			, int width, int pattern, GridParser gp, int health, int shootspeed, String name) {
 		super(tex, parent, 100, 100, gp.parseGrid(tex, 49.0f), 0, new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f))));
 		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, null, health, shootspeed);
+		this.name = name;
+	}
+	public String getName() {
+		return name;
 	}
 	public void setScroll(boolean b) {
 		scroll = b;
@@ -140,13 +147,18 @@ public class Enemy extends Sprite{
 	public void setAnimationSpeed(int speed) {
 		this.speed = speed;
 	}
-	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
+	public int finish(IntBuffer vboids, IntBuffer vaoids, int[] index, Integer texid) {
 		bullets.finish(vboids, vaoids);
-		this.finish(vboids.get(2), vaoids.get(2));
 		this.threadindex = index[0];
 		this.shootthreadindex = index[1];
 		for(int i=0; i<guns.size(); i++) {
 			guns.get(i).finish(vboids.get(2+i), vaoids.get(2+i));
+		}
+		if(texid!=null) {
+			this.finish(vboids.get(2), vaoids.get(2), texid);
+			return 0;
+		} else {
+			return this.finish(vboids.get(2), vaoids.get(2));
 		}
 	}
 	public BulletHandler getBulletHandler() {
