@@ -183,8 +183,13 @@ public class GuiString implements GuiElement{
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
 	}
-	@Override
+	public String getType() {
+		return "String";
+	}
 	public int getTextureId() {
 		return texid;
+	}
+	public FloatBuffer getMatrix() {
+		return null;
 	}
 }

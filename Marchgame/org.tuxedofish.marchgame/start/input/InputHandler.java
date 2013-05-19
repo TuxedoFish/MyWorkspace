@@ -1,8 +1,15 @@
 package start.input;
 
+import images.ImageReturn;
+
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -12,18 +19,48 @@ import start.Controller;
 import start.DisplaySetup;
 import start.gui.GuiButton;
 import start.gui.GuiElement;
+import start.gui.GuiMarker;
 
 public class InputHandler {
 	private boolean leftdown, rightdown, up, down;
 	private boolean mousedown = false;
 	private Controller parent;
 	private ArrayList<GuiButton> buttons = new ArrayList<GuiButton>();
+	private ArrayList<GuiMarker> markers = new ArrayList<GuiMarker>();
 	private ArrayList<Integer> indexs = new ArrayList<Integer>();
+	private ArrayList<Integer> indexsmarker = new ArrayList<Integer>();
 	private int shootduration;
+	private Cursor pointing;
+	private Cursor pulling;
+	private Vector2f lastpos = new Vector2f(-1.0f, -1.0f);
 	
 	public InputHandler(Controller parent) {
 		this.parent = parent;
 		leftdown = false; rightdown = false;
+		pointing = newCursor("cursor.png");
+		pulling = newCursor("cursorpulling.png");
+	}
+	public void addMarker(GuiMarker m, int index) {
+		markers.add(m);
+		indexsmarker.add(index);
+	}
+	public Cursor newCursor(String cursor) {
+		ImageReturn images = new ImageReturn();
+		try {
+			int[] data=images.getImage(cursor).getRaster().getPixels(0,0,16,16,(int[])null);
+			    
+			IntBuffer ib=BufferUtils.createIntBuffer(16*16);
+			
+			for(int i=0;i<data.length;i+=4) {
+				ib.put(data[i] | data[i+1]<<8 | data[i+2]<<16 | data[i+3]<<24);
+			}
+			ib.flip();
+			
+			return new Cursor(16, 16, 0, 0, 1, ib, null);
+		} catch (LWJGLException | IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	public float neg(float f) {
 		return f * -1;
@@ -71,13 +108,28 @@ public class InputHandler {
 		Vector2f mousepos = new Vector2f(Mouse.getX(), Mouse.getY());
 		for(int i=0; i<buttons.size(); i++) {
 			if(contains(mousepos, buttons.get(i).getBounds())) {
-				if(Mouse.isButtonDown(0)) {
+				if(Mouse.isButtonDown(0) && !mousedown) {
 					buttons.get(i).setState(2);
 				} else {
 					buttons.get(i).setState(1);
 				}
 			} else {
 				buttons.get(i).setState(0);
+			}
+		}
+		for(int i=0; i<markers.size(); i++) {
+			Rectangle2D bounds = markers.get(i).getBounds();
+			Rectangle2D accbounds = new Rectangle2D.Float();
+			accbounds.setRect(bounds.getX()+(d.getPos().x*Display.getWidth()/2.0f), bounds.getY()+(d.getPos().y*Display.getHeight()/2.0f), bounds.getWidth(), bounds.getHeight());
+			
+			if(contains(mousepos, accbounds)) {
+				if(Mouse.isButtonDown(0) && !mousedown) {
+					markers.get(i).pressed();
+				} else {
+					markers.get(i).mouseupdate(true);
+				}
+			} else {
+				markers.get(i).mouseupdate(false);
 			}
 		}
 		if(Mouse.isButtonDown(0)) {
@@ -87,9 +139,28 @@ public class InputHandler {
 					parent.resetThread(parent.getPlayerShootThreadId());
 					shootduration = 0;
 				}
+//				try {
+//					//Mouse.setNativeCursor(pulling);
+//				} catch (LWJGLException e) {
+//					e.printStackTrace();
+//				}
 				mousedown = true;
 			}
+			if((lastpos.x < 0.0f)) {
+				lastpos = new Vector2f(Mouse.getX(), Mouse.getY());
+			} else {
+				d.changepos(((float)Mouse.getX()-(float)lastpos.x)/(float)Display.getWidth(), 
+						((float)Mouse.getY()-(float)lastpos.y)/(float)Display.getHeight(), 0.0f);
+				lastpos.x = Mouse.getX();
+				lastpos.y = Mouse.getY();
+			}
 		} else {
+//			try {
+//				//Mouse.setNativeCursor(pointing);
+//			} catch (LWJGLException e) {
+//				e.printStackTrace();
+//			}
+			lastpos = new Vector2f(-1.0f, -1.0f);
 			mousedown = false;
 		}
 		while (Keyboard.next()) {

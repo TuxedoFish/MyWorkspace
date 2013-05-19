@@ -38,15 +38,19 @@ import static org.lwjgl.util.glu.GLU.*;
 
 import javax.imageio.ImageIO;
 
+import logic.GridParser;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 
 import start.Controller;
+import texture.TextureHolder;
 import utils.TextureUtils;
 
-public class GuiButton implements GuiElement{
-	private BufferedImage[] imgs;
+public class GuiMarker implements GuiElement{
+	private BufferedImage img;
 	private Vector2f pos;
 	private IntBuffer indicesfb;
 	private FloatBuffer datafb;
@@ -54,13 +58,21 @@ public class GuiButton implements GuiElement{
 	private int current = 0;
 	private Controller parent;
 	private String message;
-	private int[] texids;
+	private int texid;
+	private boolean animation;
+	private TextureHolder texture;
+	private int textures;
+	private int animationid;
+	private int currenttexid = 0;
+	private FloatBuffer matrixfb;
+	private Matrix4f matrix;
 	
-	public GuiButton(String buttonname, Vector2f pos, float width, float height, Controller parent, 
-			String eventmessage) {
+	public GuiMarker(String markername, Vector2f pos, float width, float height, Controller parent, 
+			String eventmessage, int animationid, int textures) {
 		this.parent = parent;
 		this.message = eventmessage;
 		this.pos = pos;
+		this.animationid = animationid;
 		int[] indices = {
 				0, 1, 2,
 				2, 3, 0
@@ -69,22 +81,24 @@ public class GuiButton implements GuiElement{
 		indicesfb.put(indices);
 		indicesfb.flip();
 		
+		matrix = new Matrix4f();
+		matrixfb = BufferUtils.createFloatBuffer(16);
+		matrix.store(matrixfb);
+		matrixfb.flip();
+		
+		this.textures = textures;
+		
 		ImageReturn images = new ImageReturn();
+		GridParser gp = new GridParser();
 		
 		try {
-			imgs = new BufferedImage[] {
-					images.getImage("gui/" + buttonname+".png"), 
-					images.getImage("gui/" + buttonname+"hover.png"), 
-					images.getImage("gui/" + buttonname+"pressed.png"), 
-			};
+			img = images.getImage("gui/" + markername + ".png");
+			texture = gp.parseGrid(img, 20);
+			
 			TextureUtils util = new TextureUtils();
-			texids = new int[] {
-					util.binddata(imgs[0]),
-					util.binddata(imgs[1]),
-					util.binddata(imgs[2])
-			};
+			texid = util.binddata(img);
 		} catch (IOException e) {
-			System.err.println("err finding button @ " + buttonname);
+			System.err.println("err finding button @ " + markername);
 			e.printStackTrace();
 		}
 		
@@ -106,7 +120,33 @@ public class GuiButton implements GuiElement{
 		datafb.put(data);
 		datafb.rewind();
 		
+		Vector2f[] texids = texture.getTextureCoords(0);
+		
+		datafb.put(4, texids[0].x); datafb.put(5, texids[0].y);
+		datafb.put(14, texids[1].x); datafb.put(15, texids[1].y);
+		datafb.put(24, texids[2].x); datafb.put(25, texids[2].y);
+		datafb.put(34, texids[3].x); datafb.put(35, texids[3].y);
+		
 		this.bounds = new Rectangle2D.Float((pos.x+1.0f)*(Display.getWidth()/2), (pos.y+1.0f)*(Display.getHeight()/2), width, height);
+	}
+	public void animate() {
+		if(animation) {
+			Vector2f[] texids;
+			if(currenttexid < textures-1) {
+				texids = texture.getTextureCoords(currenttexid + 1);
+				currenttexid += 1;
+			} else {
+				texids = texture.getTextureCoords(0);
+				currenttexid = 0;
+			}
+			datafb.put(4, texids[0].x); datafb.put(5, texids[0].y);
+			datafb.put(14, texids[1].x); datafb.put(15, texids[1].y);
+			datafb.put(24, texids[2].x); datafb.put(25, texids[2].y);
+			datafb.put(34, texids[3].x); datafb.put(35, texids[3].y);
+		}
+	}
+	public void pressed() {
+		parent.action(message);
 	}
 	public Rectangle2D getBounds() { 
 		return bounds;
@@ -121,27 +161,27 @@ public class GuiButton implements GuiElement{
 		return indicesfb;
 	}
 	public BufferedImage getImg() {
-		return imgs[current];
+		return img;
 	}
-	public void setState(int state) {
-		if(state == 2) {
-			parent.action(message);
-		}
-		this.current = state;
+	public void mouseupdate(boolean mouseover) {
+		animation = mouseover;
 	}
 	public void setImg(BufferedImage img) {
-		this.imgs = imgs;
+		this.img = img;
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
 	}
-	public String getType() {
-		return "Button";
+	public int getAnimationThreadID() {
+		return animationid;
 	}
 	public int getTextureId() {
-		return texids[current];
+		return texid;
+	}
+	public String getType() {
+		return "Marker";
 	}
 	public FloatBuffer getMatrix() {
-		return null;
+		return matrixfb;
 	}
 }

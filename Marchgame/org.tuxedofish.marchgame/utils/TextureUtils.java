@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -76,7 +77,24 @@ public class TextureUtils {
 	     buffer.flip(); 
 	     return buffer;
 	}
+	public IntBuffer loadTextureInt(BufferedImage texture) {
+		 int[] pixels = new int[texture.getWidth() * texture.getHeight()];
+	     texture.getRGB(0, 0, texture.getWidth(), texture.getHeight(), pixels, 0, texture.getWidth());
 
+	     IntBuffer buffer = BufferUtils.createIntBuffer(texture.getWidth() * texture.getHeight() * 4); 
+	        
+	     for(int y = 0; y < texture.getHeight(); y++){
+	         for(int x = 0; x < texture.getWidth(); x++){
+	             int pixel = pixels[y * texture.getWidth() + x];
+		         buffer.put((int) ((pixel >> 16) & 0xFF));    
+	             buffer.put((int) ((pixel >> 8) & 0xFF));   
+	             buffer.put((int) (pixel & 0xFF));      
+	             buffer.put((int) ((pixel >> 24) & 0xFF));
+	         }
+	     }
+	     buffer.flip(); 
+	     return buffer;
+	}
 	public BufferedImage createimage(ArrayList<Vector2f> points, Color c) {
 		int lowestx = (int) points.get(0).x;
 		int highestx = (int) points.get(0).x;

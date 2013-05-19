@@ -102,6 +102,16 @@ public class GuiElementHandler {
 		keys.add(currentindex);
 		return currentindex;
 	}
+	public GuiMarker newMarker(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
+			String eventmessage, int animationid, int animationlength) {
+		GuiMarker marker = new GuiMarker(loc, pos, width, height, parent, eventmessage, animationid, animationlength);
+		elements.add(marker);
+		ih.addMarker(marker, elements.size()-1);
+		
+		currentindex += 1;
+		keys.add(currentindex);
+		return marker;
+	}
 	public int newBar(String barname, Vector2f pos, int percent) {
 		elements.add(new GuiBar(barname, pos, percent));
 		
@@ -129,8 +139,13 @@ public class GuiElementHandler {
 		for(int i=0; i<elements.size();i++) {
 			DataUtils datautil = new DataUtils();
 			if(elements.size() > i) {
-				datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 1, elements.get(i).getIndices(), null, 0);
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				if(elements.get(i).getType().equals("Marker")) {
+					datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 2, elements.get(i).getIndices(), elements.get(i).getMatrix(), 0);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				} else {
+					datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 1, elements.get(i).getIndices(), null, 0);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				}
 			}
 		}
 	}

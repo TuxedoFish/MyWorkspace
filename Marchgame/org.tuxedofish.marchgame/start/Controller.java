@@ -36,6 +36,8 @@ import object.Shape;
 import object.Sprite;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ARBFragmentShader;
@@ -59,6 +61,7 @@ import shader.ShaderHandler;
 import start.gui.Gui;
 import start.gui.GuiButton;
 import start.gui.GuiElementHandler;
+import start.gui.GuiMarker;
 import start.gui.GuiString;
 import start.input.InputHandler;
 import terrain.Block;
@@ -95,6 +98,8 @@ public class Controller {
 	private GuiElementHandler gui;
 	
 	private int prevhealth = 0;
+	
+	private boolean levelmap = false;
 	
 	private Player player;
 	private Boss boss;
@@ -145,6 +150,8 @@ public class Controller {
 	
 	private int playerthread;
 	private int playershootthreadid;
+
+	private ArrayList<GuiMarker> markers = new ArrayList<GuiMarker>();
 	
 	public void bulletexplode(int index) {
 		player.bulletexplode(index);
@@ -156,6 +163,7 @@ public class Controller {
 		ct.resetTimeStep(index);
 	}
 	public void startup() {
+		levelmap = false;
 		gui.clearElements();
 		ih.clearElements();
 		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
@@ -238,7 +246,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(51, 10);
+		gm.makeGrid(21, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -270,6 +278,18 @@ public class Controller {
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 		
+		Sprite map = null;
+		
+		try {
+			map = new Sprite(images.getImage("title.png"), this, 1000, 1000, 
+					new GridParser().parseGrid(images.getImage("title.png"), 100), 0, new Vector2f(-1.0f, 1.0f));
+			map.finish(glGenBuffers(), glGenVertexArrays());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		DataUtils dutils = new DataUtils();
+		
 		while(!Display.isCloseRequested()) {
 			if(started) {
 				rendergl(shaderhandler, display);
@@ -294,8 +314,12 @@ public class Controller {
 				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 				
 				utils.begin(shaderhandler, display);
-				utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				if(!levelmap) {
+					utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				} else {
+					map.render(shaderhandler, dutils, 0);
+				}
 				gui.drawElements(shaderhandler);
 				ih.update(display);
 			}
@@ -306,6 +330,7 @@ public class Controller {
 	}
 	public void action(String message) {
 		if(message.equals("start")) {
+			levelmap = true;
 			this.levelselectscreen();
 		}
 		if(message.equals("levelselected")) {
@@ -316,11 +341,7 @@ public class Controller {
 	public void levelselectscreen() {
 		gui.clearElements();
 		ih.clearElements();
-		gui.newButton("button", new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)), 
-				100.0f, 20.0f, ih, this, "levelselected");
-		gui.newString("level1", Color.red, 100, 20, 
-				new Vector2f(-1.0f + (100.0f/(float)Display.getWidth()*2), 1.0f - (20.0f/(float)Display.getHeight()*2)));
-			
+		markers.add(gui.newMarker("marker", new Vector2f(0.0f, 0.0f), 20, 20, ih, this, "levelselected", ct.addTimeStep(100), 4));
 	}
 	public void update(int update, int index) {
 		if(update == 200) {
@@ -343,6 +364,11 @@ public class Controller {
 						}
 					}
 				}
+			}
+		}
+		for(int i=0; i<markers.size(); i++) {
+			if(markers.get(i).getAnimationThreadID() == index) {
+				markers.get(i).animate();
 			}
 		}
 		if(index == playershootthreadid) {

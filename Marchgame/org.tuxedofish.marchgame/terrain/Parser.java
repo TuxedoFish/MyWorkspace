@@ -38,7 +38,7 @@ public class Parser {
 				}
 				//stone
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 100, 100))) {
-					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 6, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 5, 50, 50));
 				}
 				//wood
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 0, 0))) {

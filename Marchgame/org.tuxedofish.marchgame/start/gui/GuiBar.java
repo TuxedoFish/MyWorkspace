@@ -74,6 +74,11 @@ public class GuiBar implements GuiElement{
 			Graphics g = img.getGraphics();
 			
 			g.drawImage(emptybar, 0, 0, null);
+			
+			if(percent >= 98) {
+				percent = 98;
+			}
+			
 			g.drawImage(bar.getSubimage(0, 0, (int)(((float)bar.getWidth()/100.0f)*(float)percent), 
 					bar.getHeight()), 1, 1, null);
 			g.dispose();
@@ -126,8 +131,13 @@ public class GuiBar implements GuiElement{
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
 	}
-	@Override
 	public int getTextureId() {
 		return texid;
+	}
+	public String getType() {
+		return "Bar";
+	}
+	public FloatBuffer getMatrix() {
+		return null;
 	}
 }
