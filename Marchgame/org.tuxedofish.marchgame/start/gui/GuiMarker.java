@@ -169,7 +169,7 @@ public class GuiMarker implements GuiElement{
 	public void mouseupdate(boolean mouseover, DisplaySetup d) {
 		if(parent.isLevelMap() && !finished) {
 			if(mouseover && !animation) {
-				stringindex = parent.addString("level1", new Vector2f(pos.x+0.06f+d.getPos().x, pos.y+d.getPos().y));
+				stringindex = parent.addString(message, new Vector2f(pos.x+0.06f+d.getPos().x, pos.y+d.getPos().y));
 			}
 			if(animation && !mouseover) {
 				if(parent.isElements()) {

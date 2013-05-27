@@ -164,14 +164,14 @@ public class Controller {
 	public void resetThread(int index) {
 		ct.resetTimeStep(index);
 	}
-	public void startup() {
+	public void startup(String level) {
 		display.changepos(-display.getPos().x, -display.getPos().y, 0.0f);
 		levelmap = false;
 		elements = false;
 		gui.clearElements();
 		ih.clearElements();
 		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-		el = new EnemyLoader(true, "level1", this, null, ct, display);
+		el = new EnemyLoader(true, level, this, null, ct, display);
 	}
 	public void startupfinish() throws IOException {
 		ArrayList<Integer> texids = new ArrayList<Integer>();
@@ -265,15 +265,26 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(21, 10);
+		gm.makeGrid(101, 2);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
 		
+		Sprite map = null;
+		
+		try {
+			map = new Sprite(images.getImage("map.png"), this, 3000, 1500, 
+					new GridParser().parseGrid(images.getImage("map.png"), 1429, 831), 0, new Vector2f(-1500.0f/Display.getWidth(), 
+							750.0f/Display.getHeight()));
+			map.finish(glGenBuffers(), glGenVertexArrays());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		ih = new InputHandler(this, map);
+		
 		ct = new ControllerTimer(this);
 		playerthread = ct.addTimeStep(200);
-		
-		ih = new InputHandler(this);
 		
 		ColorHandler ch = new ColorHandler();
 		texids.add(ch.newCol(Color.BLUE, colors));
@@ -299,16 +310,6 @@ public class Controller {
 		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 		elements = true;
-		
-		Sprite map = null;
-		
-		try {
-			map = new Sprite(images.getImage("title.png"), this, 1000, 1000, 
-					new GridParser().parseGrid(images.getImage("title.png"), 100), 0, new Vector2f(-1.0f, 1.0f));
-			map.finish(glGenBuffers(), glGenVertexArrays());
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		
 		DataUtils dutils = new DataUtils();
 		
@@ -364,11 +365,11 @@ public class Controller {
 			ih.atLevelMap(true);
 			this.levelselectscreen();
 		}
-		if(message.equals("levelselected")) {
+		if(message.contains("level")) {
 			levelmap = false;
 			ih.atLevelMap(false);
-			level=1;
-			this.startup();
+			level=Integer.valueOf(message.substring(message.length()-1, message.length()));
+			this.startup("level" + level);
 			for(int i=0; i<markers.size(); i++) {
 				markers.get(i).finish();
 			}
@@ -378,7 +379,8 @@ public class Controller {
 		elements = false;
 		gui.clearElements();
 		ih.clearElements();
-		markers.add(gui.newMarker("marker", new Vector2f(0.0f, 0.0f), 20, 20, ih, this, "levelselected", ct.addTimeStep(100), 4));
+		markers.add(gui.newMarker("marker", new Vector2f(0.5f, 0.0f), 20, 20, ih, this, "level 1", ct.addTimeStep(100), 4));
+		markers.add(gui.newMarker("marker", new Vector2f(0.0f, 0.0f), 20, 20, ih, this, "level 2", ct.addTimeStep(100), 4));
 		elements = true;
 	}
 	public void update(int update, int index) {

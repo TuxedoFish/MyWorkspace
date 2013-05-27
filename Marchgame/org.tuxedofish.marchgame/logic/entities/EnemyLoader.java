@@ -97,6 +97,7 @@ public class EnemyLoader extends Thread{
 			BufferedReader reader2;
 			BufferedReader readertest;
 			try {
+				System.out.println(level);
 				readertest = images.getFile("enemies/" + level + ".txt");
 				String linetest = null;
 				while((linetest=readertest.readLine()) != null) {lines+=1;}
@@ -120,7 +121,7 @@ public class EnemyLoader extends Thread{
 			
 			try {
 				Parser parser = new Parser();
-				blocks = parser.parseLevel(images.getImage("level1.png"), 
+				blocks = parser.parseLevel(images.getImage(level + ".png"), 
 						new Vector2f(-1.0f, -1.0f));
 				GridParser gp = new GridParser();
 				
@@ -140,7 +141,9 @@ public class EnemyLoader extends Thread{
 						340, 500, new Vector2f(-0.9f, 5.0f), 100, gp.parseGrid(images.getImage("building3.png"), 167, 250));
 				Building b2 = new Building(images.getImage("building3.png"), player.getBullets(), parent, 
 						340, 500, new Vector2f(-0.9f, 2.0f), 100, gp.parseGrid(images.getImage("building3.png"), 167, 250));
-				buildings.add(b); buildings.add(b2);
+				Building b3 = new Building(images.getImage("tree.png"), player.getBullets(), parent, 
+						200, 200, new Vector2f(0.0f, 2.0f), 100, gp.parseGrid(images.getImage("tree.png"), 100, 100));
+				buildings.add(b); buildings.add(b2); buildings.add(b3);
 				
 				boss = new Boss(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets());
 				boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import object.Sprite;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
@@ -34,12 +36,14 @@ public class InputHandler {
 	private Cursor pulling;
 	private Vector2f lastpos = new Vector2f(-1.0f, -1.0f);
 	private boolean levelmap = false;
+	private Sprite map;
 	
-	public InputHandler(Controller parent) {
+	public InputHandler(Controller parent, Sprite map) {
 		this.parent = parent;
 		leftdown = false; rightdown = false;
 		pointing = newCursor("cursor.png");
 		pulling = newCursor("cursorpulling.png");
+		this.map = map;
 	}
 	public void addMarker(GuiMarker m, int index) {
 		markers.add(m);
@@ -154,8 +158,22 @@ public class InputHandler {
 				lastpos = new Vector2f(Mouse.getX(), Mouse.getY());
 			} else {
 				if(levelmap) {
-					d.changepos(((float)Mouse.getX()-(float)lastpos.x)/(float)Display.getWidth(), 
-						((float)Mouse.getY()-(float)lastpos.y)/(float)Display.getHeight(), 0.0f);
+					float xchange = ((float)Mouse.getX()-(float)lastpos.x)/(float)Display.getWidth();
+					float ychange = ((float)Mouse.getY()-(float)lastpos.y)/(float)Display.getHeight();
+					
+					if(!(d.getPos().x+xchange+1.1f < map.getPos().x + (float)map.getWidth()/Display.getWidth())) {
+						xchange = 0.0f;
+					}
+					if(!(d.getPos().x+xchange-1.1f > map.getPos().x)) {
+						xchange = 0.0f;
+					}
+					if(!(d.getPos().y+ychange+1.1f < map.getPos().y)) {
+						ychange = 0.0f;
+					}
+					if(!(d.getPos().y+ychange-1.1f > map.getPos().y - (float)map.getHeight()/Display.getHeight())) {
+						ychange = 0.0f;
+					}
+					d.changepos(xchange, ychange, 0.0f);
 				}
 				lastpos.x = Mouse.getX();
 				lastpos.y = Mouse.getY();

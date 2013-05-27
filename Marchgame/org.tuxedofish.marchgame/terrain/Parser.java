@@ -30,19 +30,19 @@ public class Parser {
 			for(int j = 0; j < lvl.getWidth(); j++) {
 				//grass
 				if(new Color(lvl.getRGB(j, i)).equals(Color.green)) {
-					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 6, 50, 50));
 				}
-				//dirt
+				//path
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 120, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 0, 50, 50));
 				}
-				//stone
+				//rightpath
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 100, 100))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 5, 50, 50));
 				}
-				//wood
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 0, 0))) {
-					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 6, 50, 50));
+				//water
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 0, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
 				}
 				//peepy hole
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(10, 10, 10))) {
