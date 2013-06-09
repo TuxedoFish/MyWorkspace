@@ -44,30 +44,36 @@ public class Parser {
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 0, 255))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
 				}
-				//peepy hole
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(10, 10, 10))) {
+				//cliff right
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 200, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 7, 50, 50));
 				}
-				//flag(1-3)
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(20, 20, 20))) {
+				//cliff left
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 150, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 8, 50, 50));
 				}
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(30, 30, 30))) {
+				//cliff top
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 100, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 9, 50, 50));
 				}
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(40, 40, 40))) {
+				//cliff bottom
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 50, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 10, 50, 50));
 				}
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(50, 50, 50))) {
+				//cliff bottom-right
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(20, 200, 20))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 11, 50, 50));
 				}
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(60, 60, 60))) {
+				//cliff bottom-left
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(20, 150, 20))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 12, 50, 50));
 				}
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(70, 70, 70))) {
+				//cliff top-right
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(10, 200, 10))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 13, 50, 50));
 				}
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(80, 80, 80))) {
+				//cliff top-left
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(10, 150, 10))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 14, 50, 50));
 				}
 			}

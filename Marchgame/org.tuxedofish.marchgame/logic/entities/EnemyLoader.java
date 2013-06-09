@@ -168,6 +168,7 @@ public class EnemyLoader extends Thread{
 				String line = null;
 				while((line=reader2.readLine()) != null) {
 					parent.loadupdate(100/lines);
+					System.out.println();
 					String[] parts = line.split(" ");
 					BufferedReader reader = images.getFile("enemies/" + parts[0] + ".txt");
 					String line2 = "";
@@ -185,6 +186,7 @@ public class EnemyLoader extends Thread{
 					int health = Integer.valueOf(reader.readLine());
 					int shootspeed = Integer.valueOf(reader.readLine());
 					
+					reader.close();
 					try {
 						Class<?> enemy = null;
 						if(!loadedclasses.contains(texloc.substring(0, texloc.length()-4))) {
@@ -228,6 +230,7 @@ public class EnemyLoader extends Thread{
 						e.printStackTrace();
 					}
 				}
+				reader2.close();
 			} catch (IOException e) {
 				System.err.println("err getting img");
 				System.exit(1);

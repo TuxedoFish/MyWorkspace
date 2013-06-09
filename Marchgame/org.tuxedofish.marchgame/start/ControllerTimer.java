@@ -27,7 +27,7 @@ public class ControllerTimer extends Thread{
 			try {
 				Thread.sleep(1);
 				for(int i=0; i<temp.size(); i++) {
-					if(!disabled.get(i)) {
+					if(i < temp.size() && !disabled.get(i)) {
 						temp.set(i, temp.get(i) + 1);
 						if(temp.get(i) >= stages.get(i)) {
 							temp.set(i, 0);
