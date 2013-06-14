@@ -41,6 +41,18 @@ public class BulletHandler extends ArrayList<Bullet>{
 			e.printStackTrace();
 		}
 	}
+	public BulletHandler(TextureHolder bullettex, TextureHolder explosiontex, Controller parent, Player player, 
+			int bullettexid, int explosiontexid) {
+		this.parent = parent;
+		this.player = player;
+		
+		bullet = new Sprite(parent, 40, 40, bullettex, 0, new Vector2f(0.0f, 0.0f), bullettexid);
+		explosion = new Sprite(parent, 100, 100, explosiontex, 0, new Vector2f(0.0f, 0.0f), explosiontexid);
+	}
+	public void finishwithouttex(IntBuffer vboids, IntBuffer vaoids) {
+		this.explosion.finishwithouttex(vboids.get(0), vaoids.get(0));
+		this.bullet.finishwithouttex(vboids.get(1), vaoids.get(1));
+	}
 	public void finish(IntBuffer vboids, IntBuffer vaoids) {
 		this.explosion.finish(vboids.get(0), vaoids.get(0));
 		this.bullet.finish(vboids.get(1), vaoids.get(1));

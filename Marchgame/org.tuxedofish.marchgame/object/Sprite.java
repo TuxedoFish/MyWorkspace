@@ -94,6 +94,22 @@ public class Sprite{
 		datafb = getData(this.pos, width, height, currenttexid);
 		indices = getIndices(0);
 	}
+	public Sprite(Controller c, int width, int height, TextureHolder th, int currenttexid, 
+			Vector2f pos, int texid) {
+		parent = c;
+		any = true;
+		this.th = th;
+		this.textureid = texid;
+		
+		modelmatrix.translate(pos);
+		this.currenttexid = currenttexid;
+		
+		this.width = width;
+		this.height = height;
+		this.pos = pos;
+		datafb = getData(this.pos, width, height, currenttexid);
+		indices = getIndices(0);
+	}
 	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int currenttexid, 
 			Vector2f pos, ByteBuffer imgdata) {
 		this.imgdata = imgdata;
@@ -118,16 +134,20 @@ public class Sprite{
 		TextureUtils util = new TextureUtils();
 		return this.textureid = util.binddata(texture, imgdata);
 	}
+	public void finishwithouttex(int vboid, int vaoid) {
+		this.vboID = vboid;
+		this.vaoID = vaoid;
+	}
+	public void finish(int vboid, int vaoid, int texid) {
+		this.vboID = vboid;
+		this.vaoID = vaoid;
+		this.textureid = texid; 
+	}
 	public BufferedImage getImage() {
 		return texture;
 	}
 	public ByteBuffer getImageData() {
 		return imgdata;
-	}
-	public void finish(int vboid, int vaoid, int textureid) {
-		this.vboID = vboid;
-		this.vaoID = vaoid;
-		this.textureid = textureid;
 	}
 	public int getWidth() {
 		return width;
@@ -212,20 +232,26 @@ public class Sprite{
 	public void changeTexture(int texid) {
 		currenttexid = texid;
 		Vector2f[] tc = th.getTextureCoords(texid);
-		datafb.put(4, tc[0].x); datafb.put(5, tc[0].y);
-		datafb.put(14, tc[1].x); datafb.put(15, tc[1].y);
-		datafb.put(24, tc[2].x); datafb.put(25, tc[2].y);
 		
-		datafb.put(34, tc[0].x); datafb.put(35, tc[0].y);
-		datafb.put(44, tc[2].x); datafb.put(45, tc[2].y);
-		datafb.put(54, tc[3].x); datafb.put(55, tc[3].y);
+		if(tc != null) {
+			datafb.put(4, tc[0].x); datafb.put(5, tc[0].y);
+			datafb.put(14, tc[1].x); datafb.put(15, tc[1].y);
+			datafb.put(24, tc[2].x); datafb.put(25, tc[2].y);
+			
+			datafb.put(34, tc[0].x); datafb.put(35, tc[0].y);
+			datafb.put(44, tc[2].x); datafb.put(45, tc[2].y);
+			datafb.put(54, tc[3].x); datafb.put(55, tc[3].y);
+		}
 	}
 	public void render(ShaderHandler sh, DataUtils util, int brightness) {
 		FloatBuffer modelmatrixfb = BufferUtils.createFloatBuffer(16);
 		Matrix4f.mul(rotmatrix, modelmatrix, new Matrix4f()).store(modelmatrixfb);
 		modelmatrixfb.flip();
-			
-		util.setup(datafb, vboID, vaoID, parent.getSh(), textureid, 2, indices, modelmatrixfb, brightness);
+
+		util.setup(datafb, vboID, vaoID, sh, textureid, 2, indices, modelmatrixfb, brightness);
+//		for(int i=0; i<datafb.capacity(); i++) {
+//			System.out.print(datafb.get(i) + ", ");
+//		}
 		util.drawRectangle();
 	}
 	public void rotate(float angle) {

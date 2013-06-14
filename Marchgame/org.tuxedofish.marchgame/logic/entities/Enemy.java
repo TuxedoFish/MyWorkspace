@@ -76,21 +76,25 @@ public class Enemy extends Sprite{
 	private SoundHandler sounds = new SoundHandler();
 	private Clip explosionsound;
 	
+	private int bullettexid;
+	private int explosiontexid;
+	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
-			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, String name, ByteBuffer imgdata) {
-		super(tex, parent, 100, 100, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
-				((pos.y)/(Display.getHeight()/2.0f))), imgdata);
-		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
-		this.name = name;
-	}
-	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
-			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
-			, int width, int pattern, GridParser gp, int health, int shootspeed, String name) {
-		super(tex, parent, 100, 100, gp.parseGrid(tex, 49.0f), 0, new Vector2f(((pos.x/Display.getWidth())), 
-				((pos.y)/(Display.getHeight()/2.0f))));
-		setup(pos, texid, parent, ep, player, playerbullets, tex, lowesttexid, highesttexid, width, pattern, null, health, shootspeed);
-		this.name = name;
+			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
+			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid) {
+		super(parent, 100, 100, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
+				((pos.y)/(Display.getHeight()/2.0f))), texid);
+		this.explosiontexid = explosiontexid;
+		this.bullettexid = bullettexid;
+		setup(pos, texid, parent, ep, player, playerbullets, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
+		ImageReturn images = new ImageReturn();
+		GridParser gp = new GridParser();
+		try {
+			addGun(new Gun(images.getImage("gun1.png"), parent, 50, 50, gp.parseGrid(images.getImage("gun1.png"), 20), 0, new Vector2f(0.0f, 0.0f), 
+					getBulletHandler(), 2, player), false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	public String getName() {
 		return name;
@@ -99,7 +103,7 @@ public class Enemy extends Sprite{
 		scroll = b;
 	}
 	public void setup(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
-			ArrayList<Bullet> playerbullets, BufferedImage tex, int lowesttexid, int highesttexid
+			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
 		explosionsound = sounds.loadClip("explosion.wav");
 		this.width = (float)width/Display.getWidth();
@@ -115,51 +119,16 @@ public class Enemy extends Sprite{
 				((pos.y)/(Display.getHeight()/2.0f)));
 		this.playersprite = player;
 		this.ep = ep;
-		this.texid = texid;
+		this.texid = 0;
 		this.player = new Rectangle2D.Float();
 		this.myrect = new Rectangle2D.Float();
 		this.hit = 0;
 		
-		ImageReturn images = new ImageReturn();
-		GridParser gp = new GridParser();
-		TextureHolder texture; TextureHolder texture2; TextureHolder texture3;
-		
-		try {
-			if(ts != null) {
-				textures = ts;
-				bullets = new BulletHandler(ts[1], ts[0], "bullets2", parent, player);
-			} else {
-				texture = gp.parseGrid(images.getImage("explosion.png"), 29.0f);
-				texture2 = gp.parseGrid(images.getImage("bullets2.png"), 19.0f);
-				texture3 = gp.parseGrid(tex, 49.0f);
-				
-				bullets = new BulletHandler(texture2, texture, "bullets2", parent, player);
-				textures = new TextureHolder[]{
-						texture, texture2, texture3
-				};
-			}
-		} catch (IOException e) {
-			System.err.println("err at enemy");
-			System.exit(1);
-			e.printStackTrace();
-		}
+		textures = ts;
+		bullets = new BulletHandler(ts[1], ts[0], parent, player, bullettexid, explosiontexid);
 	}
 	public void setAnimationSpeed(int speed) {
 		this.speed = speed;
-	}
-	public int finish(IntBuffer vboids, IntBuffer vaoids, int[] index, Integer texid) {
-		bullets.finish(vboids, vaoids);
-		this.threadindex = index[0];
-		this.shootthreadindex = index[1];
-		for(int i=0; i<guns.size(); i++) {
-			guns.get(i).finish(vboids.get(2+i), vaoids.get(2+i));
-		}
-		if(texid!=null) {
-			this.finish(vboids.get(2), vaoids.get(2), texid);
-			return 0;
-		} else {
-			return this.finish(vboids.get(2), vaoids.get(2));
-		}
 	}
 	public BulletHandler getBulletHandler() {
 		return bullets;
@@ -172,7 +141,7 @@ public class Enemy extends Sprite{
 		return guns.size();
 	}
 	public int getShootThreadID() {
-			return shootthreadindex;
+		return shootthreadindex;
 	}
 	public int getShootSpeed() {
 		return shootspeed;
@@ -301,6 +270,8 @@ public class Enemy extends Sprite{
 	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		updateColl(d);
 		animate();
+		followPath(d);
+		
 		if(Math.abs(d.getPos().y) + 1.0f > getPos().y) {
 			onscreen = true;
 		}
@@ -310,7 +281,6 @@ public class Enemy extends Sprite{
 						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
 					health -= 5;
-					parent.resetThread(threadindex);
 					hit = 1;
 					if(health <= 0 && !stopped) {
 						SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
@@ -329,6 +299,15 @@ public class Enemy extends Sprite{
 			}
 		}
 		bullets.render(sh, d, util);
+	}
+	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
+		this.threadindex = index[0];
+		this.shootthreadindex = index[1];
+		bullets.finishwithouttex(vboids, vaoids);
+		for(int i=0; i<guns.size(); i++) {
+			guns.get(i).finish(vboids.get(1+i), vaoids.get(1+i));
+		}
+		this.finishwithouttex(vboids.get(0), vaoids.get(0));
 	}
 	public void fire(DisplaySetup d) {
 		for(int i=0; i<guns.size(); i++) {

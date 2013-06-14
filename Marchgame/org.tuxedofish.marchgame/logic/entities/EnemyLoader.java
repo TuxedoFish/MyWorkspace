@@ -19,6 +19,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
+import logic.entities.troops.SpriteHolder;
 import logic.entities.troops.Troop;
 
 import object.Sprite;
@@ -53,14 +54,16 @@ public class EnemyLoader extends Thread{
 	private ControllerTimer ct;
 	private DisplaySetup display;
 	private int highscore;
+	private SpriteHolder spriteholder;
 	
 	public EnemyLoader(boolean cached, String level, Controller parent
-			, BufferedImage enemy, ControllerTimer ct, DisplaySetup display) {
+			, BufferedImage enemy, ControllerTimer ct, DisplaySetup display, SpriteHolder spriteholder) {
 		this.level = level;
 		this.parent = parent;
 		this.enemy = enemy;
 		this.cached = cached;
 		this.ct = ct;
+		this.spriteholder = spriteholder;
 		this.display = display;
 		this.start();
 	}
@@ -86,13 +89,6 @@ public class EnemyLoader extends Thread{
 	public void run() {
 		ArrayList<Troop> allenemies = new ArrayList<Troop>();
 		if(cached) {
-			ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
-			ArrayList<Constructor<?>> constructors = new ArrayList<Constructor<?>>();
-			ArrayList<ByteBuffer> imgdatas = new ArrayList<ByteBuffer>();
-			ArrayList<String> loadedclasses = new ArrayList<String>();
-			ArrayList<String> keys = new ArrayList<String>();
-			ArrayList<TextureHolder[]> textures = new ArrayList<TextureHolder[]>();
-			
 			ImageReturn images = new ImageReturn();
 			BufferedReader reader2;
 			BufferedReader readertest;
@@ -166,9 +162,21 @@ public class EnemyLoader extends Thread{
 			try {
 				reader2 = images.getFile("enemies/" + level + ".txt");
 				String line = null;
+				
+				Class<?> troop = null;
+				troop = Class.forName("logic.entities.troops.Troop");
+				
+				Constructor<?> troopcon = null;
+				try {
+					troopcon = troop.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
+							Player.class, ArrayList.class,  TextureHolder[].class,
+							int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class); 
+				} catch (NoSuchMethodException | SecurityException e1) {
+					e1.printStackTrace();
+				}
+				
 				while((line=reader2.readLine()) != null) {
 					parent.loadupdate(100/lines);
-					System.out.println();
 					String[] parts = line.split(" ");
 					BufferedReader reader = images.getFile("enemies/" + parts[0] + ".txt");
 					String line2 = "";
@@ -188,43 +196,12 @@ public class EnemyLoader extends Thread{
 					
 					reader.close();
 					try {
-						Class<?> enemy = null;
-						if(!loadedclasses.contains(texloc.substring(0, texloc.length()-4))) {
-							enemy = Class.forName("logic.entities.troops." + texloc.substring(0, texloc.length()-4));
-						} else {
-							enemy = classes.get(loadedclasses.indexOf(texloc.substring(0, texloc.length()-4)));
-						}
-						if(!keys.contains(parts[0])) {
-							Constructor<?> con = null;
-							con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
-								Player.class, ArrayList.class , String.class,
-								int.class, int.class, int.class, int.class,
-								int.class, int.class, ImageReturn.class, String.class);
-							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-									player.getBullets(), texloc, lti, hti, width, pattern, health, shootspeed, images, texloc.substring(0, texloc.length()-4)));
-							keys.add(parts[0]);
-							textures.add(allenemies.get(allenemies.size()-1).getEnemy().getTextures());
-							imgdatas.add(allenemies.get(allenemies.size()-1).getEnemy().getImageData());
-						} else {
-							Constructor<?> con = null;
-							if(!loadedclasses.contains(texloc.substring(0, texloc.length()-4))) {
-								con = enemy.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
-									Player.class, ArrayList.class , String.class,
-									int.class, int.class, int.class, int.class,
-									TextureHolder[].class, int.class, int.class, ImageReturn.class, String.class, ByteBuffer.class);
-								loadedclasses.add(texloc.substring(0, texloc.length()-4));
-								classes.add(enemy);
-								constructors.add(con);
-							} else {
-								con = constructors.get(loadedclasses.indexOf(texloc.substring(0, texloc.length()-4)));
-							}
-							allenemies.add((Troop) con.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 0, parent, ep, player, 
-									player.getBullets(), texloc, lti, hti, width, pattern, textures.get(keys.indexOf(parts[0])), 
-									health, shootspeed, images, texloc.substring(0, texloc.length()-4), 
-									imgdatas.get(loadedclasses.indexOf(texloc.substring(0, texloc.length()-4)))));
-						}
-					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | 
-							InstantiationException | IllegalAccessException | IllegalArgumentException | 
+						allenemies.add((Troop) troopcon.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
+								spriteholder.getTextureID(texloc), parent, ep, player, 
+								player.getBullets(), new TextureHolder[]{spriteholder.getTexture("explosion"), spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, 
+								lti, hti, width, pattern, health, shootspeed, spriteholder.getTextureID("bullets"), spriteholder.getTextureID("explosion")));
+					} catch (SecurityException | InstantiationException | IllegalAccessException | 
+							IllegalArgumentException | 
 							InvocationTargetException e) {
 						System.err.println("err finding class / constructor");
 						e.printStackTrace();
@@ -234,6 +211,8 @@ public class EnemyLoader extends Thread{
 			} catch (IOException e) {
 				System.err.println("err getting img");
 				System.exit(1);
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		} else {

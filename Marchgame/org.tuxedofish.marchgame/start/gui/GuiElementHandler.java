@@ -138,8 +138,10 @@ public class GuiElementHandler {
 		return currentindex;
 	}
 	public void removeElement(int index) {
-		elements.remove(keys.indexOf(index));
-		keys.remove(keys.indexOf(index));
+		if(keys.indexOf(index) != -1) {
+			elements.remove(keys.indexOf(index));
+			keys.remove(keys.indexOf(index));
+		}
 	}
 	public void newLine() {
 		nextx = 0.0f;

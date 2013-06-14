@@ -27,6 +27,7 @@ import logic.entities.EnemyLoader;
 import logic.entities.Player;
 import logic.entities.ScoreHandler;
 import logic.entities.ScorePellet;
+import logic.entities.troops.SpriteHolder;
 import logic.entities.troops.Troop;
 
 import object.ColorHandler;
@@ -171,30 +172,31 @@ public class Controller {
 		gui.clearElements();
 		ih.clearElements();
 		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-		el = new EnemyLoader(true, level, this, null, ct, display);
+		SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
+		try {
+			sph.addTexture(images.getImage("Enemy1.png"), "Enemy1.png", 49);
+			sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
+			sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
+			sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
+			sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
+			sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		sph.finish();
+		el = new EnemyLoader(true, level, this, null, ct, display, sph);
 	}
 	public void startupfinish() throws IOException {
-		ArrayList<Integer> texids = new ArrayList<Integer>();
-		ArrayList<String> names = new ArrayList<String>();
-		
 		enemies = el.getEnemies();
+		
 		for(int i=0; i<enemies.size(); i++) {
 			IntBuffer vboids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenBuffers(vboids);
 			IntBuffer vaoids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenVertexArrays(vaoids);
-			if(names.contains(enemies.get(i).getEnemy().getName())) {
-				enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
-						ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())}, 
-						texids.get(names.indexOf(enemies.get(i).getEnemy().getName())));
-			} else {
-				texids.add(enemies.get(i).getEnemy().finish(vboids, vaoids, new int[]{ct.addTimeStep(200), 
-					ct.addTimeStep(enemies.get(i).getEnemy().getShootSpeed())}, null));
-				names.add(enemies.get(i).getEnemy().getName());
-			}
+			
+			enemies.get(i).finish(vboids, vaoids, new int[]{ct.addTimeStep(200), ct.addTimeStep(enemies.get(i).getShootSpeed())});
 		}
-		texids.clear();
-		names.clear();
 		
 		blocks = el.getBlocks();
 		
@@ -265,7 +267,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(101, 2);
+		gm.makeGrid(33, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -390,8 +392,8 @@ public class Controller {
 			} else {
 				if(started) {
 					for(int i=0; i<enemies.size(); i++) {
-						if(enemies.get(i).getEnemy().getThreadID() == index) {
-							enemies.get(i).getEnemy().resetBlinking();
+						if(enemies.get(i).getThreadID() == index) {
+							enemies.get(i).resetBlinking();
 						}
 					}
 					ArrayList<Integer> bossthreadids = boss.getThreadIDs();
@@ -418,7 +420,7 @@ public class Controller {
 			lr.animate(blocktex, blockdata);
 		}
 		for(int i=0; i<enemies.size(); i++) {
-			if(enemies.get(i).getEnemy().getShootThreadID() == index) {
+			if(enemies.get(i).getShootThreadID() == index) {
 				if(started) {
 					enemies.get(i).shoot(display);
 				}
@@ -470,6 +472,7 @@ public class Controller {
 		score = 0;
 		scoretextids.clear();
 		scorethreadids.clear();
+		enemies.clear();
 	}
 	public void shoot() {
 		if(started) {
@@ -484,7 +487,7 @@ public class Controller {
 			display.changepos(0.0f, -0.005f, 0.0f);
 			player.changePos(0.0f, 0.005f);
 			for(int i=0; i<enemies.size(); i++) {
-				enemies.get(i).getEnemy().scroll();
+				enemies.get(i).scroll();
 			}
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);
@@ -497,7 +500,7 @@ public class Controller {
 		player.setMovement(ih.getMovement());
 		
 		for(int i=0; i<enemies.size(); i++) {
-			enemies.get(i).render(shaderhandler, display, util);
+			enemies.get(i).update(shaderhandler, display, util);
 		}
 		if(prevhealth != player.getHealth() && started) {
 			prevhealth = player.getHealth();
