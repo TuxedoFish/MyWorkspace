@@ -16,12 +16,14 @@ public class Gun extends Sprite {
 	private boolean visible = true;
 	
 	public Gun(BufferedImage img, Controller parent, int width, int height,
-			TextureHolder th, int currenttexid, Vector2f pos, BulletHandler bullets,
+			TextureHolder th, int currenttexid, Vector2f pos,
 			int pattern, Player player) {
 		super(img, parent, width, height, th, currenttexid, pos);
-		this.bullets = bullets;
 		this.pattern = pattern;
 		this.player = player;
+	}
+	public void finish(BulletHandler bullets) {
+		this.bullets = bullets;
 	}
 	public void fire() {
 		if(pattern == 1) {

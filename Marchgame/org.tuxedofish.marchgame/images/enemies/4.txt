@@ -11,3 +11,6 @@ Tank.png
 2
 10
 750
+gun gun1.png 50 50 20 2 true
+path
+3

@@ -50,6 +50,7 @@ public class Enemy extends Sprite{
 	private Rectangle2D myrect;
 	private Player playersprite;
 	private Controller parent;
+	private String movementtype;
 	
 	private float direction = -1;
 	private float togo = -1;
@@ -81,20 +82,19 @@ public class Enemy extends Sprite{
 	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid) {
+			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid,
+			String movementtype, int animationtype) {
 		super(parent, 100, 100, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f))), texid);
 		this.explosiontexid = explosiontexid;
 		this.bullettexid = bullettexid;
-		setup(pos, texid, parent, ep, player, playerbullets, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
-		ImageReturn images = new ImageReturn();
-		GridParser gp = new GridParser();
-		try {
-			addGun(new Gun(images.getImage("gun1.png"), parent, 50, 50, gp.parseGrid(images.getImage("gun1.png"), 20), 0, new Vector2f(0.0f, 0.0f), 
-					getBulletHandler(), 2, player), false);
-		} catch (IOException e) {
-			e.printStackTrace();
+		this.movementtype = movementtype;
+		this.animationstyle = animationtype;
+		if(movementtype.contains("swirl")) {
+			setScroll(false);
+			setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 		}
+		setup(pos, texid, parent, ep, player, playerbullets, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
 	}
 	public String getName() {
 		return name;
@@ -136,6 +136,7 @@ public class Enemy extends Sprite{
 	public void addGun(Gun g, boolean visible) {
 		guns.add(g);
 		guns.get(guns.size()-1).setVisible(visible);
+		guns.get(guns.size()-1).finish(getBulletHandler());
 	}
 	public int getAmountOfGuns() {
 		return guns.size();
@@ -270,7 +271,12 @@ public class Enemy extends Sprite{
 	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		updateColl(d);
 		animate();
-		followPath(d);
+		if(movementtype.contains("path")) {
+			followPath(d);
+		}
+		if(movementtype.contains("swirl")) {
+			swirlAround();
+		}
 		
 		if(Math.abs(d.getPos().y) + 1.0f > getPos().y) {
 			onscreen = true;

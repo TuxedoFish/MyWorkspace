@@ -180,6 +180,7 @@ public class Controller {
 			sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
 			sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
 			sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
+			sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

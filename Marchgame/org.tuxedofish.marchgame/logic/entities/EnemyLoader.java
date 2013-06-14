@@ -170,7 +170,8 @@ public class EnemyLoader extends Thread{
 				try {
 					troopcon = troop.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 							Player.class, ArrayList.class,  TextureHolder[].class,
-							int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class); 
+							int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class,
+							String.class, int.class); 
 				} catch (NoSuchMethodException | SecurityException e1) {
 					e1.printStackTrace();
 				}
@@ -194,12 +195,28 @@ public class EnemyLoader extends Thread{
 					int health = Integer.valueOf(reader.readLine());
 					int shootspeed = Integer.valueOf(reader.readLine());
 					
+					line2 = "";
+					ArrayList<Gun> guns = new ArrayList<Gun>();
+					ArrayList<Boolean> visible = new ArrayList<Boolean>();
+					while((line2=reader.readLine())!= null && line2.startsWith("gun")) {
+						String[] data = line2.split(" ");
+						guns.add(new Gun(spriteholder.getImage(data[1]), parent, Integer.valueOf(data[2]), Integer.valueOf(data[3]), 
+								spriteholder.getTexture(data[1]), 0, new Vector2f(0.0f, 0.0f), pattern, player));
+						visible.add(Boolean.valueOf(data[6]));
+					}
+					
+					String movementtype = line2;
+					int animationtype = Integer.valueOf(reader.readLine());
+					
 					reader.close();
 					try {
 						allenemies.add((Troop) troopcon.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
 								spriteholder.getTextureID(texloc), parent, ep, player, 
 								player.getBullets(), new TextureHolder[]{spriteholder.getTexture("explosion"), spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, 
-								lti, hti, width, pattern, health, shootspeed, spriteholder.getTextureID("bullets"), spriteholder.getTextureID("explosion")));
+								lti, hti, width, pattern, health, shootspeed, spriteholder.getTextureID("bullets"), spriteholder.getTextureID("explosion"), movementtype, animationtype));
+						for(int i=0; i<guns.size(); i++) {
+							allenemies.get(allenemies.size()-1).addGun(guns.get(i), visible.get(i));
+						}
 					} catch (SecurityException | InstantiationException | IllegalAccessException | 
 							IllegalArgumentException | 
 							InvocationTargetException e) {

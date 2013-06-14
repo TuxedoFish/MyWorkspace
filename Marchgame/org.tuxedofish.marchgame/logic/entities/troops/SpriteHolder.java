@@ -26,6 +26,9 @@ public class SpriteHolder {
 	public TextureHolder getTexture(String index) {
 		return grids.get(indexs.indexOf(index));
 	}
+	public BufferedImage getImage(String index) {
+		return textures.get(indexs.indexOf(index));
+	}
 	public int getSize() {
 		return textures.size();
 	}
