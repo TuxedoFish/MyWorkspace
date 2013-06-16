@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 
 import logic.GridParser;
 
@@ -50,7 +51,12 @@ public class Player extends Sprite{
 		this.parent  = parent;
 		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
 		
-		shootsound = sounds.loadClip("shoot.wav");
+		try {
+			shootsound = sounds.loadClip("shoot.wav");
+			shootsound.open(sounds.getAudioStream("shoot.wav"));
+		} catch (LineUnavailableException | IOException e) {
+			e.printStackTrace();
+		}
 		
 		try {
 			TextureHolder explosiontex = gp.parseGrid(images.getImage("SegaExplosions.png"), 100.0f);
@@ -169,7 +175,7 @@ public class Player extends Sprite{
 		render(sh, util, hit);
 	}
 	public void shoot() {
-		SoundHandler.playSound(shootsound, sounds.getAudioStream("shoot.wav"));
+		SoundHandler.playSound(shootsound);
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
 			, (float)Math.PI, 40));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)

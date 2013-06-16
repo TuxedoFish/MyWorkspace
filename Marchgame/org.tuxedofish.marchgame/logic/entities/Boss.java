@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 
 import logic.GridParser;
 import object.Sprite;
@@ -57,7 +58,12 @@ public class Boss {
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets) {
-		explosionsound = sounds.loadClip("explosion.wav");
+		try {
+			explosionsound = sounds.loadClip("explosion.wav");
+			explosionsound.open(sounds.getAudioStream("explosion.wav"));
+		} catch (LineUnavailableException | IOException e) {
+			e.printStackTrace();
+		}
 		this.playerbullets = playerbullets;
 		this.parent = parent;
 		this.pos = new Vector2f(((pos.x/Display.getWidth())*2.0f)-1.0f, 
@@ -196,7 +202,7 @@ public class Boss {
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);
-								SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
+								SoundHandler.playSound(explosionsound);
 								if(me.size() == 1) {
 									for(int k=0; k<50; k++) {
 										bullets.addExplosion(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
@@ -220,7 +226,7 @@ public class Boss {
 					stopped = true;
 				} else {
 					deathexplosionsleft -= 1;
-					SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
+					SoundHandler.playSound(explosionsound);
 					for(int k=0; k<50; k++) {
 						bullets.explosions.add(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
 								(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 

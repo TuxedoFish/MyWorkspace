@@ -11,6 +11,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 
 import logic.GridParser;
 
@@ -105,7 +106,12 @@ public class Enemy extends Sprite{
 	public void setup(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
-		explosionsound = sounds.loadClip("explosion.wav");
+		try {
+			explosionsound = sounds.loadClip("explosion.wav");
+			explosionsound.open(sounds.getAudioStream("explosion.wav"));
+		} catch (LineUnavailableException | IOException e) {
+			e.printStackTrace();
+		}
 		this.width = (float)width/Display.getWidth();
 		this.shootspeed = shootspeed;
 		this.playerbullets = playerbullets;
@@ -289,7 +295,7 @@ public class Enemy extends Sprite{
 					health -= 5;
 					hit = 1;
 					if(health <= 0 && !stopped) {
-						SoundHandler.playSound(explosionsound, sounds.getAudioStream("explosion.wav"));
+						SoundHandler.playSound(explosionsound);
 						parent.addScorePellet(getPos(), 20);
 						stopped = true;
 					}

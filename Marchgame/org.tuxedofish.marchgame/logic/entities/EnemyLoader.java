@@ -93,7 +93,6 @@ public class EnemyLoader extends Thread{
 			BufferedReader reader2;
 			BufferedReader readertest;
 			try {
-				System.out.println(level);
 				readertest = images.getFile("enemies/" + level + ".txt");
 				String linetest = null;
 				while((linetest=readertest.readLine()) != null) {lines+=1;}
