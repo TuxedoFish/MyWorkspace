@@ -76,8 +76,10 @@ public class GuiBar implements GuiElement{
 			g.drawImage(emptybar, 0, 0, null);
 			
 			if(percent < 100) {
-				g.drawImage(bar.getSubimage(0, 0, (int)(((float)bar.getWidth()/100.0f)*(float)percent), 
+				if(percent >= 2) {
+					g.drawImage(bar.getSubimage(0, 0, (int)(((float)bar.getWidth()/100.0f)*(float)percent), 
 						bar.getHeight()), 1, 1, null);
+				}
 			} else {
 				g.drawImage(bar.getSubimage(0, 0, (int)(((float)bar.getWidth()/100.0f)*(float)100), 
 						bar.getHeight()), 1, 1, null);

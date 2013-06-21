@@ -91,7 +91,7 @@ public class Enemy extends Sprite{
 		this.bullettexid = bullettexid;
 		this.movementtype = movementtype;
 		this.animationstyle = animationtype;
-		if(movementtype.contains("swirl")) {
+		if(movementtype.contains("swirl") || movementtype.contains("toplayer")) {
 			setScroll(false);
 			setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 		}
@@ -184,6 +184,17 @@ public class Enemy extends Sprite{
 			} else {
 				texturestage += 1;
 			}
+		}
+		if(animationstyle == 4) {
+			float direction = (float) Math.atan2(playersprite.getPos().y-getPos().y, playersprite.getPos().x-getPos().x);
+			int texture = 6-(int)(direction/(Math.PI/4));
+			if(texture < 0) {
+				texture += 8;
+			}
+			if(texture > 7) {
+				texture -= 8;
+			}
+			this.changeTexture(texture);
 		}
 	}
 	public void setAnimationStyle(int style) {
@@ -283,6 +294,13 @@ public class Enemy extends Sprite{
 		if(movementtype.contains("swirl")) {
 			swirlAround();
 		}
+		if(movementtype.contains("toplayer")) {
+			if(getPos().y > playersprite.getPos().y) {
+				gotoplayer();
+			} else {
+				changePos(0.0f, -0.01f);
+			}
+		}
 		
 		if(Math.abs(d.getPos().y) + 1.0f > getPos().y) {
 			onscreen = true;
@@ -311,6 +329,11 @@ public class Enemy extends Sprite{
 			}
 		}
 		bullets.render(sh, d, util);
+	}
+	private void gotoplayer() {
+		direction=(float) Math.atan2(playersprite.getPos().y - this.getPos().y, 
+				playersprite.getPos().x - this.getPos().x);
+		changePos((float)Math.cos(direction)/200.0f, (float)Math.sin(direction)/200.0f);
 	}
 	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
 		this.threadindex = index[0];

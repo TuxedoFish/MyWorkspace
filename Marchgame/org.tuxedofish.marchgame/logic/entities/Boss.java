@@ -114,6 +114,11 @@ public class Boss {
 					(float)me.get(i).getHeight()/Display.getHeight());
 		}
 	}
+	public void rotate()  {
+		for(int i=0; i<me.size(); i++) {
+			me.get(i).rotate(0.01f);
+		}
+	}
 	public void addSprite(Sprite s, int lowesttexid, int highesttexid, int health, int pattern, boolean hittable, 
 			int threadID, int[] shootthreadids, int[] shootlengths) {
 		me.add(s);
@@ -183,6 +188,7 @@ public class Boss {
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
+	//	rotate();
 		if(anstage == 5) {
 			animate();
 			anstage = 0;

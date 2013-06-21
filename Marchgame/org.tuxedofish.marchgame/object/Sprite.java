@@ -249,15 +249,12 @@ public class Sprite{
 		modelmatrixfb.flip();
 
 		util.setup(datafb, vboID, vaoID, sh, textureid, 2, indices, modelmatrixfb, brightness);
-//		for(int i=0; i<datafb.capacity(); i++) {
-//			System.out.print(datafb.get(i) + ", ");
-//		}
 		util.drawRectangle();
 	}
 	public void rotate(float angle) {
-		modelmatrix.translate(new Vector2f(pos.x, pos.y));
+		modelmatrix.translate(new Vector2f(-pos.x-((float)getWidth()/Display.getWidth()/2), -pos.y-((float)getHeight()/Display.getHeight()/2)));
 		modelmatrix.rotate(angle, new Vector3f(0.0f, 0.0f, 1.0f));
-		modelmatrix.translate(new Vector2f(-pos.x, -pos.y));
+		modelmatrix.translate(new Vector2f(pos.x+((float)getWidth()/Display.getWidth()/2), pos.y+((float)getHeight()/Display.getHeight()/2)));
 	}
 	public Vector2f getPos() {
 		return pos;
@@ -273,5 +270,10 @@ public class Sprite{
 	}
 	public int gettexid() {
 		return textureid;
+	}
+	public void rotateAround(Vector2f pos2, float angle) {
+		modelmatrix.translate(new Vector2f(pos2.x-pos.x, pos2.y-pos.y));
+		modelmatrix.rotate(angle, new Vector3f(pos.x, pos.y, 1.0f));
+		modelmatrix.translate(new Vector2f(-(pos2.x-pos.x), -(pos2.y-pos.y)));
 	}
 }

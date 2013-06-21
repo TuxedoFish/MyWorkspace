@@ -177,6 +177,8 @@ public class Controller {
 			sph.addTexture(images.getImage("Enemy1.png"), "Enemy1.png", 49);
 			sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
 			sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
+			sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
+			sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
 			sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
 			sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
 			sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);

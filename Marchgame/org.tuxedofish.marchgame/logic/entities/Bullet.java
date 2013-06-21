@@ -32,17 +32,21 @@ public class Bullet {
 		this.lastage = age;
 	}
 	public boolean contains(Vector2f pos, float width, float height, DisplaySetup d) {
-		Vector2f p2 = new Vector2f(pos.x + width, pos.y);
-		Vector2f p3 = new Vector2f(pos.x + width, pos.y - height);
-		Vector2f p4 = new Vector2f(pos.x, pos.y - height);
 		float yconv = Display.getWidth()/Display.getHeight();
-		float d1 = (float)Math.sqrt(Math.pow(pos.x - (this.pos.x+(radius/2)), 2) + Math.pow(pos.y - (this.pos.y-(radius*yconv/2)), 2));
-		float d2 = (float)Math.sqrt(Math.pow(p2.x - (this.pos.x+(radius/2)), 2) + Math.pow(p2.y - (this.pos.y-(radius*yconv/2)), 2));
-		float d3 = (float)Math.sqrt(Math.pow(p3.x - (this.pos.x+(radius/2)), 2) + Math.pow(p3.y - (this.pos.y-(radius*yconv/2)), 2));
-		float d4 = (float)Math.sqrt(Math.pow(p4.x - (this.pos.x+(radius/2)), 2) + Math.pow(p4.y - (this.pos.y-(radius*yconv/2)), 2));
 		
-		if(d1<radius || d2<radius || d3<radius || d4<radius) {
-			return true;
+		if(Math.sqrt(Math.pow(pos.x+(width/2) - (this.pos.x+(radius/2)), 2) + Math.pow(pos.y-(height/2) - (this.pos.y-(radius*yconv/2)), 2))<radius) {
+			Vector2f p2 = new Vector2f(pos.x + width, pos.y);
+			Vector2f p3 = new Vector2f(pos.x + width, pos.y - height);
+			Vector2f p4 = new Vector2f(pos.x, pos.y - height);
+			
+			float d1 = (float)Math.sqrt(Math.pow(pos.x - (this.pos.x+(radius/2)), 2) + Math.pow(pos.y - (this.pos.y-(radius*yconv/2)), 2));
+			float d2 = (float)Math.sqrt(Math.pow(p2.x - (this.pos.x+(radius/2)), 2) + Math.pow(p2.y - (this.pos.y-(radius*yconv/2)), 2));
+			float d3 = (float)Math.sqrt(Math.pow(p3.x - (this.pos.x+(radius/2)), 2) + Math.pow(p3.y - (this.pos.y-(radius*yconv/2)), 2));
+			float d4 = (float)Math.sqrt(Math.pow(p4.x - (this.pos.x+(radius/2)), 2) + Math.pow(p4.y - (this.pos.y-(radius*yconv/2)), 2));
+			
+			if(d1<radius || d2<radius || d3<radius || d4<radius) {
+				return true;
+			}
 		}
 		if(this.pos.x >= pos.x && this.pos.x <= pos.x + width 
 				&& this.pos.y <= pos.y && this.pos.y >= pos.y - height) {

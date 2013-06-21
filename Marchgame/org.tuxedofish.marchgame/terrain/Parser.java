@@ -32,6 +32,18 @@ public class Parser {
 				if(new Color(lvl.getRGB(j, i)).equals(Color.green)) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 6, 50, 50));
 				}
+				//grass-pinkflower
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 0, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 15, 50, 50));
+				}
+				//grass-pinkflower-left
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 80, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 16, 50, 50));
+				}
+				//grass-pinkflower-right
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 40, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 17, 50, 50));
+				}
 				//path
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 120, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 0, 50, 50));
