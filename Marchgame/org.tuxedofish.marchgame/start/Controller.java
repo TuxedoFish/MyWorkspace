@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -119,13 +120,19 @@ public class Controller {
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	private ArrayList<Integer> scoretextids = new ArrayList<Integer>();
 	private ArrayList<Integer> scorethreadids = new ArrayList<Integer>();
+	private ArrayList<Vector2f> enemycollisionpoints = new ArrayList<Vector2f>();
+	
+	private Vector4f lastpoint = null;
 	
 	private ScoreHandler sch;
 	private int score = 0;
 	private int prevscore = 0;
+	private Vector2f enemysize;
 	
 	private int healthid;
 	private int scoreid;
+	
+	private int stage = 0;
 	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
@@ -155,6 +162,13 @@ public class Controller {
 	private int playershootthreadid;
 
 	private ArrayList<GuiMarker> markers = new ArrayList<GuiMarker>();
+
+	private GuiElementHandler enemymakergui;
+	
+	private LineCollection enemypolygonslines;
+	private LineCollection enemypathlines;
+
+	private ArrayList<Vector2f> enemypathpoints = new ArrayList<Vector2f>();
 	
 	public void bulletexplode(int index) {
 		player.bulletexplode(index);
@@ -166,28 +180,30 @@ public class Controller {
 		ct.resetTimeStep(index);
 	}
 	public void startup(String level) {
-		display.changepos(-display.getPos().x, -display.getPos().y, 0.0f);
-		levelmap = false;
-		elements = false;
-		gui.clearElements();
-		ih.clearElements();
-		gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-		SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
-		try {
-			sph.addTexture(images.getImage("Enemy1.png"), "Enemy1.png", 49);
-			sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
-			sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
-			sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
-			sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
-			sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
-			sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
-			sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
-			sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(stage == 0) {
+			display.changepos(-display.getPos().x, -display.getPos().y, 0.0f);
+			levelmap = false;
+			elements = false;
+			gui.clearElements();
+			ih.clearElements();
+			gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+			SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
+			try {
+				sph.addTexture(images.getImage("Enemy1.png"), "Enemy1.png", 49);
+				sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
+				sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
+				sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
+				sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
+				sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
+				sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
+				sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
+				sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			sph.finish();
+			el = new EnemyLoader(true, level, this, null, ct, display, sph);
 		}
-		sph.finish();
-		el = new EnemyLoader(true, level, this, null, ct, display, sph);
 	}
 	public void startupfinish() throws IOException {
 		enemies = el.getEnemies();
@@ -317,44 +333,57 @@ public class Controller {
 		elements = true;
 		
 		DataUtils dutils = new DataUtils();
+		GenrealRenderer gr = new GenrealRenderer();
 		
 		while(!Display.isCloseRequested()) {
-			if(started) {
-				rendergl(shaderhandler, display);
-				ih.update(display);
-			} else {
-				if(el != null && el.getFinished()) {
-					try {
-						this.startupfinish();
-					} catch (IOException e) {
-						System.err.println("failed to startup");
-						e.printStackTrace();
-					}
-				}
-				if(el != null && prevpercent != loadpercent) {
-					prevpercent = loadpercent;
-					elements = false;
-					gui.clearElements();
-					ih.clearElements();
-					gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
-					gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
-				}
-				FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
-				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
-				
-				utils.begin(shaderhandler, display);
-				if(!levelmap) {
-					if(el!=null) {
-						utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
-					} else {
-						utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
-					}
-					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			if(stage == 0) {
+				if(started) {
+					rendergl(shaderhandler, display);
+					ih.update(display);
 				} else {
-					map.render(shaderhandler, dutils, 0);
+					if(el != null && el.getFinished()) {
+						try {
+							this.startupfinish();
+						} catch (IOException e) {
+							System.err.println("failed to startup");
+							e.printStackTrace();
+						}
+					}
+					if(el != null && prevpercent != loadpercent) {
+						prevpercent = loadpercent;
+						elements = false;
+						gui.clearElements();
+						ih.clearElements();
+						gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
+						gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+					}
+					FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
+					Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
+					
+					utils.begin(shaderhandler, display);
+					if(!levelmap) {
+						if(el!=null) {
+							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
+						} else {
+							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
+						}
+						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+					} else {
+						map.render(shaderhandler, dutils, 0);
+					}
+					gui.drawElements(shaderhandler);
+					ih.update(display);
 				}
-				gui.drawElements(shaderhandler);
-				ih.update(display);
+			} else {
+				if(stage == 1) {
+					utils.begin(shaderhandler, display);
+					ih.update(display);
+					gr.renderLineCollection(enemypolygonslines, shaderhandler, display, this);
+				} else {
+					utils.begin(shaderhandler, display);
+					ih.update(display);
+					gr.renderLineCollection(enemypathlines, shaderhandler, display, this);
+				}
 			}
 			Display.update();
 			Display.sync(60);
@@ -562,5 +591,102 @@ public class Controller {
 	}
 	public void removeThread(Integer index) {
 		ct.removeTimeStep(index);
+	}
+	public void addLine(float mousex, float mousey) {
+		if(stage == 1) {
+			if(lastpoint != null) {
+				enemypolygonslines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+			} else {
+				enemypolygonslines.addLine(new Line(new Vector4f(mousex, mousey, 0.0f, 1.0f), new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+			}
+			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
+			enemycollisionpoints.add(new Vector2f(mousex, mousey));
+		} else if(stage == 2) {
+			if(lastpoint != null) {
+				enemypathlines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+			} else {
+				enemypathlines.addLine(new Line(new Vector4f(mousex, mousey, 0.0f, 1.0f), new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+			}
+			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
+			enemypathpoints .add(new Vector2f(mousex, mousey));
+		}
+	}
+	public void nextStage() {
+		if(stage == 0) {
+			enemypolygonslines = new LineCollection();
+			try {
+				System.out.println("width : ");
+				BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+			    int width = Integer.valueOf(bufferRead.readLine());
+				System.out.println("height : ");
+				int height = Integer.valueOf(bufferRead.readLine());
+				enemysize = new Vector2f(width, height);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			stage = 1;
+		} else if(stage == 1){
+			enemypathlines = new LineCollection();
+			lastpoint = null;
+			stage += 1;
+		} else {
+			try {
+				ArrayList<String> guns = new ArrayList<String>();
+				BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+				System.out.println("texloc : ");
+				String texloc = (bufferRead.readLine());
+				System.out.println("lti : ");
+				String lti = (bufferRead.readLine());
+				System.out.println("hti : ");
+				String hti = (bufferRead.readLine());
+				System.out.println("pattern : ");
+				String pattern = (bufferRead.readLine());
+				System.out.println("health : ");
+				String health = (bufferRead.readLine());
+				System.out.println("shoottime : ");
+				String shoottime = (bufferRead.readLine());
+				boolean finished = false;
+				while(!finished) {
+					System.out.println("new gun? 0/1 true/false : ");
+					int newgun = Integer.valueOf(bufferRead.readLine());
+					if(newgun == 0) {
+						System.out.println("name : ");
+						String gunname = bufferRead.readLine(); guns.add(gunname);
+						System.out.println("width : ");
+						String gunwidth = (bufferRead.readLine()); guns.add(gunwidth);
+						System.out.println("height : ");
+						String gunheight = (bufferRead.readLine()); guns.add(gunheight);
+						System.out.println("visible : ");
+						String visible = (bufferRead.readLine()); guns.add(visible);
+					} else if(newgun == 1){
+						finished = true;
+					}
+				}
+				System.out.println("size : ");
+				String size = (bufferRead.readLine());
+				System.out.println("movementtype : ");
+				String movementtype = bufferRead.readLine();
+				System.out.println("animationtype : ");
+				String animationtype = (bufferRead.readLine());
+				
+				PrintWriter out
+				   = new PrintWriter(new BufferedWriter(new FileWriter("example.txt")));
+				for(int i=0; i<enemypathpoints.size(); i++) {
+					out.println("ep " + enemypathpoints.get(i).x + " " + enemypathpoints.get(i).y + " " + i);
+				}
+				out.println(texloc); out.println(lti); out.println(hti); out.println(pattern); out.println(health); out.println(shoottime);  
+				for(int i=0; i<guns.size(); i+=4) {
+					out.println("gun " + guns.get(i*4) + " " + guns.get((i*4) + 1) + " " + guns.get((i*4) + 2) + " " + guns.get((i*4) + 3));
+				}
+				out.println(size); out.println(movementtype); out.println(animationtype);
+				for(int i=0; i<enemycollisionpoints.size(); i++) {
+					out.println("collison " + (enemycollisionpoints.get(i).x+1.0f)/2.0f + " "+ (enemycollisionpoints.get(i).y+1.0f)/2.0f);
+				}
+				out.close();
+				stage = 0;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

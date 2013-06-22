@@ -11,6 +11,7 @@ Enemy3.png
 2
 10
 2000
-gun gun1.png 50 50 20 2 false
+100
+gun gun1.png 50 50 false
 swirl
 1

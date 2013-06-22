@@ -3,9 +3,9 @@ ep 333 477 4
 ep 373 260 2
 ep 451 163 1
 ep 639 67 0
-Enemy2.png
+cyborg.png
 0
-15
+3
 20
 1
 10

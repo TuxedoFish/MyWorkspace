@@ -142,6 +142,7 @@ public class InputHandler {
 		}
 		if(Mouse.isButtonDown(0)) {
 			if(!mousedown) {
+				parent.addLine((float)Mouse.getX()/Display.getWidth()*2.0f-1.0f, (float)Mouse.getY()/Display.getHeight()*2.0f-1.0f);
 				if(shootduration >= 200) {
 					parent.shoot();
 					parent.resetThread(parent.getPlayerShootThreadId());
@@ -193,6 +194,7 @@ public class InputHandler {
 				if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_W)  up = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_S)  down = true;
+				if (Keyboard.getEventKey() == Keyboard.KEY_X)  parent.nextStage();
 		    	} else {
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_A)  leftdown = false;
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = false;

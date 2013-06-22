@@ -84,8 +84,8 @@ public class Enemy extends Sprite{
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid,
-			String movementtype, int animationtype) {
-		super(parent, 100, 100, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
+			String movementtype, int animationtype, int size) {
+		super(parent, size, size, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f))), texid);
 		this.explosiontexid = explosiontexid;
 		this.bullettexid = bullettexid;
@@ -194,7 +194,25 @@ public class Enemy extends Sprite{
 			if(texture > 7) {
 				texture -= 8;
 			}
-			this.changeTexture(texture);
+			this.changeTexture(texture + (texid*10));
+			if(texturestage>speed) {
+				if(isup) {
+					if(texid<hti) {
+						texid += 1;
+					} else {
+						isup = false;
+					}
+				} else {
+					if(texid>lti) {
+						texid=0;
+					} else {
+						isup = true;
+					}
+				}
+				texturestage = 0;
+			} else {
+				texturestage += 1;
+			}
 		}
 	}
 	public void setAnimationStyle(int style) {

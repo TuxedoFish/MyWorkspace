@@ -3,14 +3,13 @@ ep 333 477 4
 ep 373 260 2
 ep 451 163 1
 ep 639 67 0
-Enemy2.png
+missile.png
 0
-15
+3
 20
 1
 10
 2000
-100
-gun gun1.png 50 50 false
-path
-1
+64
+toplayer
+4

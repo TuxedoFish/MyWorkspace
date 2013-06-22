@@ -11,7 +11,7 @@ public class LineCollection {
 	}
 	public void addLine(Line l) {
 		FloatBuffer f = data;
-
+		
 		int pos = data.position();
 			
 		data = FloatBuffer.allocate(data.capacity() + 20);
