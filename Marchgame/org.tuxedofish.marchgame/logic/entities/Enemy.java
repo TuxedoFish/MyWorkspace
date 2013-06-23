@@ -75,6 +75,8 @@ public class Enemy extends Sprite{
 	private int shootthreadindex;
 	private String name;
 	
+	private boolean firing = false;
+	
 	private SoundHandler sounds = new SoundHandler();
 	private Clip explosionsound;
 	
@@ -164,11 +166,20 @@ public class Enemy extends Sprite{
 						this.changeTexture(texid+1);
 						texid += 1;
 					} else {
+						if(pattern == 3) {
+							firing = true;
+							speed = 10;
+						}
 						isup = false;
 					}
 				} else {
 					if(texid>lti) {
 						if(animationstyle == 1) {
+							if(pattern == 3) {
+								firing = false;
+								speed = 3;
+								for(int i=0; i<guns.size(); i++) {guns.get(i).clear();}
+							}
 							this.changeTexture(texid-1);
 							texid -= 1;
 						}
@@ -306,6 +317,9 @@ public class Enemy extends Sprite{
 	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		updateColl(d);
 		animate();
+		if(firing) {
+			for(int i=0; i<guns.size(); i++) {guns.get(i).fire();}
+		}
 		if(movementtype.contains("path")) {
 			followPath(d);
 		}
@@ -364,7 +378,7 @@ public class Enemy extends Sprite{
 	}
 	public void fire(DisplaySetup d) {
 		for(int i=0; i<guns.size(); i++) {
-			if(!stopped) {
+			if(!stopped && pattern != 3) {
 				guns.get(i).update(getPos(), (float)myrect.getWidth(), (float)myrect.getHeight());
 				guns.get(i).fire();
 			}

@@ -105,11 +105,11 @@ public class Player extends Sprite{
 	}
 	public void bulletexplode(int index) {
 		bullets.get(index).setDestroyingSelf(true);
-		explosions.add(new Bullet(bullets.get(index).getPos(), 0.0f, 70));
+		explosions.add(new Bullet(bullets.get(index).getPos(), 0.0f, 70, "explosion"));
 		explosions.add(new Bullet(new Vector2f((float)(bullets.get(index).getPos().x + 
-				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
+				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
 		explosions.add(new Bullet(new Vector2f((float)(bullets.get(index).getPos().x + 
-				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70));
+				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
 	}
 	public void setMovement(int movement) {
 		this.movement = movement;
@@ -177,11 +177,11 @@ public class Player extends Sprite{
 	public void shoot() {
 		SoundHandler.playSound(shootsound);
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
-			, (float)Math.PI, 40));
+			, (float)Math.PI, 40, "normal"));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
-		, (float)(Math.PI + (Math.PI/25)), 40));
+		, (float)(Math.PI + (Math.PI/25)), 40, "normal"));
 		bullets.add(new Bullet(new Vector2f(getPos().x + (getWidth()/(Display.getWidth()*2.0f)), getPos().y)
-		, (float)(Math.PI - (Math.PI/25)), 40));
+		, (float)(Math.PI - (Math.PI/25)), 40, "normal"));
 	}
 	public ArrayList<Bullet> getBullets() {
 		return bullets;

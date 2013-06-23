@@ -36,9 +36,19 @@ public class Gun extends Sprite {
 					this.getPos().x - player.getPos().x);
 			shoot((float)compassBearing);
 		}
+		if(pattern == 3) {
+			laser(getPos());
+		}
+	}
+	public void clear() {
+		bullets.stoplaser();
+	}
+	private void laser(Vector2f pos) {
+		bullets.stoplaser();
+		bullets.shootlaser(pos);
 	}
 	private void shoot(float rot) {
-		bullets.add(new Bullet(new Vector2f(this.getPos().x+(this.getWidth()/(Display.getWidth()*2.0f)), this.getPos().y), rot, 40));
+		bullets.add(new Bullet(new Vector2f(this.getPos().x+(this.getWidth()/(Display.getWidth()*2.0f)), this.getPos().y), rot, 40, "normal"));
 	}
 	public boolean isVisible() {
 		return visible;

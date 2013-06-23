@@ -15,11 +15,16 @@ public class Bullet {
 	private boolean destroyingself = false;
 	private int lastage = 0;
 	private float radius;
+	private String type;
 	
-	public Bullet(Vector2f pos, float rot, float radius) {
+	public Bullet(Vector2f pos, float rot, float radius, String type) {
 		this.rot = rot;
 		this.pos = pos;
 		this.radius = radius/Display.getWidth();
+		this.type = type;
+	}
+	public String getType() {
+		return type;
 	}
 	public void age() {
 		age += 1;

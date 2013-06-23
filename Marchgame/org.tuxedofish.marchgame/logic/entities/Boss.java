@@ -184,7 +184,7 @@ public class Boss {
 	}
 	private void shoot(float rot, int index) {
 		bullets.add(new Bullet(new Vector2f(me.get(index).getPos().x+(me.get(index).getWidth()/(Display.getWidth()*2.0f)), 
-				me.get(index).getPos().y), rot, 40));
+				me.get(index).getPos().y), rot, 40, "normal"));
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
@@ -213,7 +213,7 @@ public class Boss {
 									for(int k=0; k<50; k++) {
 										bullets.addExplosion(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
 												(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
-												(Math.random()*myrect.get(0).getHeight()))), 0, 70));
+												(Math.random()*myrect.get(0).getHeight()))), 0, 70, "normal"));
 									}
 								}
 								j-=1;
@@ -236,7 +236,7 @@ public class Boss {
 					for(int k=0; k<50; k++) {
 						bullets.explosions.add(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
 								(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
-								(Math.random()*myrect.get(0).getHeight()))), 0, 70));
+								(Math.random()*myrect.get(0).getHeight()))), 0, 70, "explosion"));
 					}
 				}
 			}
