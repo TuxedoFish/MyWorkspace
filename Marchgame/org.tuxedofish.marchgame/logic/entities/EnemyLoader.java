@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import images.ImageReturn;
 
 import java.awt.Color;
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -170,7 +171,7 @@ public class EnemyLoader extends Thread{
 					troopcon = troop.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
 							Player.class, ArrayList.class,  TextureHolder[].class,
 							int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class,
-							String.class, int.class, int.class); 
+							String.class, int.class, int.class, ArrayList.class); 
 				} catch (NoSuchMethodException | SecurityException e1) {
 					e1.printStackTrace();
 				}
@@ -208,6 +209,26 @@ public class EnemyLoader extends Thread{
 					String movementtype = line2;
 					int animationtype = Integer.valueOf(reader.readLine());
 					
+					
+					int id = 0;
+					ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+					ArrayList<Vector2f> points = new ArrayList<Vector2f>();
+					
+					while((line2=reader.readLine())!= null && line2.startsWith("collision")) {
+						String line3 = null;
+						String[] data = line2.split(" ");
+						points.add(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])));
+						while((line3=reader.readLine())!= null && line3.endsWith(Integer.toString(id))) {
+							data = line3.split(" ");
+							points.add(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])));
+						}
+						id += 1;
+						polygons.add(new Polygon());
+						for(int i=0; i<points.size(); i++) {
+							polygons.get(polygons.size()-1).addPoint((int)points.get(i).x, (int)points.get(i).y);
+						}
+						points.clear();
+					}
 					reader.close();
 					try {
 						allenemies.add((Troop) troopcon.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
@@ -215,7 +236,7 @@ public class EnemyLoader extends Thread{
 								player.getBullets(), new TextureHolder[]{spriteholder.getTexture("explosion"), 
 							spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, 
 								lti, hti, width, pattern, health, shootspeed, spriteholder.getTextureID("bullets"), 
-								spriteholder.getTextureID("explosion"), movementtype, animationtype, size));
+								spriteholder.getTextureID("explosion"), movementtype, animationtype, size, polygons));
 						for(int i=0; i<guns.size(); i++) {
 							allenemies.get(allenemies.size()-1).addGun(guns.get(i), visible.get(i));
 						}

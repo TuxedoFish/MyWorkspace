@@ -1,5 +1,8 @@
 package logic.entities;
 
+import java.awt.Polygon;
+import java.awt.geom.Rectangle2D;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
@@ -16,12 +19,15 @@ public class Bullet {
 	private int lastage = 0;
 	private float radius;
 	private String type;
+	private Rectangle2D bounds;
 	
 	public Bullet(Vector2f pos, float rot, float radius, String type) {
 		this.rot = rot;
 		this.pos = pos;
 		this.radius = radius/Display.getWidth();
 		this.type = type;
+		this.bounds = new Rectangle2D.Float();
+		this.bounds.setRect((pos.x+1.0f)*(Display.getWidth()/2.0f), (pos.y+1.0f)*(Display.getHeight()/2.0f), radius*2.0f, radius*2.0f);
 	}
 	public String getType() {
 		return type;
@@ -79,5 +85,14 @@ public class Bullet {
 	}
 	public Vector2f getPos() {
 		return pos;
+	}
+	public boolean contains(Vector2f pos, Polygon polygon, DisplaySetup d) {
+		Polygon polygon2 = new Polygon();
+		for(int i=0; i<polygon.npoints; i++) {
+			polygon2.addPoint((int)((pos.x+1.0f)*(Display.getWidth()/2.0f)+polygon.xpoints[i]), 
+					(int)((pos.y+1.0f)*(Display.getHeight()/2.0f)+polygon.ypoints[i]));
+		}
+		System.out.println(pos + " : " + this.bounds + " : " + polygon2.ypoints[0] + " : " + polygon.ypoints[0]);
+		return polygon2.contains(this.bounds);
 	}
 }

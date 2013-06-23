@@ -2,6 +2,7 @@ package logic.entities;
 
 import images.ImageReturn;
 
+import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -83,12 +84,15 @@ public class Enemy extends Sprite{
 	private int bullettexid;
 	private int explosiontexid;
 	
+	private ArrayList<Polygon> collisions = new ArrayList<Polygon>();
+	
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
 			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid,
-			String movementtype, int animationtype, int size) {
+			String movementtype, int animationtype, int size, ArrayList<Polygon> collisions) {
 		super(parent, size, size, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f))), texid);
+		this.collisions = collisions;
 		this.explosiontexid = explosiontexid;
 		this.bullettexid = bullettexid;
 		this.movementtype = movementtype;
@@ -339,7 +343,7 @@ public class Enemy extends Sprite{
 		}
 		if(!stopped) {
 			for(int i=0; i<playerbullets.size(); i++) {
-				if(playerbullets.get(i).contains(this.getPos(), (float)myrect.getWidth(), (float)myrect.getHeight(), d)
+				if(playerbullets.get(i).contains(this.getPos(), collisions.get(texid), d)
 						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
 					health -= 5;

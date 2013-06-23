@@ -1,5 +1,6 @@
 package logic.entities.troops;
 
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -22,10 +23,10 @@ public class Troop extends Enemy{
 	public Troop(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets,  TextureHolder[] ts,
 			int lowesttexid, int highesttexid, int width, int pattern, int health, int shootspeed,
-			int bullettexid, int explosiontexid, String movementtype, int animationstyle, int size) {
+			int bullettexid, int explosiontexid, String movementtype, int animationstyle, int size, ArrayList<Polygon> collision) {
 		super(pos, texid, parent, ep, player, playerbullets, lowesttexid,
 				highesttexid, width, pattern, ts, health, shootspeed, 
-				bullettexid, explosiontexid, movementtype, animationstyle, size);
+				bullettexid, explosiontexid, movementtype, animationstyle, size, collision);
 	}
 	public Enemy getEnemy() {
 		return this;

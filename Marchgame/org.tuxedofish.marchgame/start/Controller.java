@@ -111,6 +111,8 @@ public class Controller {
 	private int highscore;
 	private int highscoreid;
 	
+	private int texid;
+	
 	private boolean elements = false;
 	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
@@ -121,6 +123,10 @@ public class Controller {
 	private ArrayList<Integer> scoretextids = new ArrayList<Integer>();
 	private ArrayList<Integer> scorethreadids = new ArrayList<Integer>();
 	private ArrayList<Vector2f> enemycollisionpoints = new ArrayList<Vector2f>();
+	
+	private boolean update = false;
+	
+	private EnemyAutoGenerator eag = new EnemyAutoGenerator(this);
 	
 	private Vector4f lastpoint = null;
 	
@@ -162,13 +168,17 @@ public class Controller {
 	private int playershootthreadid;
 
 	private ArrayList<GuiMarker> markers = new ArrayList<GuiMarker>();
-
-	private GuiElementHandler enemymakergui;
 	
 	private LineCollection enemypolygonslines;
 	private LineCollection enemypathlines;
 
 	private ArrayList<Vector2f> enemypathpoints = new ArrayList<Vector2f>();
+	private ArrayList<Integer> enemycollisiontexids = new ArrayList<Integer>();
+	private int enemytexid;
+	
+	private Sprite enemybg;
+
+	private boolean finished = true;
 	
 	public void bulletexplode(int index) {
 		player.bulletexplode(index);
@@ -378,6 +388,11 @@ public class Controller {
 				if(stage == 1) {
 					utils.begin(shaderhandler, display);
 					ih.update(display);
+					if(!finished) {
+						enemybg.finish(glGenBuffers(), glGenVertexArrays());
+						finished = true;
+					}
+					enemybg.render(shaderhandler, utils, 0);
 					gr.renderLineCollection(enemypolygonslines, shaderhandler, display, this);
 				} else {
 					utils.begin(shaderhandler, display);
@@ -601,6 +616,7 @@ public class Controller {
 			}
 			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
 			enemycollisionpoints.add(new Vector2f(mousex, mousey));
+			enemycollisiontexids.add(enemytexid);
 		} else if(stage == 2) {
 			if(lastpoint != null) {
 				enemypathlines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
@@ -611,82 +627,54 @@ public class Controller {
 			enemypathpoints .add(new Vector2f(mousex, mousey));
 		}
 	}
+	public void setStage(int stage) {
+		this.stage = stage;
+	}
+	public int getStage() {
+		return stage;
+	}
+	public void resetPolygonLines() {
+		enemypolygonslines = new LineCollection();
+	}
 	public void nextStage() {
-		if(stage == 0) {
-			enemypolygonslines = new LineCollection();
-			try {
-				System.out.println("width : ");
-				BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-			    int width = Integer.valueOf(bufferRead.readLine());
-				System.out.println("height : ");
-				int height = Integer.valueOf(bufferRead.readLine());
-				enemysize = new Vector2f(width, height);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			stage = 1;
-		} else if(stage == 1){
-			enemypathlines = new LineCollection();
-			lastpoint = null;
-			stage += 1;
-		} else {
-			try {
-				ArrayList<String> guns = new ArrayList<String>();
-				BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-				System.out.println("texloc : ");
-				String texloc = (bufferRead.readLine());
-				System.out.println("lti : ");
-				String lti = (bufferRead.readLine());
-				System.out.println("hti : ");
-				String hti = (bufferRead.readLine());
-				System.out.println("pattern : ");
-				String pattern = (bufferRead.readLine());
-				System.out.println("health : ");
-				String health = (bufferRead.readLine());
-				System.out.println("shoottime : ");
-				String shoottime = (bufferRead.readLine());
-				boolean finished = false;
-				while(!finished) {
-					System.out.println("new gun? 0/1 true/false : ");
-					int newgun = Integer.valueOf(bufferRead.readLine());
-					if(newgun == 0) {
-						System.out.println("name : ");
-						String gunname = bufferRead.readLine(); guns.add(gunname);
-						System.out.println("width : ");
-						String gunwidth = (bufferRead.readLine()); guns.add(gunwidth);
-						System.out.println("height : ");
-						String gunheight = (bufferRead.readLine()); guns.add(gunheight);
-						System.out.println("visible : ");
-						String visible = (bufferRead.readLine()); guns.add(visible);
-					} else if(newgun == 1){
-						finished = true;
-					}
-				}
-				System.out.println("size : ");
-				String size = (bufferRead.readLine());
-				System.out.println("movementtype : ");
-				String movementtype = bufferRead.readLine();
-				System.out.println("animationtype : ");
-				String animationtype = (bufferRead.readLine());
-				
-				PrintWriter out
-				   = new PrintWriter(new BufferedWriter(new FileWriter("example.txt")));
-				for(int i=0; i<enemypathpoints.size(); i++) {
-					out.println("ep " + enemypathpoints.get(i).x + " " + enemypathpoints.get(i).y + " " + i);
-				}
-				out.println(texloc); out.println(lti); out.println(hti); out.println(pattern); out.println(health); out.println(shoottime);  
-				for(int i=0; i<guns.size(); i+=4) {
-					out.println("gun " + guns.get(i*4) + " " + guns.get((i*4) + 1) + " " + guns.get((i*4) + 2) + " " + guns.get((i*4) + 3));
-				}
-				out.println(size); out.println(movementtype); out.println(animationtype);
-				for(int i=0; i<enemycollisionpoints.size(); i++) {
-					out.println("collison " + (enemycollisionpoints.get(i).x+1.0f)/2.0f + " "+ (enemycollisionpoints.get(i).y+1.0f)/2.0f);
-				}
-				out.close();
-				stage = 0;
-			} catch (IOException e) {
-				e.printStackTrace();
+		update = true;
+	}
+	public void resetPathPoints() {
+		enemypathlines = new LineCollection();
+		lastpoint = null;
+	}
+	public ArrayList<Vector2f> getEnemyCollisionPoints() {
+		return enemycollisionpoints;
+	}
+	public ArrayList<Vector2f> getEnemyPathPoints() {
+		return enemypathpoints;
+	}
+	public ArrayList<Integer> getEnemyCollisonTexids() {
+		return enemycollisiontexids;
+	}
+	public void changeEnemyBg(String enemytexloc, int enemytexid, Vector2f enemysize) {
+		ImageReturn images = new ImageReturn(); GridParser gp = new GridParser();
+		try {
+			this.enemytexid = enemytexid;
+			enemybg = new Sprite(images.getImage(enemytexloc), this, 1280, 960, gp.parseGrid(images.getImage(enemytexloc), enemysize.x, enemysize.y), 
+					enemytexid, new Vector2f(-1.0f, 1.0f));
+			finished  = false;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void copy(int texid) {
+		for(int i=0; i<enemycollisiontexids.size(); i++) {
+			if(enemycollisiontexids.get(i) == texid) {
+				enemycollisionpoints.add(enemycollisionpoints.get(i));
+				enemycollisiontexids.add(texid+1);
 			}
 		}
+	}
+	public void doneUpdate() {
+		update = false;
+	}
+	public boolean isUpdate() {
+		return update;
 	}
 }
