@@ -346,7 +346,7 @@ public class Enemy extends Sprite{
 				if(playerbullets.get(i).contains(this.getPos(), collisions.get(texid), d)
 						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
-					health -= 5;
+					health -= 1;
 					hit = 1;
 					if(health <= 0 && !stopped) {
 						SoundHandler.playSound(explosionsound);

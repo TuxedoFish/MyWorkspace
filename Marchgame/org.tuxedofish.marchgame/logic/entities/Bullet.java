@@ -76,6 +76,7 @@ public class Bullet {
 	}
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
+		this.bounds.setRect((pos.x+1.0f)*(Display.getWidth()/2.0f), (pos.y+1.0f)*(Display.getHeight()/2.0f), radius*2.0f, radius*2.0f);
 	}
 	public int getTexid() {
 		return texid;
@@ -89,10 +90,13 @@ public class Bullet {
 	public boolean contains(Vector2f pos, Polygon polygon, DisplaySetup d) {
 		Polygon polygon2 = new Polygon();
 		for(int i=0; i<polygon.npoints; i++) {
-			polygon2.addPoint((int)((pos.x+1.0f)*(Display.getWidth()/2.0f)+polygon.xpoints[i]), 
-					(int)((pos.y+1.0f)*(Display.getHeight()/2.0f)+polygon.ypoints[i]));
+			polygon2.addPoint((int)(((pos.x+1.0f)*(Display.getWidth()/2.0f))+polygon.xpoints[i]), 
+					(int)(((pos.y+1.0f)*(Display.getHeight()/2.0f))-polygon.ypoints[i]));
 		}
-		System.out.println(pos + " : " + this.bounds + " : " + polygon2.ypoints[0] + " : " + polygon.ypoints[0]);
-		return polygon2.contains(this.bounds);
+		if(!destroyingself) {
+			return polygon2.contains(this.bounds);
+		} else {
+			return false;
+		}
 	}
 }
