@@ -17,6 +17,9 @@ public class Block {
 		 this.y = y;
 	     this.texid = texid;
 	}
+	public void setTexID(int id) { 
+		this.texid = id;
+	}
 	public int getWidth() {
 		return width;
 	}

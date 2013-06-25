@@ -36,14 +36,6 @@ public class Parser {
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 0, 255))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 15, 50, 50));
 				}
-				//grass-pinkflower-left
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 80, 255))) {
-					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 16, 50, 50));
-				}
-				//grass-pinkflower-right
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 40, 255))) {
-					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 17, 50, 50));
-				}
 				//path
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 120, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 0, 50, 50));
@@ -88,6 +80,31 @@ public class Parser {
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(10, 150, 10))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 14, 50, 50));
 				}
+			}
+		}
+		float w = 50.0f/Display.getWidth();
+		float h = 50.0f/Display.getHeight();
+		for(int i=0; i<blocks.size(); i++) {
+			if(blocks.get(i).getTexid() == 15) {
+				boolean left = false, right = false, top = false, bottom = false;
+				for(int k=0; k<blocks.size(); k++) {
+					if(blocks.get(k).getTexid() >= 15 && blocks.get(k).getTexid() <= 21) {
+						if(blocks.get(k).y == blocks.get(i).y) {
+							if(blocks.get(k).x == blocks.get(i).x + w) right = true;
+							if(blocks.get(k).x == blocks.get(i).x - w) left = true;
+						}
+						if(blocks.get(k).x == blocks.get(i).x) {
+							if(blocks.get(k).y == blocks.get(i).y - h) bottom = true;
+							if(blocks.get(k).y == blocks.get(i).y + h) top = true;
+						}
+					}
+				}
+				if(!right && left && bottom && top) {blocks.get(i).setTexID(16);}
+				if(right && !left && bottom && top) {blocks.get(i).setTexID(17);}
+				if(right && !left && !top && bottom) {blocks.get(i).setTexID(18);}
+				if(!right && left && !top && bottom) {blocks.get(i).setTexID(19);}
+				if(!right && left && top && !bottom) {blocks.get(i).setTexID(20);}
+				if(right && !left && top && !bottom) {blocks.get(i).setTexID(21);}
 			}
 		}
 		return blocks;
