@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -133,13 +134,33 @@ public class EnemyLoader extends Thread{
 				Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
 				Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), parent, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
 				
-				Building b = new Building(images.getImage("building3.png"), player.getBullets(), parent, 
-						340, 500, new Vector2f(-0.9f, 5.0f), 100, gp.parseGrid(images.getImage("building3.png"), 167, 250));
-				Building b2 = new Building(images.getImage("building3.png"), player.getBullets(), parent, 
-						340, 500, new Vector2f(-0.9f, 2.0f), 100, gp.parseGrid(images.getImage("building3.png"), 167, 250));
-				Building b3 = new Building(images.getImage("tree2.png"), player.getBullets(), parent, 
-						200, 200, new Vector2f(0.0f, 2.0f), 100, gp.parseGrid(images.getImage("tree.png"), 100, 100));
-				buildings.add(b); buildings.add(b2); buildings.add(b3);
+//				Vector2f p = new Vector2f(-1.0f, 0.0f);
+//				BufferedImage img = images.getImage("trees.png");
+//				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("foo.out")));
+//				
+//				for(int i=0; i<img.getWidth()-1; i++) {
+//					for(int j=0; j<img.getHeight()-1; j++) {
+//						if(new Color(img.getRGB(i, j)).equals(new Color(26, 128, 23))) {
+//							 out.write("tree.png " + ((p.x)+((50.0f/Display.getWidth())*i)) + " " +  ((p.y)+(50.0f/Display.getHeight())*j) + " 200 " + "200");
+//							 out.println();
+//						}
+//					}
+//				}
+//				
+//				out.close();
+				reader2 = images.getFile("buildings/" + level + ".txt");
+				String line = null;
+				
+				while((line = reader2.readLine()) != null) {
+					String[] parts = line.split(" ");
+					
+					buildings.add(new Building(images.getImage(parts[0]), player.getBullets(), parent, Integer.valueOf(parts[3]),
+							Integer.valueOf(parts[4]), new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 35, 
+							gp.parseGrid(images.getImage(parts[0]), Integer.valueOf(parts[5]), Integer.valueOf(parts[6])), 
+							Boolean.valueOf(parts[7])));
+				}
+				
+				reader2.close();
 				
 				boss = new Boss(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets());
 				boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 

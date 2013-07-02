@@ -199,7 +199,6 @@ public class Controller {
 			gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 			SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
 			try {
-				sph.addTexture(images.getImage("Enemy1.png"), "Enemy1.png", 49);
 				sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
 				sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
 				sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);

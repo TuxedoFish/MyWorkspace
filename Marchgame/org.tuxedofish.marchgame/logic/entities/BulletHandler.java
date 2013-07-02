@@ -136,7 +136,7 @@ public class BulletHandler extends ArrayList<Bullet>{
 	}
 	public void shootlaser(Vector2f pos) {
 		for(int i=0; i<20; i++) {
-			add(new Bullet(new Vector2f(pos.x+0.025f, pos.y - i*0.08f), 0, 20, "laser"));
+			add(new Bullet(new Vector2f(pos.x+0.03f, pos.y - 0.05f - i*0.08f), 0, 20, "laser"));
 			bullet.changeTexture(12);
 		}
 	}

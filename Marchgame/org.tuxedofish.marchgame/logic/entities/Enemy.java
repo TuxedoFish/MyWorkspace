@@ -181,7 +181,7 @@ public class Enemy extends Sprite{
 						if(animationstyle == 1) {
 							if(pattern == 3) {
 								firing = false;
-								speed = 3;
+								speed = 10;
 								for(int i=0; i<guns.size(); i++) {guns.get(i).clear();}
 							}
 							this.changeTexture(texid-1);
@@ -276,7 +276,7 @@ public class Enemy extends Sprite{
 						this.p = ep.getPoint(index);
 						this.lastp = ep.getPoint(index-1);
 						dist = (int)(Math.sqrt(Math.pow(p.getPos().x - lastp.getPos().x, 2) + 
-								Math.pow(p.getPos().y - lastp.getPos().y, 2))*100.0f);
+								Math.pow(p.getPos().y - lastp.getPos().y, 2))*300.0f);
 					}
 				} else {
 					this.changePos((p.getPos().x - lastp.getPos().x)/dist, (p.getPos().y - lastp.getPos().y)/dist);
@@ -321,7 +321,7 @@ public class Enemy extends Sprite{
 	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		updateColl(d);
 		animate();
-		if(firing) {
+		if(firing && !stopped) {
 			for(int i=0; i<guns.size(); i++) {guns.get(i).fire();}
 		}
 		if(movementtype.contains("path")) {

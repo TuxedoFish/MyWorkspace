@@ -27,14 +27,16 @@ public class Building extends Sprite{
 	private int threadid;
 	private int health;
 	private boolean stopped = false;
+	private boolean shoot = false;
 	
 	public Building(BufferedImage img, ArrayList<Bullet> playerbullets, Controller parent, int width, 
-			int height, Vector2f pos, int health, TextureHolder texture) {
+			int height, Vector2f pos, int health, TextureHolder texture, boolean shootable) {
 		super(img, parent, width, height, texture, 0, pos);
 		
 		this.playerbullets = playerbullets;
 		this.parent = parent;
 		this.health = health;
+		this.shoot = shootable;
 	}
 	public void finish(int vboid, int vaoid, int threadid) {
 		finish(vboid, vaoid);
@@ -47,7 +49,7 @@ public class Building extends Sprite{
 		hit = 0;
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
-		if(!stopped) {
+		if(!stopped && shoot) {
 			for(int i=0; i<playerbullets.size(); i++) {
 				if(playerbullets.get(i).contains(getPos(), (float)getWidth()/Display.getWidth(), 
 						(float)getHeight()/Display.getHeight(), d) && !playerbullets.get(i).getDestroying()) {
@@ -56,8 +58,7 @@ public class Building extends Sprite{
 					parent.resetThread(threadid);
 					hit = 1;
 					if(health <= 0) {
-						//SoundHandler.playSound("explosion.wav");
-						for(int j=0; j<20; j++) {
+						for(int j=0; j<2; j++) {
 							parent.addScorePellet(new Vector2f((float)(getPos().x + (Math.random()*((float)getWidth()/Display.getWidth()))), 
 									(float)(getPos().y - (Math.random()*((float)getHeight()/Display.getHeight())))), 5);
 						}

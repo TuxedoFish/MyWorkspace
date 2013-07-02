@@ -9,7 +9,7 @@ cyborg.png
 20
 3
 10
-2000
+5000
 100
 gun gun1.png 50 50 false
 path

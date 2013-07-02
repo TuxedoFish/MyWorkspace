@@ -55,7 +55,7 @@ public class InputHandler {
 	public Cursor newCursor(String cursor) {
 		ImageReturn images = new ImageReturn();
 		try {
-			int[] data=images.getImage(cursor).getRaster().getPixels(0,0,16,16,(int[])null);
+			int[] data=images.getImage("gui/" + cursor).getRaster().getPixels(0,0,16,16,(int[])null);
 			    
 			IntBuffer ib=BufferUtils.createIntBuffer(16*16);
 			
