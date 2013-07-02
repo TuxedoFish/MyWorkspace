@@ -1,6 +1,7 @@
 package logic.entities;
 
 import java.awt.Polygon;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import org.lwjgl.opengl.Display;
@@ -19,15 +20,16 @@ public class Bullet {
 	private int lastage = 0;
 	private float radius;
 	private String type;
-	private Rectangle2D bounds;
+	private Line2D bounds;
 	
 	public Bullet(Vector2f pos, float rot, float radius, String type) {
 		this.rot = rot;
 		this.pos = pos;
 		this.radius = radius/Display.getWidth();
 		this.type = type;
-		this.bounds = new Rectangle2D.Float();
-		this.bounds.setRect((pos.x+1.0f)*(Display.getWidth()/2.0f), (pos.y+1.0f)*(Display.getHeight()/2.0f), radius*2.0f, radius*2.0f);
+		this.bounds = new Line2D.Float();
+		this.bounds.setLine((this.pos.x+1.0f)*(Display.getWidth()/2.0f), (this.pos.y+1.0f)*(Display.getHeight()/2.0f), 
+				(this.pos.x+1.0f)*(Display.getWidth()/2.0f), (this.pos.y+1.0f)*(Display.getHeight()/2.0f));
 	}
 	public String getType() {
 		return type;
@@ -75,8 +77,9 @@ public class Bullet {
 		this.texid = texid;
 	}
 	public void setPos(Vector2f pos) {
+		this.bounds.setLine((this.pos.x+1.0f)*(Display.getWidth()/2.0f), (this.pos.y+1.0f)*(Display.getHeight()/2.0f), 
+				(pos.x+1.0f)*(Display.getWidth()/2.0f), (pos.y+1.0f)*(Display.getHeight()/2.0f));
 		this.pos = pos;
-		this.bounds.setRect((pos.x+1.0f)*(Display.getWidth()/2.0f), (pos.y+1.0f)*(Display.getHeight()/2.0f), radius*2.0f, radius*2.0f);
 	}
 	public int getTexid() {
 		return texid;
@@ -94,7 +97,18 @@ public class Bullet {
 					(int)(((pos.y+1.0f)*(Display.getHeight()/2.0f))-polygon.ypoints[i]));
 		}
 		if(!destroyingself) {
-			return polygon2.contains(this.bounds);
+			boolean intersect = false;
+			for (int i = 0; i < polygon2.npoints - 1; i++) {
+			   intersect = this.bounds.intersectsLine(polygon2.xpoints[i], polygon2.ypoints[i], polygon2.xpoints[i+1], polygon2.ypoints[i+1]);
+			   if (intersect) {
+			      break;
+			   }
+			}
+			if (!intersect) {
+			   intersect =  this.bounds.intersectsLine(polygon2.xpoints[polygon2.npoints - 1], polygon2.ypoints[polygon2.npoints - 1], 
+					   polygon2.xpoints[0], polygon2.ypoints[0]);
+			}
+			return intersect;
 		} else {
 			return false;
 		}

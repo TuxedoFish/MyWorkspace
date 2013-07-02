@@ -122,11 +122,20 @@ public class BulletHandler extends ArrayList<Bullet>{
 				bullet.changePos(get(i).getPos().x-bpos.x, get(i).getPos().y-bpos.y);
 				bpos = new Vector2f(get(i).getPos().x, get(i).getPos().y);
 				bullet.render(sh, util, 0);
+				if(!get(i).getDestroying()) {
+					if(get(i).contains(player.getPos(), (float)player.getWidth()/Display.getWidth(), (float)player.getHeight()/Display.getHeight(), d)) {
+						get(i).setDestroyingSelf(true);
+						explosions.add(new Bullet(get(i).getPos(), 0.0f, 70, "explosion"));
+						explosions.add(new Bullet(new Vector2f((float)(get(i).getPos().x + (Math.random()*0.2f)-0.1f), (float)(get(i).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
+						explosions.add(new Bullet(new Vector2f((float)(get(i).getPos().x + (Math.random()*0.2f)-0.1f), (float)(get(i).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
+						parent.damage(5);
+					}
+				}
 			}
 		}
 	}
 	public void shootlaser(Vector2f pos) {
-		for(int i=0; i<15; i++) {
+		for(int i=0; i<20; i++) {
 			add(new Bullet(new Vector2f(pos.x+0.025f, pos.y - i*0.08f), 0, 20, "laser"));
 			bullet.changeTexture(12);
 		}

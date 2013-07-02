@@ -43,6 +43,9 @@ public class Player extends Sprite{
 	private int movement = 0;
 	private SoundHandler sounds = new SoundHandler();
 	private Clip shootsound;
+	private boolean inposition = true;
+	private int speed = 2;
+	private int animastage = 0;
 	
 	public Player(BufferedImage img, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos, Controller parent) {
@@ -96,8 +99,6 @@ public class Player extends Sprite{
 				if(!(getPos().y + y > -display.getPos().y + 1.0f) || y <= 0) {
 					if(!(getPos().y - (getHeight()/Display.getHeight()) + y < -display.getPos().y - 0.8f) || y >= 0) {
 							changePos(x, y);
-							changeTexture(5);
-							//display.changepos(-x, -y, 0.0f);
 					}
 				}
 			}
@@ -112,15 +113,60 @@ public class Player extends Sprite{
 				(Math.random()*0.2f)-0.1f), (float)(bullets.get(index).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
 	}
 	public void setMovement(int movement) {
+		if(this.movement != movement) {
+			this.inposition = false;
+			currenttex = 0;
+		}
 		this.movement = movement;
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
-		if(currenttex<4) {
-			changeTexture((movement*5)+currenttex);
-			currenttex+=1;
+		if(animastage >= speed) {
+			if(movement == 0) {
+				if(currenttex<4) {
+					changeTexture(currenttex);
+					currenttex+=1;
+				} else {
+					changeTexture(currenttex);
+					currenttex = 0;
+				}
+			} else if(movement == 2) {
+				if(!inposition) {
+					changeTexture(5 + currenttex);
+					currenttex += 1;
+					if(currenttex == 3) {
+						inposition = true;
+						currenttex = 0;
+					}
+				} else {
+					if(currenttex < 6) {
+						changeTexture(8 + currenttex);
+						currenttex += 1;
+					} else {
+						changeTexture(8 + currenttex);
+						currenttex = 0;
+					}
+				}
+			} else {
+				if(!inposition) {
+					changeTexture(15 + currenttex);
+					currenttex += 1;
+					if(currenttex == 3) {
+						inposition = true;
+						currenttex = 0;
+					}
+				} else {
+					if(currenttex < 4) {
+						changeTexture(17 + currenttex);
+						currenttex += 1;
+					} else {
+						changeTexture(17 + currenttex);
+						currenttex = 0;
+					}
+				}
+			}
+			animastage = 0;
 		} else {
-			changeTexture((movement*5)+currenttex);
-			currenttex = 0;
+			animastage += 1;
 		}
 		if(stage >= 35) {
 			stage = 0;

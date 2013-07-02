@@ -248,7 +248,7 @@ public class Enemy extends Sprite{
 	}
 	public void scroll() {
 		if(scroll) {
-			this.changePos(0.0f, 0.005f);
+			this.changePos(0.0f, 0.0025f);
 		}
 	}
 	public int getThreadID() {
@@ -346,7 +346,7 @@ public class Enemy extends Sprite{
 				if(playerbullets.get(i).contains(this.getPos(), collisions.get(texid), d)
 						&& !playerbullets.get(i).getDestroying()) {
 					parent.bulletexplode(i);
-					health -= 1;
+					health -= 2;
 					hit = 1;
 					if(health <= 0 && !stopped) {
 						SoundHandler.playSound(explosionsound);

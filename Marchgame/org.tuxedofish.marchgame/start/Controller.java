@@ -430,6 +430,7 @@ public class Controller {
 		ih.clearElements();
 		markers.add(gui.newMarker("marker", new Vector2f(0.5f, 0.0f), 20, 20, ih, this, "level 1", ct.addTimeStep(100), 4));
 		markers.add(gui.newMarker("marker", new Vector2f(0.0f, 0.0f), 20, 20, ih, this, "level 2", ct.addTimeStep(100), 4));
+		markers.add(gui.newMarker("marker", new Vector2f(-0.5f, 0.5f), 20, 20, ih, this, "level 3", ct.addTimeStep(100), 4));
 		elements = true;
 	}
 	public void update(int update, int index) {
@@ -531,8 +532,8 @@ public class Controller {
 		util.begin(sh, d);
 		
 		if((d.getPos().y + 0.25f > levelheight*-1)) {
-			display.changepos(0.0f, -0.005f, 0.0f);
-			player.changePos(0.0f, 0.005f);
+			display.changepos(0.0f, -0.0025f, 0.0f);
+			player.changePos(0.0f, 0.0025f);
 			for(int i=0; i<enemies.size(); i++) {
 				enemies.get(i).scroll();
 			}

@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
+import utils.MathUtils;
+
 public class Parser {
 	public ArrayList<Block> parseFile(File lvl, Vector2f pos) {
 		try {
@@ -80,31 +82,95 @@ public class Parser {
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(10, 150, 10))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 14, 50, 50));
 				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(185, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 22, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(200, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 23, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(240, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 24, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(180, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 25, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(160, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 26, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(120, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 27, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(80, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 28, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(50, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 29, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(20, 255, 255))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 30, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 160, 160))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 31, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(112, 35, 84))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 32, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 216, 241))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 33, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(248, 124, 144))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 34, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 6, 241))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 35, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(135, 0, 86))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 43, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(106, 0, 67))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 41, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 0, 160))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 42, 50, 50));
+				}
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 146, 215))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 40, 50, 50));
+				}
 			}
 		}
 		float w = 50.0f/Display.getWidth();
 		float h = 50.0f/Display.getHeight();
+		MathUtils u = new MathUtils();
 		for(int i=0; i<blocks.size(); i++) {
 			if(blocks.get(i).getTexid() == 15) {
+				int texid = blocks.get(i).getTexid();
 				boolean left = false, right = false, top = false, bottom = false;
 				for(int k=0; k<blocks.size(); k++) {
-					if(blocks.get(k).getTexid() >= 15 && blocks.get(k).getTexid() <= 21) {
-						if(blocks.get(k).y == blocks.get(i).y) {
-							if(blocks.get(k).x == blocks.get(i).x + w) right = true;
-							if(blocks.get(k).x == blocks.get(i).x - w) left = true;
+					if(blocks.get(k).getTexid() >= texid && blocks.get(k).getTexid() <= texid+6) {
+						if(u.closeEnough(blocks.get(k).y, blocks.get(i).y, 0.001f)) {
+							if(u.closeEnough(blocks.get(k).x, blocks.get(i).x + w, 0.001f)) right = true;
+							if(u.closeEnough(blocks.get(k).x, blocks.get(i).x - w, 0.001f)) left = true;
 						}
-						if(blocks.get(k).x == blocks.get(i).x) {
-							if(blocks.get(k).y == blocks.get(i).y - h) bottom = true;
-							if(blocks.get(k).y == blocks.get(i).y + h) top = true;
+						if(u.closeEnough(blocks.get(k).x, blocks.get(i).x, 0.001f)) {
+							if(u.closeEnough(blocks.get(k).y, blocks.get(i).y - h, 0.001f)) bottom = true;
+							if(u.closeEnough(blocks.get(k).y, blocks.get(i).y + h, 0.001f)) top = true;
 						}
 					}
 				}
-				if(!right && left && bottom && top) {blocks.get(i).setTexID(16);}
-				if(right && !left && bottom && top) {blocks.get(i).setTexID(17);}
-				if(right && !left && !top && bottom) {blocks.get(i).setTexID(18);}
-				if(!right && left && !top && bottom) {blocks.get(i).setTexID(19);}
-				if(!right && left && top && !bottom) {blocks.get(i).setTexID(20);}
-				if(right && !left && top && !bottom) {blocks.get(i).setTexID(21);}
+				if(!right && left && bottom && top) {blocks.get(i).setTexID(texid+1);}
+				if(right && !left && bottom && top) {blocks.get(i).setTexID(texid+2);}
+				if(right && !left && !top && bottom) {blocks.get(i).setTexID(texid+3);}
+				if(!right && left && !top && bottom) {blocks.get(i).setTexID(texid+4);}
+				if(!right && left && top && !bottom) {blocks.get(i).setTexID(texid+5);}
+				if(right && !left && top && !bottom) {blocks.get(i).setTexID(texid+6);}
 			}
 		}
 		return blocks;

@@ -133,4 +133,11 @@ public class MathUtils {
 		}
 		return dest;
 	}
+	public boolean closeEnough(float a, float b, float giveortake) {
+		if(a < b+giveortake && a > b-giveortake) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
