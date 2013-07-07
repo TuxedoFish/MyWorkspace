@@ -1,4 +1,4 @@
-package logic.entities;
+package logic.entities.boss;
 
 import images.ImageReturn;
 
@@ -11,6 +11,12 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 
 import logic.GridParser;
+import logic.entities.Bullet;
+import logic.entities.BulletHandler;
+import logic.entities.EnemyPath;
+import logic.entities.PathPoint;
+import logic.entities.Player;
+import logic.entities.TexID;
 import object.Sprite;
 
 import org.lwjgl.opengl.Display;

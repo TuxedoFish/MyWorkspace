@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import logic.GridMaker;
 import logic.GridParser;
 import logic.LevelLoader;
-import logic.entities.Boss;
 import logic.entities.Building;
 import logic.entities.Enemy;
 import logic.entities.Bullet;
@@ -28,6 +27,7 @@ import logic.entities.EnemyLoader;
 import logic.entities.Player;
 import logic.entities.ScoreHandler;
 import logic.entities.ScorePellet;
+import logic.entities.boss.Boss;
 import logic.entities.troops.SpriteHolder;
 import logic.entities.troops.Troop;
 
@@ -295,7 +295,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(33, 10);
+		gm.makeGrid(400, 110, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);

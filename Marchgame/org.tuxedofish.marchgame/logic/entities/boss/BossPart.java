@@ -1,4 +1,4 @@
-package logic.entities;
+package logic.entities.boss;
 
 public class BossPart {
 	private int pattern;

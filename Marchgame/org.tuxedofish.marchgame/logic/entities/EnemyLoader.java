@@ -21,6 +21,9 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import logic.GridParser;
+import logic.entities.boss.Boss;
+import logic.entities.boss.HiveEye;
+import logic.entities.boss.HiveJet;
 import logic.entities.troops.SpriteHolder;
 import logic.entities.troops.Troop;
 
@@ -155,26 +158,18 @@ public class EnemyLoader extends Thread{
 					String[] parts = line.split(" ");
 					
 					buildings.add(new Building(images.getImage(parts[0]), player.getBullets(), parent, Integer.valueOf(parts[3]),
-							Integer.valueOf(parts[4]), new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 35, 
+							Integer.valueOf(parts[4]),new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 35, 
 							gp.parseGrid(images.getImage(parts[0]), Integer.valueOf(parts[5]), Integer.valueOf(parts[6])), 
 							Boolean.valueOf(parts[7])));
 				}
 				
 				reader2.close();
 				
-				boss = new Boss(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets());
-				boss.addSprite(boss6, 0, 3, 1000, 1, false, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
-						new int[]{1, 4});
-				boss.addSprite(boss1, 0, 3, 50, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
-						new int[]{1, 4});
-				boss.addSprite(boss2, 0, 3, 50, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
-						new int[]{1, 4});
-				boss.addSprite(boss3, 0, 6, 10, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
-						new int[]{1, 4});
-				boss.addSprite(boss4, 0, 6, 10, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
-						new int[]{1, 4});
-				boss.addSprite(boss5, 0, 6, 10, 1, true, ct.addTimeStep(200), new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, 
-						new int[]{1, 4});
+				if(level.equals("level1")) {
+					boss = new HiveEye(parent, player, ct);
+				} else {
+					boss = new HiveJet(parent, player, ct);
+				}
 			} catch (IOException e1) {
 				System.err.println("err loading img");
 				System.exit(1);
