@@ -214,15 +214,10 @@ public class Boss {
 								me.remove(j);
 								myrect.remove(j);
 								healths.remove(j);
-								SoundHandler.playSound(explosionsound);
-								if(me.size() == 1) {
-									for(int k=0; k<50; k++) {
-										bullets.addExplosion(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
-												(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
-												(Math.random()*myrect.get(0).getHeight()))), 0, 70, "normal"));
-									}
+								if(me.size() > 1) {
+									bps.remove(j);
 								}
-								j-=1;
+								SoundHandler.playSound(explosionsound);
 							}
 						}
 					}
@@ -232,14 +227,21 @@ public class Boss {
 				me.get(i).render(sh, util, hit.get(i));
 			}
 			bullets.render(sh, d, util);
-			if(me.size() == 1 && bullets.explosions.size() <= 10) {
+			
+			boolean dead = true;
+			for(int i=0; i<bps.size(); i++) {
+				if(bps.get(i).isHittable() == true) {
+					dead = false;
+				}
+			}
+			if(dead && bullets.explosions.size() <= 10) {
 				if(deathexplosionsleft == 0) {
 					parent.toHome();
 					stopped = true;
 				} else {
 					deathexplosionsleft -= 1;
 					SoundHandler.playSound(explosionsound);
-					for(int k=0; k<50; k++) {
+					for(int k=0; k<20; k++) {
 						bullets.explosions.add(new Bullet(new Vector2f((float)(me.get(0).getPos().x + 
 								(Math.random()*myrect.get(0).getWidth())), (float)(me.get(0).getPos().y - 
 								(Math.random()*myrect.get(0).getHeight()))), 0, 70, "explosion"));
