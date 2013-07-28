@@ -1,30 +1,23 @@
 package logic.entities.boss;
 
+import java.util.ArrayList;
+
 public class BossPart {
-	private int pattern;
 	private boolean hittable;
-	private int[] shootthreadids;
-	private int[] shootlengths;
 	private int currentshootstage = 0;
 	private int currentshootpattern = 0;
+	private ArrayList<ShootType> shoottypes;
+	private int currenttype = 0;
 	
-	public BossPart(int pattern, boolean hittable, int[] shootthreads, int[] shootlengths) {
-		this.pattern = pattern;
+	public BossPart(boolean hittable, ArrayList<ShootType> shoottypes) {
+		this.shoottypes = shoottypes;
 		this.hittable = hittable;
-		this.shootthreadids = shootthreads;
-		this.shootlengths = shootlengths;
-	}
-	public int getPattern() {
-		return pattern;
 	}
 	public void changeShootStage() {
 		currentshootstage += 1;
 	}
 	public void resetShootStage() {
 		currentshootstage = 0;
-	}
-	public void setPattern(int pattern) {
-		this.pattern = pattern;
 	}
 	public int getShootStage() {
 		return currentshootstage;
@@ -38,13 +31,22 @@ public class BossPart {
 	public boolean isHittable() {
 		return hittable;
 	}
-	public int[] getShootThreads() {
-		return shootthreadids;
-	}
-	public int[] getShootLengths() {
-		return shootlengths;
+	public ArrayList<ShootType> getShootTypes() { 
+		return shoottypes;
 	}
 	public void setHittable(boolean hittable) {
 		this.hittable = hittable;
+	}
+	public int[] getShootThreads() {
+		return shoottypes.get(currenttype).getShootthreads();
+	}
+	public int[] getShootLengths() {
+		return shoottypes.get(currenttype).getShootlengths();
+	}
+	public int getPattern() {
+		return shoottypes.get(currenttype).getPattern();
+	}
+	public void setShootType(int type) {
+		currenttype = type;
 	}
 }

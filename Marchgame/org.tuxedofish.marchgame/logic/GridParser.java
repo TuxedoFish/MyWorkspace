@@ -37,8 +37,8 @@ public class GridParser {
 	public TextureHolder parseGrid(BufferedImage lvl, float blockwidth, float blockheight) {
 		TextureHolder th = new TextureHolder(lvl.getWidth(), lvl.getHeight(), lvl);
 		
-		for(float i = 0; i < (lvl.getHeight()/blockheight); i++) {
-			for(float j = 0; j < (lvl.getWidth()/blockwidth); j++) {
+		for(float i = 0; i < (lvl.getHeight()/blockheight)-1.0f; i++) {
+			for(float j = 0; j < (lvl.getWidth()/blockwidth)-1.0f; j++) {
 				th.addTexture(new Vector2f(j*(blockwidth+1.0f) + 1.0f, i*(blockheight+1.0f) + 1.0f), blockwidth, blockheight);
 			}
 		}

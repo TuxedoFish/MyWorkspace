@@ -28,6 +28,7 @@ import logic.entities.Player;
 import logic.entities.ScoreHandler;
 import logic.entities.ScorePellet;
 import logic.entities.boss.Boss;
+import logic.entities.boss.BossType;
 import logic.entities.troops.SpriteHolder;
 import logic.entities.troops.Troop;
 
@@ -104,7 +105,7 @@ public class Controller {
 	private boolean levelmap = false;
 	
 	private Player player;
-	private Boss boss;
+	private BossType boss;
 	private int levelheight;
 	private EnemyLoader el;
 	
@@ -455,6 +456,9 @@ public class Controller {
 				}
 			}
 		}
+		if(boss != null && index == boss.getUpdateThreadID()) {
+			boss.update();
+		}
 		for(int i=0; i<markers.size(); i++) {
 			if(markers.get(i).getAnimationThreadID() == index) {
 				markers.get(i).animate();
@@ -473,12 +477,12 @@ public class Controller {
 				}
 			}
 		}
-		if(started) {
-			ArrayList<Integer> bossthreadids2 = boss.getShootThreadIDs();
-			if(bossthreadids2.contains(index)) {
-				boss.shoot(index);
-			}
-		}
+//		if(started) {
+//			ArrayList<Integer> bossthreadids2 = boss.getShootThreadIDs();
+//			if(bossthreadids2.contains(index)) {
+//				boss.shoot(index);
+//			}
+//		}
 		for(int i=0; i<scorethreadids.size(); i++) {
 			if(scorethreadids.get(i) == index) {
 				if(started) {

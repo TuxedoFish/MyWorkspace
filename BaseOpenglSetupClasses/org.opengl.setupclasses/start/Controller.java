@@ -127,7 +127,7 @@ public class Controller {
 
 		shapes.add(triangle);
 		try {
-			shapes.add(ol.loadModel("cube.obj").createUsable());
+			shapes.add(ol.loadModel("church.obj").createUsable());
 		} catch (IOException e) {
 			System.err.println("ERROROROROOR : " + e.getLocalizedMessage());
 			System.exit(1);

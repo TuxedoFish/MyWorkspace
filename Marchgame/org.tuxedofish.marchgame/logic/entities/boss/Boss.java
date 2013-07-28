@@ -58,9 +58,9 @@ public class Boss {
 	private ArrayList<Bullet> playerbullets = new ArrayList<Bullet>();
 	private ArrayList<Integer> hit = new ArrayList<Integer>();
 	private ArrayList<Integer> threadids = new ArrayList<Integer>();
-	private ArrayList<Integer> shootthreadids = new ArrayList<Integer>();
 	private SoundHandler sounds = new SoundHandler();
 	private Clip explosionsound;
+	private ArrayList<Integer> shootthreadids = new ArrayList<Integer>();
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets) {
@@ -102,7 +102,7 @@ public class Boss {
 		}
 	}
 	public ArrayList<Integer> getShootThreadIDs() {
-		return shootthreadids;
+		return shootthreadids ;
 	}
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
@@ -126,15 +126,17 @@ public class Boss {
 		}
 	}
 	public void addSprite(Sprite s, int lowesttexid, int highesttexid, int health, int pattern, boolean hittable, 
-			int threadID, int[] shootthreadids, int[] shootlengths) {
+			int threadID, ArrayList<ShootType> shoottypes) {
 		me.add(s);
 		myrect.add(new Rectangle2D.Float());
 		this.texids.add(new TexID(lowesttexid, highesttexid, texid));
 		healths.add(health);
-		bps.add(new BossPart(pattern, hittable, shootthreadids, shootlengths));
+		bps.add(new BossPart(hittable, shoottypes));
 		hit.add(0);
 		threadids.add(threadID);
-		this.shootthreadids.add(shootthreadids[0]);
+		for(int i=0; i<shoottypes.size(); i++) {
+			shootthreadids.add(shoottypes.get(i).getShootthreads()[0]);
+		}
 	}
 	public void animate() {
 		for(int i=0; i<me.size(); i++) {

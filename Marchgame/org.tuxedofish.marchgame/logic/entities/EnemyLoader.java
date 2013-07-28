@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import logic.GridParser;
 import logic.entities.boss.Boss;
+import logic.entities.boss.BossType;
 import logic.entities.boss.HiveEye;
 import logic.entities.boss.HiveJet;
 import logic.entities.troops.SpriteHolder;
@@ -48,7 +49,7 @@ public class EnemyLoader extends Thread{
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	private ArrayList<Block> blocks;
 	
-	private Boss boss;
+	private BossType boss;
 	private boolean cached;
 	private String level;
 	private Controller parent;
@@ -87,7 +88,7 @@ public class EnemyLoader extends Thread{
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
-	public Boss getBoss() {
+	public BossType getBoss() {
 		return boss;
 	}
 	@Override
