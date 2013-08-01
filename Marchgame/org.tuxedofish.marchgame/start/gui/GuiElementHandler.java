@@ -51,7 +51,6 @@ import utils.DataUtils;
 import utils.TextureUtils;
 
 public class GuiElementHandler {
-	
 	private TextureAtlas ta = new TextureAtlas();
 	private int texid;
 	
@@ -86,7 +85,6 @@ public class GuiElementHandler {
 			elements.add(new GuiString(images.get(content.indexOf(str)), bounds.get(content.indexOf(str)), c, 
 					new Vector2f(topleft.x, topleft.y), width, height, topleft));
 		}
-		
 		
 		currentindex += 1;
 		keys.add(currentindex);
@@ -138,10 +136,8 @@ public class GuiElementHandler {
 		return currentindex;
 	}
 	public void removeElement(int index) {
-		if(keys.indexOf(index) != -1) {
-			elements.remove(keys.indexOf(index));
-			keys.remove(keys.indexOf(index));
-		}
+		elements.remove(keys.indexOf(index));
+		keys.remove(keys.indexOf(index));
 	}
 	public void newLine() {
 		nextx = 0.0f;

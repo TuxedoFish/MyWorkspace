@@ -43,8 +43,8 @@ public class BossPart {
 	public int[] getShootLengths() {
 		return shoottypes.get(currenttype).getShootlengths();
 	}
-	public int getPattern() {
-		return shoottypes.get(currenttype).getPattern();
+	public int[] getPatterns() {
+		return shoottypes.get(currenttype).getPatterns();
 	}
 	public void setShootType(int type) {
 		currenttype = type;

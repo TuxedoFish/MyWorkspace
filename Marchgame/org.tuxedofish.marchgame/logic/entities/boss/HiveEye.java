@@ -15,23 +15,46 @@ import start.ControllerTimer;
 import texture.TextureHolder;
 
 public class HiveEye extends BossType{
+	private int ticks = 0;
+	private int shootingstage = -1;
+	
 	public HiveEye(Controller parent, Player player, ControllerTimer ct) {
 		super(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets(), ct.addTimeStep(200));
 		ImageReturn images = new ImageReturn(); GridParser gp = new GridParser();
 		try {
 			TextureHolder texture = gp.parseGrid(images.getImage("bosses/ship.png"), 256, 67);
-			Sprite boss1 = new Sprite(images.getImage("bosses/ship.png"), parent, 768, 201, texture, 0, new Vector2f(-1.0f, 8.75f));
+			Sprite boss1 = new Sprite(images.getImage("bosses/ship.png"), parent, 1028, 268, texture, 0, new Vector2f(-1.0f, 8.75f));
 			
 			ArrayList<ShootType> shoottypes = new ArrayList<>();
-			shoottypes.add(new ShootType( new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, new int[]{1, 4}, 1));
+			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(2000), ct.addTimeStep(20)}, new int[]{1, 10}, new int[]{0, 1}));
+			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(500), ct.addTimeStep(500)}, new int[]{1, 1}, new int[]{1, 0}));
 			
-			addSprite(boss1, 0, 9, 50, 1, true, ct.addTimeStep(200), shoottypes);
+			addSprite(boss1, 0, 0, 500, 1, true, ct.addTimeStep(200), shoottypes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	public void resetTicks() {
+		ticks = 0;
+		shootingstage = -1;
+	}
 	@Override
 	public void update() {
-		shoot(getShootThreadIDs().get(0));
+		if(shootingstage == -1) {
+			shootingstage = (int)(Math.random()*100.0f);
+			if(shootingstage >= 50) {
+				shootingstage = 1;
+			} else {
+				shootingstage = 0;
+			}
+			getBossPart(0).setShootType(shootingstage);
+			System.out.println(shootingstage);
+		}
+		
+		ticks += 1;
+		
+		if(ticks >= 40) {
+			resetTicks();
+		}
 	}
 }

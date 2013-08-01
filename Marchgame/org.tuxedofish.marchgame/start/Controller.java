@@ -102,6 +102,7 @@ public class Controller {
 	
 	private int prevhealth = 0;
 	
+	private boolean end = false;
 	private boolean levelmap = false;
 	
 	private Player player;
@@ -260,11 +261,12 @@ public class Controller {
 		blockdata = lr.getLevelData(blocks, blocktex);
 		lr.update(blocks, display);
 		
+		elements = false;
+		gui = new GuiElementHandler();
+		ih.clearElements();
+		
 		prevhealth = player.getHealth();
 		prevscore = score;
-		elements = false;
-		gui.clearElements();
-		ih.clearElements();
 		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
 		healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
 		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
@@ -360,12 +362,14 @@ public class Controller {
 						}
 					}
 					if(el != null && prevpercent != loadpercent) {
-						prevpercent = loadpercent;
-						elements = false;
-						gui.clearElements();
-						ih.clearElements();
-						gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
-						gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+						if(blocks.size() == 0) {
+							prevpercent = loadpercent;
+							elements = false;
+							gui.clearElements();
+							ih.clearElements();
+							gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
+							gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+						}
 					}
 					FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
 					Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
@@ -483,6 +487,9 @@ public class Controller {
 //				boss.shoot(index);
 //			}
 //		}
+		if(boss != null) {
+			boss.shoot(index);
+		}
 		for(int i=0; i<scorethreadids.size(); i++) {
 			if(scorethreadids.get(i) == index) {
 				if(started) {
@@ -534,6 +541,10 @@ public class Controller {
 		DataUtils util = new DataUtils();
 		util.begin(sh, d);
 		
+		if(end) {
+			end = false;
+			toHome();
+		}
 		if((d.getPos().y + 0.25f > levelheight*-1)) {
 			display.changepos(0.0f, -0.0025f, 0.0f);
 			player.changePos(0.0f, 0.0025f);
@@ -680,5 +691,8 @@ public class Controller {
 	}
 	public boolean isUpdate() {
 		return update;
+	}
+	public void end() {
+		end = true;
 	}
 }

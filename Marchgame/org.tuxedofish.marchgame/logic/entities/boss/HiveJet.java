@@ -27,7 +27,7 @@ public class HiveJet extends BossType{
 			Sprite boss3 = new Sprite(images.getImage("bosses/jet.png"), parent, 32, 32, jet, 0, new Vector2f(0.2f, 8.4f));
 			
 			ArrayList<ShootType> shoottypes = new ArrayList<>();
-			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, new int[]{1, 4}, 1));
+			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, new int[]{1, 4}, new int[]{0, 1}));
 			
 			addSprite(boss2, 0, 4, 10, 1, true, ct.addTimeStep(200), shoottypes);
 			addSprite(boss3, 0, 4, 10, 1, true, ct.addTimeStep(200), shoottypes);

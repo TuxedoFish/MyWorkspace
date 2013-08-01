@@ -87,6 +87,9 @@ public class Player extends Sprite{
 		return health;
 	}
 	public void resetBlinking() {
+		if(hit == 1) {
+			parent.end();
+		}
 		hit = 0;
 	}
 	public void damage(int d) {

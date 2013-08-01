@@ -44,7 +44,6 @@ public class Boss {
 	private int anstage = 0;
 	private int textstage = 0;
 	private int dist;
-	private int index;
 	private int pattern = 1;
 	private boolean stopped = false;
 	private BulletHandler bullets;
@@ -52,7 +51,7 @@ public class Boss {
 	private ArrayList<BossPart> bps = new ArrayList<BossPart>();
 	private Rectangle2D player;
 	private ArrayList<Rectangle2D> myrect = new ArrayList<Rectangle2D>();
-	private Sprite playersprite;
+	private Player playersprite;
 	private Controller parent;
 	private ArrayList<Integer> healths = new ArrayList<Integer>();
 	private ArrayList<Bullet> playerbullets = new ArrayList<Bullet>();
@@ -61,6 +60,8 @@ public class Boss {
 	private SoundHandler sounds = new SoundHandler();
 	private Clip explosionsound;
 	private ArrayList<Integer> shootthreadids = new ArrayList<Integer>();
+	private int shootstage = 0;
+	private int shootindex = 0;
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets) {
@@ -102,7 +103,7 @@ public class Boss {
 		}
 	}
 	public ArrayList<Integer> getShootThreadIDs() {
-		return shootthreadids ;
+		return shootthreadids;
 	}
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
@@ -135,7 +136,9 @@ public class Boss {
 		hit.add(0);
 		threadids.add(threadID);
 		for(int i=0; i<shoottypes.size(); i++) {
-			shootthreadids.add(shoottypes.get(i).getShootthreads()[0]);
+			for(int j=0; j<shoottypes.get(i).getShootthreads().length; j++) {
+				shootthreadids.add(shoottypes.get(i).getShootthreads()[j]);
+			}
 		}
 	}
 	public void animate() {
@@ -157,6 +160,9 @@ public class Boss {
 			}
 		}
 	}
+	public BossPart getBossPart(int index) {
+		return bps.get(index);
+	}
 	public void resetBlinking(int index) {
 		hit.set(threadids.indexOf(index), 0);
 	}
@@ -164,28 +170,22 @@ public class Boss {
 		return threadids;
 	}
 	public void shoot(int index) {
-		int i = shootthreadids.indexOf(index);
-		if(i<me.size()) {
-			if(bps.get(i).isHittable()) {
-				if(bps.get(i).getPattern() == 1) {
-					double compassBearing=Math.atan2(me.get(i).getPos().y - playersprite.getPos().y, 
-							me.get(i).getPos().x - playersprite.getPos().x);
-					shoot((float)compassBearing, i);
-					
-					bps.get(i).changeShootStage();
-					int[] shootlengths = bps.get(i).getShootLengths();
-					int[] shootids = bps.get(i).getShootThreads();
-					
-					if(bps.get(i).getShootStage() >= shootlengths[bps.get(i).getShootPattern()]) {
-						if(bps.get(i).getShootPattern()+1<shootids.length) {
-							bps.get(i).setShootPattern(bps.get(i).getShootPattern()+1);
-							shootthreadids.set(i, shootids[bps.get(i).getShootPattern()]);
-						} else {
-							shootthreadids.set(i, shootids[0]);
-							bps.get(i).setShootPattern(0);
-						}
-						bps.get(i).resetShootStage();
+		if(bps.get(0).getShootThreads()[shootindex] == index) {
+			if(bps.get(0).isHittable()) {
+				shootstage += 1;
+				if(bps.get(0).getPatterns()[shootindex] == 1) {
+					double compassBearing=Math.atan2(me.get(0).getPos().y - playersprite.getPos().y, 
+							me.get(0).getPos().x - playersprite.getPos().x);
+					shoot((float)compassBearing, 0);
+					System.out.println("b " + compassBearing);
+				}
+				if(shootstage >= bps.get(0).getShootLengths()[shootindex]) {
+					shootindex += 1;
+					shootstage = 0;
+					if(shootindex >= bps.get(0).getShootLengths().length) {
+						shootindex = 0;
 					}
+					parent.resetThread(bps.get(0).getShootThreads()[shootindex]);
 				}
 			}
 		}
@@ -196,7 +196,6 @@ public class Boss {
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
-	//	rotate();
 		if(anstage == 5) {
 			animate();
 			anstage = 0;
