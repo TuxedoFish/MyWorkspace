@@ -54,7 +54,6 @@ import start.gui.GuiElementHandler;
 import start.gui.GuiString;
 import start.input.InputHandler;
 import terrain.Block;
-import terrain.DungeonCreator;
 import terrain.LevelHolder;
 import terrain.LevelRenderer;
 import terrain.Parser;
@@ -90,7 +89,6 @@ public class Controller {
 	private boolean jump;
 	private int stage; private int ministage;
 	private int score;
-	private DungeonCreator dc;
 	
 	private float changex; private float changey; private float changez;
 	private int health = 500;
@@ -192,7 +190,7 @@ public class Controller {
 		EnemyLoader el = new EnemyLoader();
 		
 		try {
-			dc = new DungeonCreator();
+			//dc = new DungeonCreator();
 			//blocks = dc.getBlocks();
 			GridParser gp = new GridParser();
 			
