@@ -62,6 +62,7 @@ public class Boss {
 	private ArrayList<Integer> shootthreadids = new ArrayList<Integer>();
 	private int shootstage = 0;
 	private int shootindex = 0;
+	private float missile1 = 0, missile2 = 180;
 	
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets) {
@@ -169,23 +170,61 @@ public class Boss {
 	public ArrayList<Integer> getThreadIDs() {
 		return threadids;
 	}
+	public float toCoordsWidth(int i) {
+		return (i*4.0f)/(Display.getWidth());
+	}
+	public float toCoordsHeight(int i) {
+		return (i*4.0f)/(Display.getHeight());
+	}
 	public void shoot(int index) {
-		if(bps.get(0).getShootThreads()[shootindex] == index) {
-			if(bps.get(0).isHittable()) {
-				shootstage += 1;
-				if(bps.get(0).getPatterns()[shootindex] == 1) {
-					double compassBearing=Math.atan2(me.get(0).getPos().y - playersprite.getPos().y, 
-							me.get(0).getPos().x - playersprite.getPos().x);
-					shoot((float)compassBearing, 0);
-					System.out.println("b " + compassBearing);
-				}
-				if(shootstage >= bps.get(0).getShootLengths()[shootindex]) {
-					shootindex += 1;
-					shootstage = 0;
-					if(shootindex >= bps.get(0).getShootLengths().length) {
-						shootindex = 0;
+		if(!stopped) {
+			if(bps.get(0).getShootThreads()[shootindex] == index) {
+				if(bps.get(0).isHittable()) {
+					shootstage += 1;
+					if(bps.get(0).getPatterns()[shootindex] == 1) {
+						double compassBearing=Math.atan2(me.get(0).getPos().y - playersprite.getPos().y, 
+								me.get(0).getPos().x - playersprite.getPos().x);
+						shoot((float)compassBearing, 0);
 					}
-					parent.resetThread(bps.get(0).getShootThreads()[shootindex]);
+					if(bps.get(0).getPatterns()[shootindex] == 2) {
+						Vector2f p1 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(92), me.get(0).getPos().y - toCoordsHeight(37));
+						Vector2f p2 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(99), me.get(0).getPos().y - toCoordsHeight(33));
+						Vector2f p3 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(150), me.get(0).getPos().y - toCoordsHeight(33));
+						Vector2f p4 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(156), me.get(0).getPos().y - toCoordsHeight(39));
+						
+						double compassBearing=Math.atan2(p1.y - playersprite.getPos().y, p1.x - playersprite.getPos().x);
+						shoot((float)compassBearing, p1);
+						compassBearing=Math.atan2(p2.y - playersprite.getPos().y, p2.x - playersprite.getPos().x);
+						shoot((float)compassBearing, p2);
+						compassBearing=Math.atan2(p3.y - playersprite.getPos().y, p3.x - playersprite.getPos().x);
+						shoot((float)compassBearing, p3);
+						compassBearing=Math.atan2(p4.y - playersprite.getPos().y, p4.x - playersprite.getPos().x);
+						shoot((float)compassBearing, p4);
+					}
+					if(bps.get(0).getPatterns()[shootindex] == 3) {
+						Vector2f p1 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(107), me.get(0).getPos().y - toCoordsHeight(3));
+						Vector2f p2 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(150), me.get(0).getPos().y - toCoordsHeight(3));
+						
+						missile1 += 10;
+						missile2 += 10;
+						
+						if(missile1 >= 360) missile1 -= 360;
+						if(missile2 >= 360) missile2 -= 360;
+						
+						shoot((float)Math.toRadians(missile1), p1);
+						shoot((float)Math.toRadians(missile2), p1);
+						
+						shoot((float)Math.toRadians(missile1), p2);
+						shoot((float)Math.toRadians(missile2), p2);
+					}
+					if(shootstage >= bps.get(0).getShootLengths()[shootindex]) {
+						shootindex += 1;
+						shootstage = 0;
+						if(shootindex >= bps.get(0).getShootLengths().length) {
+							shootindex = 0;
+						}
+						parent.resetThread(bps.get(0).getShootThreads()[shootindex]);
+					}
 				}
 			}
 		}
@@ -193,6 +232,9 @@ public class Boss {
 	private void shoot(float rot, int index) {
 		bullets.add(new Bullet(new Vector2f(me.get(index).getPos().x+(me.get(index).getWidth()/(Display.getWidth()*2.0f)), 
 				me.get(index).getPos().y), rot, 40, "normal"));
+	}
+	private void shoot(float rot, Vector2f pos) {
+		bullets.add(new Bullet(pos, rot, 40, "normal"));
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		update(d);
@@ -212,10 +254,10 @@ public class Boss {
 							this.healths.set(j, healths.get(j)-5);
 							hit.set(j, 1);
 							if(healths.get(j)<=0) {
-								me.remove(j);
-								myrect.remove(j);
 								healths.remove(j);
-								if(me.size() > 1) {
+								if(healths.size() > 1) {
+									myrect.remove(j);
+									me.remove(j);
 									bps.remove(j);
 								}
 								SoundHandler.playSound(explosionsound);
@@ -234,6 +276,9 @@ public class Boss {
 				if(bps.get(i).isHittable() == true) {
 					dead = false;
 				}
+			}
+			if(myrect.size() == 0) {
+				dead = true;
 			}
 			if(dead && bullets.explosions.size() <= 10) {
 				if(deathexplosionsleft == 0) {

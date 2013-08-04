@@ -129,14 +129,6 @@ public class EnemyLoader extends Thread{
 				TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 50);
 				player = new Player(images.getImage("spaceship.png"), 100, 100, texture, 0,
 						new Vector2f(0.0f, -0.75f), parent);
-				texture = gp.parseGrid(images.getImage("bosspart1.png"), 19);
-				TextureHolder eye = gp.parseGrid(images.getImage("bosspart2.png"), 19);
-				Sprite boss1 = new Sprite(images.getImage("bosspart1.png"), parent, 100, 100, texture, 0, new Vector2f(0.5f, 8.75f));
-				Sprite boss2 = new Sprite(images.getImage("bosspart1.png"), parent, 100, 100, texture, 0, new Vector2f(-0.5f, 8.75f));
-				Sprite boss3 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(-0.4f, 8.9f));
-				Sprite boss4 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(0.0f, 8.9f));
-				Sprite boss5 = new Sprite(images.getImage("bosspart2.png"), parent, 50, 50, eye, 0, new Vector2f(0.4f, 8.9f));
-				Sprite boss6 = new Sprite(images.getImage("bosspart1.png"), parent, 800, 800, texture, 0, new Vector2f(-0.5f, 9.7f));
 				
 //				Vector2f p = new Vector2f(-1.0f, 0.0f);
 //				BufferedImage img = images.getImage("trees.png");

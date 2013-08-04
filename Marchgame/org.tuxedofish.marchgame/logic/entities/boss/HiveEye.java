@@ -26,8 +26,8 @@ public class HiveEye extends BossType{
 			Sprite boss1 = new Sprite(images.getImage("bosses/ship.png"), parent, 1028, 268, texture, 0, new Vector2f(-1.0f, 8.75f));
 			
 			ArrayList<ShootType> shoottypes = new ArrayList<>();
-			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(2000), ct.addTimeStep(20)}, new int[]{1, 10}, new int[]{0, 1}));
-			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(500), ct.addTimeStep(500)}, new int[]{1, 1}, new int[]{1, 0}));
+			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(2000), ct.addTimeStep(100)}, new int[]{1, 10}, new int[]{0, 2}));
+			shoottypes.add(new ShootType(new int[]{ct.addTimeStep(100), ct.addTimeStep(2000)}, new int[]{20, 1}, new int[]{3, 0}));
 			
 			addSprite(boss1, 0, 0, 500, 1, true, ct.addTimeStep(200), shoottypes);
 		} catch (IOException e) {
@@ -48,7 +48,6 @@ public class HiveEye extends BossType{
 				shootingstage = 0;
 			}
 			getBossPart(0).setShootType(shootingstage);
-			System.out.println(shootingstage);
 		}
 		
 		ticks += 1;

@@ -43,9 +43,13 @@ public class Player extends Sprite{
 	private int movement = 0;
 	private SoundHandler sounds = new SoundHandler();
 	private Clip shootsound;
+	private Clip explosionsound;
 	private boolean inposition = true;
 	private int speed = 2;
 	private int animastage = 0;
+	private int lives = 3;
+	private int ticks = 0;
+	private boolean show = true;
 	
 	public Player(BufferedImage img, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos, Controller parent) {
@@ -57,6 +61,8 @@ public class Player extends Sprite{
 		try {
 			shootsound = sounds.loadClip("shoot.wav");
 			shootsound.open(sounds.getAudioStream("shoot.wav"));
+			explosionsound = sounds.loadClip("explosion.wav");
+			explosionsound.open(sounds.getAudioStream("explosion.wav"));
 		} catch (LineUnavailableException | IOException e) {
 			e.printStackTrace();
 		}
@@ -87,14 +93,40 @@ public class Player extends Sprite{
 		return health;
 	}
 	public void resetBlinking() {
-		if(hit == 1) {
-			parent.end();
+		if(hit == 1 && ticks == 0) {
+			lives -= 1;
+			SoundHandler.playSound(explosionsound);
+			for(int k=0; k<3; k++) {
+				explosions.add(new Bullet(new Vector2f((float)(getPos().x + 
+						(Math.random()*getWidth())), (float)(getPos().y - 
+						(Math.random()*getHeight()))), 0, 70, "explosion"));
+			}
+			if(lives == 0) {
+				parent.end();
+			}
 		}
-		hit = 0;
+		ticks += 1;
+		if(hit == 1) {
+			if(show) {
+				show = false;
+			} else { 
+				show = true;
+			}
+		} else {
+			show = true;
+		}
+		if(ticks >= 5) {
+			hit = 0;
+		}
 	}
 	public void damage(int d) {
-		hit = 1;
-		health -= d;
+		if(hit == 0) {
+			hit = 1;
+			ticks = 0;
+		}
+	}
+	public int getHit() {
+		return hit;
 	}
 	public void move(float x, float y, DisplaySetup display) {
 		if(!(getPos().x + (getWidth()/Display.getWidth()) + x > 0.8f) || x <= 0) {
@@ -221,7 +253,9 @@ public class Player extends Sprite{
 				i-=1;
 			}
 		}
-		render(sh, util, hit);
+		if(show) {
+			render(sh, util, hit);
+		}
 	}
 	public void shoot() {
 		SoundHandler.playSound(shootsound);

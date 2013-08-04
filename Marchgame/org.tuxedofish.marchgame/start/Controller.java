@@ -268,7 +268,6 @@ public class Controller {
 		prevhealth = player.getHealth();
 		prevscore = score;
 		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
-		healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
 		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
 		elements = true;
 		highscore = el.getHighScore();
@@ -326,7 +325,7 @@ public class Controller {
 		int loadscreen = 0;
 		
 		try {
-			titlescreen = util.binddata(images.getImage("title.png"));
+			titlescreen = util.binddata(images.getImage("title2.png"));
 			loadscreen = util.binddata(images.getImage("loadscreen.png"));
 		} catch (IOException e) {
 			System.err.println("err finding title screen img"); e.printStackTrace();
@@ -340,8 +339,8 @@ public class Controller {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		gui = new GuiElementHandler();
-		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
-		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
+		gui.newButton("button2", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
+		gui.newString("Click To Play", Color.RED, 200.0f, 50.0f, new Vector2f(-0.3f, -0.85f));
 		elements = true;
 		
 		DataUtils dutils = new DataUtils();
@@ -521,7 +520,7 @@ public class Controller {
 		prevpercent = 0; loadpercent = 0;
 		elements = false;
 		gui = new GuiElementHandler();
-		gui.newButton("button", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
+		gui.newButton("button2", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
 		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
 		elements = true;
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
@@ -563,15 +562,6 @@ public class Controller {
 		
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).update(shaderhandler, display, util);
-		}
-		if(prevhealth != player.getHealth() && started) {
-			prevhealth = player.getHealth();
-			gui.removeElement(healthid);
-			if((int)(((float)player.getHealth()/500.0f)*100.0f) > 1) {
-				healthid = gui.newBar("bar", new Vector2f(0.1f, 0.75f), (int)(((float)player.getHealth()/500.0f)*100.0f));
-			} else {
-				healthid = gui.newString("dead", Color.red, 50, 50, new Vector2f(0.1f, 0.75f));
-			}
 		}
 		if(prevscore != score && started) {
 			prevscore = score;

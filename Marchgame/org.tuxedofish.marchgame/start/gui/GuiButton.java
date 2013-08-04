@@ -73,9 +73,9 @@ public class GuiButton implements GuiElement{
 		
 		try {
 			imgs = new BufferedImage[] {
-					images.getImage("gui/" + buttonname+".png"), 
-					images.getImage("gui/" + buttonname+"hover.png"), 
-					images.getImage("gui/" + buttonname+"pressed.png"), 
+					images.getImage("gui/" + buttonname +".png"), 
+					images.getImage("gui/" + buttonname +"hover.png"), 
+					images.getImage("gui/button" + "pressed.png"), 
 			};
 			TextureUtils util = new TextureUtils();
 			texids = new int[] {

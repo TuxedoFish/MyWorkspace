@@ -111,6 +111,7 @@ public class GuiElementHandler {
 	public int newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
 			String eventmessage) {
 		GuiButton button = new GuiButton(loc, pos, width, height, parent, eventmessage);
+		System.out.println(width + " : " + height);
 		elements.add(button);
 		ih.addButton(button, elements.size()-1);
 		

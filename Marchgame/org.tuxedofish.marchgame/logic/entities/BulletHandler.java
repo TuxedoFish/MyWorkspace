@@ -108,8 +108,8 @@ public class BulletHandler extends ArrayList<Bullet>{
 					bullet.changePos(get(i).getPos().x-bpos.x, get(i).getPos().y-bpos.y);
 					bpos = new Vector2f(get(i).getPos().x, get(i).getPos().y);
 					bullet.render(sh, util, 0);
-					if(!get(i).getDestroying()) {
-						if(get(i).contains(player.getPos(), (float)player.getWidth()/Display.getWidth(), (float)player.getHeight()/Display.getHeight(), d)) {
+					if(!get(i).getDestroying() && player.getHit() == 0) {
+						if(get(i).contains(new Vector2f(player.getPos().x+toCoordsWidth(20), player.getPos().y-toCoordsHeight(20)), (float)14/Display.getWidth(), (float)6/Display.getHeight(), d)) {
 							get(i).setDestroyingSelf(true);
 							explosions.add(new Bullet(get(i).getPos(), 0.0f, 70, "explosion"));
 							explosions.add(new Bullet(new Vector2f((float)(get(i).getPos().x + (Math.random()*0.2f)-0.1f), (float)(get(i).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
@@ -122,8 +122,8 @@ public class BulletHandler extends ArrayList<Bullet>{
 				bullet.changePos(get(i).getPos().x-bpos.x, get(i).getPos().y-bpos.y);
 				bpos = new Vector2f(get(i).getPos().x, get(i).getPos().y);
 				bullet.render(sh, util, 0);
-				if(!get(i).getDestroying()) {
-					if(get(i).contains(player.getPos(), (float)player.getWidth()/Display.getWidth(), (float)player.getHeight()/Display.getHeight(), d)) {
+				if(!get(i).getDestroying() && player.getHit() == 0) {
+					if(get(i).contains(new Vector2f(player.getPos().x+toCoordsWidth(20), player.getPos().y-toCoordsHeight(20)), (float)14/Display.getWidth(), (float)6/Display.getHeight(), d)) {
 						get(i).setDestroyingSelf(true);
 						explosions.add(new Bullet(get(i).getPos(), 0.0f, 70, "explosion"));
 						explosions.add(new Bullet(new Vector2f((float)(get(i).getPos().x + (Math.random()*0.2f)-0.1f), (float)(get(i).getPos().y + (Math.random()*0.08f)-0.04f)), 0.0f, 70, "explosion"));
@@ -133,6 +133,12 @@ public class BulletHandler extends ArrayList<Bullet>{
 				}
 			}
 		}
+	}
+	public float toCoordsWidth(int i) {
+		return (i*2.0f)/(Display.getWidth());
+	}
+	public float toCoordsHeight(int i) {
+		return (i*2.0f)/(Display.getHeight());
 	}
 	public void shootlaser(Vector2f pos) {
 		for(int i=0; i<20; i++) {
