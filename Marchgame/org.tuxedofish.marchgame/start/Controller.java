@@ -203,6 +203,7 @@ public class Controller {
 			try {
 				sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
 				sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
+				sph.addTexture(images.getImage("Spinninglaser.png"), "Spinninglaser.png", 49);
 				sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
 				sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
 				sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
@@ -297,7 +298,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(257, 68, 5);
+		gm.makeGrid(60, 60, 5);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);

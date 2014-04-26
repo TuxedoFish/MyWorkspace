@@ -44,6 +44,7 @@ public class Boss {
 	private int anstage = 0;
 	private int textstage = 0;
 	private int dist;
+	private int partsdestroyed=0;
 	private int pattern = 1;
 	private boolean stopped = false;
 	private BulletHandler bullets;
@@ -162,7 +163,11 @@ public class Boss {
 		}
 	}
 	public BossPart getBossPart(int index) {
-		return bps.get(index);
+		if(bps.size()!=0) {
+			return bps.get(index);
+		} else {
+			return null;
+		}
 	}
 	public void resetBlinking(int index) {
 		hit.set(threadids.indexOf(index), 0);
@@ -177,7 +182,7 @@ public class Boss {
 		return (i*4.0f)/(Display.getHeight());
 	}
 	public void shoot(int index) {
-		if(!stopped) {
+		if(!stopped && bps.size()!=0) {
 			if(bps.get(0).getShootThreads()[shootindex] == index) {
 				if(bps.get(0).isHittable()) {
 					shootstage += 1;
@@ -251,16 +256,13 @@ public class Boss {
 							(float)myrect.get(j).getHeight(), d) && bps.get(j).isHittable()) {
 						if(!playerbullets.get(i).getDestroying()) {
 							parent.bulletexplode(i);
-							this.healths.set(j, healths.get(j)-5);
-							hit.set(j, 1);
-							if(healths.get(j)<=0) {
-								healths.remove(j);
-								if(healths.size() > 1) {
-									myrect.remove(j);
-									me.remove(j);
-									bps.remove(j);
-								}
+							if(healths.size()!=0 && healths.get(j)<=4) {
+								partsdestroyed+=1;
 								SoundHandler.playSound(explosionsound);
+							}
+							if(this.healths.size()!=0) {
+								this.healths.set(j, healths.get(j)-5);
+								hit.set(j, 1);
 							}
 						}
 					}
@@ -271,12 +273,11 @@ public class Boss {
 			}
 			bullets.render(sh, d, util);
 			
-			boolean dead = true;
-			for(int i=0; i<bps.size(); i++) {
-				if(bps.get(i).isHittable() == true) {
-					dead = false;
-				}
+			boolean dead = false;
+			if(partsdestroyed>=bps.size()) {
+				dead = true;
 			}
+			
 			if(myrect.size() == 0) {
 				dead = true;
 			}
