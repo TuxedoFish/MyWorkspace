@@ -11,7 +11,7 @@ cyborg.png
 10
 5000
 100
-gun gun1.png 50 50 false
+gun gun1.png 50 50 false 0.0f 0.0f
 path
 1
 collision 15.468749 84.583336 0

@@ -14,11 +14,13 @@ public class Gun extends Sprite {
 	private int pattern = 1;
 	private Player player;
 	private boolean visible = true;
+	private Vector2f pos;
 	
 	public Gun(BufferedImage img, Controller parent, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos,
 			int pattern, Player player) {
 		super(img, parent, width, height, th, currenttexid, pos);
+		this.pos = pos;
 		this.pattern = pattern;
 		this.player = player;
 	}
@@ -54,7 +56,7 @@ public class Gun extends Sprite {
 		return visible;
 	}
 	public void update(Vector2f parentpos, float width, float height) {
-		this.setPos(parentpos.x + (width/2), parentpos.y - (height/2));
+		this.setPos(parentpos.x + (width/2) + pos.x, parentpos.y - (height/2) + pos.y);
 	}
 	public void animate() {
 		float direction = (float) Math.atan2(player.getPos().y - getPos().y, player.getPos().x - getPos().x);

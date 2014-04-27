@@ -12,7 +12,7 @@ Enemy2.png
 10
 2000
 100
-gun gun1.png 50 50 false
+gun gun1.png 50 50 false 0.0f 0.0f
 path
 1
 collision 38.28125 98.95833 0

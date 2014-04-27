@@ -5,7 +5,7 @@ missile.png
 5
 10
 2000
-64
+84
 toplayer
 4
 collision 1.8999996 62.533333 0

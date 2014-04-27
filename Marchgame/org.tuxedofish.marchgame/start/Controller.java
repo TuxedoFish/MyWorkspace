@@ -109,6 +109,7 @@ public class Controller {
 	private BossType boss;
 	private int levelheight;
 	private EnemyLoader el;
+	private boolean pausedcombat = false;
 	
 	private int highscore;
 	private int highscoreid;
@@ -118,6 +119,7 @@ public class Controller {
 	private boolean elements = false;
 	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
+	private ArrayList<Float> stops = new ArrayList<Float>(); 
 	private ArrayList<Color> colors = new ArrayList<Color>(); 
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private ArrayList<Troop> enemies = new ArrayList<Troop>();
@@ -206,9 +208,10 @@ public class Controller {
 				sph.addTexture(images.getImage("Spinninglaser.png"), "Spinninglaser.png", 49);
 				sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
 				sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
-				sph.addTexture(images.getImage("Tank.png"), "Tank.png", 49);
+				sph.addTexture(images.getImage("alientank.png"), "alientank.png", 59);
 				sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
 				sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
+				sph.addTexture(images.getImage("alientankgun.png"), "alientankgun.png", 29);
 				sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -245,6 +248,8 @@ public class Controller {
 		vaoids = BufferUtils.createIntBuffer(2+boss.getAmountOfParts());
 		glGenVertexArrays(vaoids);
 		boss.finish(vboids, vaoids);
+		
+		stops = el.getStops();
 		
 		buildings = el.getBuildings();
 		for(int i=0; i<buildings.size(); i++) {
@@ -298,7 +303,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(60, 60, 5);
+		gm.makeGrid(30, 30, 10);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -540,16 +545,24 @@ public class Controller {
 	public void rendergl(ShaderHandler sh, DisplaySetup d) {
 		DataUtils util = new DataUtils();
 		util.begin(sh, d);
+		System.out.println(d.getPos().y*480);
+		for(int i=0; i<stops.size(); i++) {
+			if(d.getPos().y*-480 > stops.get(i)) {
+				pausedcombat = true;
+			}
+		}
 		
 		if(end) {
 			end = false;
 			toHome();
 		}
 		if((d.getPos().y + 0.25f > levelheight*-1)) {
-			display.changepos(0.0f, -0.0025f, 0.0f);
-			player.changePos(0.0f, 0.0025f);
-			for(int i=0; i<enemies.size(); i++) {
-				enemies.get(i).scroll();
+			if(!pausedcombat) {
+				display.changepos(0.0f, -0.0025f, 0.0f);
+				player.changePos(0.0f, 0.0025f);
+				for(int i=0; i<enemies.size(); i++) {
+					enemies.get(i).scroll();
+				}
 			}
 		}
 		lr.render(blockdata, sh, blocktex, blocks, d);

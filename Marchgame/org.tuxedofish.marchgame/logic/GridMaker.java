@@ -50,7 +50,7 @@ public class GridMaker {
 		g.dispose();
 		
 		try {
-			ImageIO.write(img, "png", new File("CHARACTER.png"));
+			ImageIO.write(img, "png", new File("BOOO.png"));
 		} catch (IOException e) {
 			System.err.println("err writing image");
 			e.printStackTrace();

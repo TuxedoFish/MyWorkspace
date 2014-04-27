@@ -1,3 +1,9 @@
+ep 1 157 0
+ep 113 89 1
+ep 175 471 5
+ep 253 118 2
+ep 284 331 4
+ep 375 149 3
 Spinninglaser.png
 0
 7
@@ -5,7 +11,7 @@ Spinninglaser.png
 2
 10
 2000
-100
-gun gun1.png 50 50 false
-swirl
+50
+gun gun1.png 50 50 false 0.0f 0.0f
+path
 2
