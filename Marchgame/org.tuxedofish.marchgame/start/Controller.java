@@ -217,7 +217,17 @@ public class Controller {
 				e.printStackTrace();
 			}
 			sph.finish();
-			el = new EnemyLoader(true, level, this, null, ct, display, sph);
+			
+			GridParser gp = new GridParser();
+			try {
+				blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
+			} catch (IOException e) {
+				System.out.println("u done fucked up");
+				e.printStackTrace();
+			}
+			blocktex.finish();
+			
+			el = new EnemyLoader(true, level, this, null, ct, display, sph, blocktex);
 		}
 	}
 	public void startupfinish() throws IOException {
@@ -258,10 +268,9 @@ public class Controller {
 		
 		sch = new ScoreHandler(this, player);
 		sch.finish(glGenBuffers(), glGenVertexArrays());
+	
+		ImageReturn images = new ImageReturn();
 		
-		GridParser gp = new GridParser(); ImageReturn images = new ImageReturn();
-		blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
-		blocktex.finish();
 		levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
 		lr = new LevelRenderer(ct.addTimeStep(600));
 		blockdata = lr.getLevelData(blocks, blocktex);
@@ -545,7 +554,6 @@ public class Controller {
 	public void rendergl(ShaderHandler sh, DisplaySetup d) {
 		DataUtils util = new DataUtils();
 		util.begin(sh, d);
-		System.out.println(d.getPos().y*480);
 		for(int i=0; i<stops.size(); i++) {
 			if(d.getPos().y*-480 > stops.get(i)) {
 				pausedcombat = true;
@@ -558,8 +566,8 @@ public class Controller {
 		}
 		if((d.getPos().y + 0.25f > levelheight*-1)) {
 			if(!pausedcombat) {
-				display.changepos(0.0f, -0.0025f, 0.0f);
-				player.changePos(0.0f, 0.0025f);
+				display.changepos(0.0f, -0.01f, 0.0f);
+				player.changePos(0.0f, 0.01f);
 				for(int i=0; i<enemies.size(); i++) {
 					enemies.get(i).scroll();
 				}

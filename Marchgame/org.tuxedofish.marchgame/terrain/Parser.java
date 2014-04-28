@@ -1,6 +1,7 @@
 package terrain;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,12 +12,13 @@ import javax.imageio.ImageIO;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
+import texture.TextureHolder;
 import utils.MathUtils;
 
 public class Parser {
-	public ArrayList<Block> parseFile(File lvl, Vector2f pos) {
+	public ArrayList<Block> parseFile(File lvl, Vector2f pos, TextureHolder th) {
 		try {
-			return parseLevel(ImageIO.read(lvl), pos);
+			return parseLevel(ImageIO.read(lvl), pos, th);
 		} catch (IOException e) {
 			System.err.println("err reading lvl file");
 			e.printStackTrace();
@@ -24,9 +26,63 @@ public class Parser {
 		System.exit(1);
 		return null;
 	}
-	public ArrayList<Block> parseLevel(BufferedImage lvl, Vector2f pos) {
+	public void drawLevel(BufferedImage level, TextureHolder th) {
+		BufferedImage img = new BufferedImage(level.getWidth()*50, level.getHeight()*50, BufferedImage.TYPE_INT_ARGB);
+		
+		Graphics g = img.getGraphics();
+		
+		for(int i = 0; i < level.getWidth(); i++) {
+			for(int j = 0; j < level.getHeight(); j++) {
+//				if(new Color(level.getRGB(j, i)).equals(Color.green)) {
+//					g.drawImage()
+//				}
+//				//grass-pinkflower
+//				if(new Color(level.getRGB(j, i)).equals(new Color(255, 0, 255))) {
+//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 15, 50, 50));
+//				}
+				//path
+//				if(new Color(level.getRGB(j, i)).equals(new Color(255, 120, 0))) {
+//					g.drawImage(th.getImg().getSubimage((0*50)+1, (0*50)+1, 50, 50), i*50, j*50, this);
+//				}
+//				//rightpath
+//				if(new Color(level.getRGB(j, i)).equals(new Color(100, 100, 100))) {
+//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 5, 50, 50));
+//				}
+//				//bottompath
+//				if(new Color(level.getRGB(j, i)).equals(new Color(100, 20, 20))) {
+//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 45, 50, 50));
+//				}
+//				//port
+//				if(new Color(level.getRGB(j, i)).equals(new Color(255, 50, 50))) {
+//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 46, 50, 50));
+//				}
+//				//water
+//				if(new Color(level.getRGB(j, i)).equals(new Color(0, 0, 255))) {
+//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
+//				}
+				g.setColor(Color.black);
+				g.drawRect(i*50, j*50, 50, 50);
+				
+				g.setColor(new Color(255, 130, 240));
+				g.fillRect(i*50+1, j*50+1, 50 - 1, 50 - 1);
+			}
+		}
+		
+		g.dispose();
+		
+		try {
+			ImageIO.write(img, "png", new File("currentlevel.png"));
+		} catch (IOException e) {
+			System.err.println("err writing image");
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	public ArrayList<Block> parseLevel(BufferedImage lvl, Vector2f pos, TextureHolder th) {
 		ArrayList<Block> blocks = new ArrayList<Block>();
 		final Block b = new Block(0.0f, 0.0f, 0, 50, 50);
+		
+		drawLevel(lvl, th);
 		
 		for(int i = 0; i < lvl.getHeight(); i++) {
 			for(int j = 0; j < lvl.getWidth(); j++) {
@@ -45,6 +101,14 @@ public class Parser {
 				//rightpath
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 100, 100))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 5, 50, 50));
+				}
+				//bottompath
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 20, 20))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 45, 50, 50));
+				}
+				//port
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 50, 50))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 46, 50, 50));
 				}
 				//water
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 0, 255))) {

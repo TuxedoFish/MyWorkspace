@@ -16,7 +16,7 @@ import start.ControllerTimer;
 import texture.TextureHolder;
 
 public class HiveJet extends BossType{
-	public HiveJet(Controller parent, Player player, ControllerTimer ct) {
+	public HiveJet(Controller parent, Player player, ControllerTimer ct, float y) {
 		super(new Vector2f(0.0f, 0.0f), 0, parent, null, player, player.getBullets(), ct.addTimeStep(200));
 		ImageReturn images = new ImageReturn(); GridParser gp = new GridParser();
 		try {

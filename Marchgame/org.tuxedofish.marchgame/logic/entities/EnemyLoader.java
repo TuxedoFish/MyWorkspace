@@ -62,9 +62,11 @@ public class EnemyLoader extends Thread{
 	private int highscore;
 	private SpriteHolder spriteholder;
 	private ArrayList<Float> stops = new ArrayList<Float>();
+	private TextureHolder blockth;
 	
 	public EnemyLoader(boolean cached, String level, Controller parent
-			, BufferedImage enemy, ControllerTimer ct, DisplaySetup display, SpriteHolder spriteholder) {
+			, BufferedImage enemy, ControllerTimer ct, DisplaySetup display, SpriteHolder spriteholder, TextureHolder blockth) {
+		this.blockth = blockth;
 		this.level = level;
 		this.parent = parent;
 		this.enemy = enemy;
@@ -125,14 +127,15 @@ public class EnemyLoader extends Thread{
 			}
 			
 			try {
-				Parser parser = new Parser();
-				blocks = parser.parseLevel(images.getImage(level + ".png"), 
-						new Vector2f(-1.0f, -1.0f));
 				GridParser gp = new GridParser();
 				
 				TextureHolder texture = gp.parseGrid(images.getImage("spaceship.png"), 50);
 				player = new Player(images.getImage("spaceship.png"), 100, 100, texture, 0,
 						new Vector2f(0.0f, -0.75f), parent);
+				
+				Parser parser = new Parser();
+				blocks = parser.parseLevel(images.getImage(level + ".png"), 
+						new Vector2f(-1.0f, -1.0f), blockth);
 				
 //				Vector2f p = new Vector2f(-1.0f, 0.0f);
 //				BufferedImage img = images.getImage("trees.png");
@@ -161,11 +164,13 @@ public class EnemyLoader extends Thread{
 				}
 				
 				reader2.close();
-				
+				 // NEEDS SERIOUS WORK POSITIONING
 				if(level.equals("level1")) {
-					boss = new HiveEye(parent, player, ct);
+					boss = new HiveEye(parent, player, ct, 
+							(images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2);
 				} else {
-					boss = new HiveJet(parent, player, ct);
+					boss = new HiveJet(parent, player, ct, 
+							(images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2);
 				}
 			} catch (IOException e1) {
 				System.err.println("err loading img");
