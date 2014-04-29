@@ -2,6 +2,7 @@ package terrain;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -41,30 +42,25 @@ public class Parser {
 //					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 15, 50, 50));
 //				}
 				//path
-//				if(new Color(level.getRGB(j, i)).equals(new Color(255, 120, 0))) {
-//					g.drawImage(th.getImg().getSubimage((0*50)+1, (0*50)+1, 50, 50), i*50, j*50, this);
-//				}
-//				//rightpath
-//				if(new Color(level.getRGB(j, i)).equals(new Color(100, 100, 100))) {
-//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 5, 50, 50));
-//				}
-//				//bottompath
-//				if(new Color(level.getRGB(j, i)).equals(new Color(100, 20, 20))) {
-//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 45, 50, 50));
-//				}
+				if(new Color(level.getRGB(i, j)).equals(new Color(255, 120, 0))) {
+					g.drawImage((Image)th.getImg().getSubimage((0*51)+1, (0*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//rightpath
+				if(new Color(level.getRGB(i, j)).equals(new Color(100, 100, 100))) {
+					g.drawImage((Image)th.getImg().getSubimage((5*51)+1, (0*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//bottompath
+				if(new Color(level.getRGB(i, j)).equals(new Color(100, 20, 20))) {
+					g.drawImage((Image)th.getImg().getSubimage((4*51)+1, (5*51)+1, 50, 50), i*50, j*50, null);
+				}
 //				//port
 //				if(new Color(level.getRGB(j, i)).equals(new Color(255, 50, 50))) {
 //					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 46, 50, 50));
 //				}
 //				//water
-//				if(new Color(level.getRGB(j, i)).equals(new Color(0, 0, 255))) {
-//					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 1, 50, 50));
-//				}
-				g.setColor(Color.black);
-				g.drawRect(i*50, j*50, 50, 50);
-				
-				g.setColor(new Color(255, 130, 240));
-				g.fillRect(i*50+1, j*50+1, 50 - 1, 50 - 1);
+				if(new Color(level.getRGB(i, j)).equals(new Color(0, 0, 255))) {
+					g.drawImage((Image)th.getImg().getSubimage((1*51)+1, (0*51)+1, 50, 50), i*50, j*50, null);
+				}
 			}
 		}
 		
