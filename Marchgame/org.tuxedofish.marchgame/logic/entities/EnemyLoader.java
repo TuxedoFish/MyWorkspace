@@ -198,11 +198,9 @@ public class EnemyLoader extends Thread{
 					parent.loadupdate(100/lines);
 					String[] parts = line.split(" ");
 					if(parts[0].equals("stop")) {
-						System.out.println("stop");
 						stops.add(Float.valueOf(parts[2]));
 					} else {
 						BufferedReader reader = images.getFile("enemies/" + parts[0] + ".txt");
-						System.out.println(parts[0]);
 						String line2 = "";
 						EnemyPath ep = new EnemyPath();
 						while((line2=reader.readLine()).startsWith("ep")) {
