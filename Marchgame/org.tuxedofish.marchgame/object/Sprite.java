@@ -110,6 +110,24 @@ public class Sprite{
 		datafb = getData(this.pos, width, height, currenttexid);
 		indices = getIndices(0);
 	}
+	public Sprite(BufferedImage img, Controller c, int width, int height, Vector2f pos) {
+		TextureUtils util = new TextureUtils();
+		imgdata = util.loadtexture(img);
+		
+		parent = c;
+		any = true;
+		
+		texture = img;
+		setPos(0.0f, -7.0f);
+		
+		modelmatrix.translate(pos);
+		
+		this.width = width;
+		this.height = height;
+		this.pos = pos;
+		datafb = getData(this.pos, width, height);
+		indices = getIndices(0);
+	}
 	public Sprite(BufferedImage img, Controller c, int width, int height, TextureHolder th, int currenttexid, 
 			Vector2f pos, ByteBuffer imgdata) {
 		this.imgdata = imgdata;
@@ -168,6 +186,52 @@ public class Sprite{
 		float realwidth = (float)width/Display.getWidth();
 		float realheight = (float)height/Display.getHeight();
 		Vector2f[] tc = th.getTextureCoords(texid);
+		
+		data = new float[]{
+				//0
+				0.0f, 0.0f, z, 1.0f, 
+				tc[0].x, tc[0].y, 
+				0.0f, 0.0f, .0f, 0.0f,
+				//1
+				realwidth, 0.0f, z, 1.0f,
+				tc[1].x, tc[1].y, 
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//2
+				realwidth, -realheight, z, 1.0f,
+				tc[2].x, tc[2].y, 
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//3
+				0.0f, 0.0f, z, 1.0f, 
+				tc[0].x, tc[0].y, 
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//4
+				realwidth, -realheight, z, 1.0f,
+				tc[2].x, tc[2].y, 
+				0.0f, 0.0f, 0.0f, 0.0f,
+				//5
+				0.0f, -realheight, z, 1.0f, 
+				tc[3].x, tc[3].y, 
+				0.0f, 0.0f, 0.0f, 0.0f,
+		};
+		
+		datafb = BufferUtils.createFloatBuffer(60);
+		datafb.put(data);
+		datafb.flip();
+		
+		return datafb;
+	}
+	public FloatBuffer getData(Vector2f pos, int width, int height) {
+		FloatBuffer datafb;
+		
+		float z = 0.0f;
+		float realwidth = (float)width/Display.getWidth();
+		float realheight = (float)height/Display.getHeight();
+		Vector2f[] tc = new Vector2f[] {
+				new Vector2f(0.0f, 0.0f),
+				new Vector2f(1.0f, 0.0f),
+				new Vector2f(1.0f, 1.0f),
+				new Vector2f(0.0f, 1.0f)
+		};
 		
 		data = new float[]{
 				//0
