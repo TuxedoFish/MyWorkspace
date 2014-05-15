@@ -100,6 +100,9 @@ public class Controller {
 	
 	private GuiElementHandler gui;
 	
+	private float xthreshold;
+	private float currentx = 0.0f;
+	
 	private int prevhealth = 0;
 	
 	private boolean end = false;
@@ -362,9 +365,11 @@ public class Controller {
 		 * This is important because it is the way we work out how to draw the level based on length
 		 * NEEDS TO BE MOVED TO LOADING SO IT ISNT SLOW AT START
 		 */
-		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (6400/240.0f)-1f), 640, 6400);
+		int width = 1000;
+		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (6400/240.0f)-1f), width, 6400);
 		int levelvbo = glGenBuffers();
 		int levelvao = glGenVertexArrays();
+		xthreshold = ((width-645)/2.0f) /(Display.getWidth()/2.0f);
 		
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
@@ -544,7 +549,22 @@ public class Controller {
 	}
 	public void move(float x, float y) {
 		if(started) {
-			player.move(x, y, display);
+			if(Math.abs(currentx) < xthreshold) {
+				currentx += x;
+				System.out.println("current : " + currentx + "threshold : " + xthreshold);
+				display.changepos(-x, 0.0f, 0.0f);
+				player.move(x, y, display);
+			} else {
+				System.out.println(player.getPos());
+				System.out.println((currentx+x));
+				System.out.println(xthreshold);
+				if((player.getPos().x<0.0f && currentx>0.0f) || (player.getPos().x>0.0f && currentx<0.0f)) {
+					if(Math.abs(currentx+x) < xthreshold) {
+						currentx -= x;
+					}
+				}
+				player.move(x, y, display);
+			}
 		}
 	}
 	public void toHome() {
