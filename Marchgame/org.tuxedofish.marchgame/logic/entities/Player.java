@@ -128,9 +128,9 @@ public class Player extends Sprite{
 	public int getHit() {
 		return hit;
 	}
-	public void move(float x, float y, DisplaySetup display) {
-		if(!(getPos().x + (getWidth()/Display.getWidth()) + x > 0.8f) || x <= 0) {
-			if(!(getPos().x - x < -0.95f) || x >= 0) {
+	public void move(float x, float y, float xoffset, DisplaySetup display) {
+		if(!(getPos().x + (getWidth()/Display.getWidth()) + x > 0.8f+(xoffset)) || x <= 0) {
+			if(!(getPos().x - x < -0.95f-(xoffset)) || x >= 0) {
 				if(!(getPos().y + y > -display.getPos().y + 1.0f) || y <= 0) {
 					if(!(getPos().y - (getHeight()/Display.getHeight()) + y < -display.getPos().y - 0.8f) || y >= 0) {
 							changePos(x, y);

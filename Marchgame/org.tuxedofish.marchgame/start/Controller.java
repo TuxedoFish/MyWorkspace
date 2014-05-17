@@ -238,6 +238,7 @@ public class Controller {
 	}
 	public void startupfinish() throws IOException {
 		enemies = el.getEnemies();
+		currentx = 0;
 		
 		for(int i=0; i<enemies.size(); i++) {
 			IntBuffer vboids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
@@ -365,7 +366,7 @@ public class Controller {
 		 * This is important because it is the way we work out how to draw the level based on length
 		 * NEEDS TO BE MOVED TO LOADING SO IT ISNT SLOW AT START
 		 */
-		int width = 1000;
+		int width = 800;
 		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (6400/240.0f)-1f), width, 6400);
 		int levelvbo = glGenBuffers();
 		int levelvao = glGenVertexArrays();
@@ -551,19 +552,14 @@ public class Controller {
 		if(started) {
 			if(Math.abs(currentx) < xthreshold) {
 				currentx += x;
-				System.out.println("current : " + currentx + "threshold : " + xthreshold);
 				display.changepos(-x, 0.0f, 0.0f);
-				player.move(x, y, display);
+				player.move(x, y, xthreshold, display);
 			} else {
-				System.out.println(player.getPos());
-				System.out.println((currentx+x));
-				System.out.println(xthreshold);
-				if((player.getPos().x<0.0f && currentx>0.0f) || (player.getPos().x>0.0f && currentx<0.0f)) {
-					if(Math.abs(currentx+x) < xthreshold) {
-						currentx -= x;
-					}
+				if((player.getPos().x<0.0f+(xthreshold) && currentx>0.0f) ||
+						(player.getPos().x>0.0f-(xthreshold) && currentx<0.0f)) {
+					currentx += x;
 				}
-				player.move(x, y, display);
+				player.move(x, y, xthreshold, display);
 			}
 		}
 	}
