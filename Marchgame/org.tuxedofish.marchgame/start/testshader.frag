@@ -16,7 +16,7 @@ out vec4 FragColor;
 void main() {
 	if(brightness == 1) {
   	  vec4 Color = texture2D(image, pass_TextureCoord);
-  	  FragColor = vec4(Color.x + 0.75f, Color.y + 0.75f, Color.z + 0.75f, Color.w);
+  	  FragColor = vec4(Color.x, Color.y, Color.z, Color.w);
     } else {
       vec4 Color = texture2D(image, pass_TextureCoord);
       FragColor = Color;

@@ -80,8 +80,10 @@ public class ShaderHandler {
 			//Compiles the glsl
 			ARBShaderObjects.glCompileShaderARB(shader);
 			//Tests for error
-			if(ARBShaderObjects.glGetObjectParameterfARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL_FALSE)
+			if(ARBShaderObjects.glGetObjectParameterfARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL_FALSE) {
+				System.err.println(getLogInfo(shader));
 				throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
+			}
 			//Returns shader id
 			return shader;
 		}catch(Exception e) {
@@ -113,8 +115,10 @@ public class ShaderHandler {
 			//Compiles the glsl
 			ARBShaderObjects.glCompileShaderARB(shader);
 			//Tests for error
-			if(ARBShaderObjects.glGetObjectParameterfARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL_FALSE)
+			if(ARBShaderObjects.glGetObjectParameterfARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL_FALSE) {
+				System.err.println(getLogInfo(shader));
 				throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
+			}
 			//Returns shader id
 			return shader;
 		}catch(Exception e) {

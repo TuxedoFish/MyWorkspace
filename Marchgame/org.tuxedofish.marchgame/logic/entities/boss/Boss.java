@@ -64,7 +64,7 @@ public class Boss {
 	private int shootstage = 0;
 	private int shootindex = 0;
 	private float missile1 = 0, missile2 = 180;
-	
+
 	public Boss(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets) {
 		try {
@@ -81,7 +81,7 @@ public class Boss {
 		this.ep = ep;
 		this.texid = texid;
 		this.player = new Rectangle2D.Float();
-		
+
 		ImageReturn images = new ImageReturn();
 		GridParser gp = new GridParser();
 		TextureHolder bullettex, explosiontex;
@@ -110,14 +110,14 @@ public class Boss {
 	public void update(DisplaySetup d) {
 		Vector4f p = new Vector4f((float)playersprite.getPos().x, (float)playersprite.getPos().y, 0.0f, 1.0f);
 		p = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p, p);
-		
+
 		this.player.setRect(p.x, p.y, 
 				(float)playersprite.getWidth()/Display.getWidth(), 
 				(float)playersprite.getHeight()/Display.getHeight());
 		for(int i=0; i<myrect.size(); i++) {
 			Vector4f p2 = new Vector4f((float)me.get(i).getPos().x, (float)me.get(i).getPos().y, 0.0f, 1.0f);
 			p2 = Matrix4f.transform(d.getModelViewMatrixAsMatrix(), p2, p2);
-			
+
 			this.myrect.get(i).setRect(p2.x, p2.y, 
 					(float)me.get(i).getWidth()/Display.getWidth(), 
 					(float)me.get(i).getHeight()/Display.getHeight());
@@ -196,7 +196,7 @@ public class Boss {
 						Vector2f p2 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(99), me.get(0).getPos().y - toCoordsHeight(33));
 						Vector2f p3 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(150), me.get(0).getPos().y - toCoordsHeight(33));
 						Vector2f p4 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(156), me.get(0).getPos().y - toCoordsHeight(39));
-						
+
 						double compassBearing=Math.atan2(p1.y - playersprite.getPos().y, p1.x - playersprite.getPos().x);
 						shoot((float)compassBearing, p1);
 						compassBearing=Math.atan2(p2.y - playersprite.getPos().y, p2.x - playersprite.getPos().x);
@@ -209,16 +209,16 @@ public class Boss {
 					if(bps.get(0).getPatterns()[shootindex] == 3) {
 						Vector2f p1 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(107), me.get(0).getPos().y - toCoordsHeight(3));
 						Vector2f p2 = new Vector2f(me.get(0).getPos().x + toCoordsWidth(150), me.get(0).getPos().y - toCoordsHeight(3));
-						
+
 						missile1 += 10;
 						missile2 += 10;
-						
+
 						if(missile1 >= 360) missile1 -= 360;
 						if(missile2 >= 360) missile2 -= 360;
-						
+
 						shoot((float)Math.toRadians(missile1), p1);
 						shoot((float)Math.toRadians(missile2), p1);
-						
+
 						shoot((float)Math.toRadians(missile1), p2);
 						shoot((float)Math.toRadians(missile2), p2);
 					}
@@ -272,12 +272,12 @@ public class Boss {
 				me.get(i).render(sh, util, hit.get(i));
 			}
 			bullets.render(sh, d, util);
-			
+
 			boolean dead = false;
 			if(partsdestroyed>=bps.size()) {
 				dead = true;
 			}
-			
+
 			if(myrect.size() == 0) {
 				dead = true;
 			}
