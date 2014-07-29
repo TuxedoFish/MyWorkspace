@@ -29,6 +29,7 @@ public class TextureHolder {
 	public TextureHolder(float parentwidth, float parentheight, BufferedImage img) {
 		this.parentwidth = parentwidth;
 		this.parentheight = parentheight;
+		this.img = img;
 	}
 	public int size() {
 		return tex.size();

@@ -100,6 +100,9 @@ public class Controller {
 	
 	private GuiElementHandler gui;
 	
+	private float xthreshold;
+	private float currentx = 0.0f;
+	
 	private int prevhealth = 0;
 	
 	private boolean end = false;
@@ -110,6 +113,9 @@ public class Controller {
 	private int levelheight;
 	private EnemyLoader el;
 	private boolean pausedcombat = false;
+	private Sprite ultimatelevel;
+	
+	private int ultimateleveltex;
 	
 	private int highscore;
 	private int highscoreid;
@@ -232,6 +238,7 @@ public class Controller {
 	}
 	public void startupfinish() throws IOException {
 		enemies = el.getEnemies();
+		currentx = 0;
 		
 		for(int i=0; i<enemies.size(); i++) {
 			IntBuffer vboids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
@@ -270,6 +277,7 @@ public class Controller {
 		sch.finish(glGenBuffers(), glGenVertexArrays());
 	
 		ImageReturn images = new ImageReturn();
+		TextureUtils util = new TextureUtils();
 		
 		levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
 		lr = new LevelRenderer(ct.addTimeStep(600));
@@ -342,6 +350,10 @@ public class Controller {
 		try {
 			titlescreen = util.binddata(images.getImage("title2.png"));
 			loadscreen = util.binddata(images.getImage("loadscreen.png"));
+			
+			//NEEDS TO BE MOVED TO LOADING
+			
+			ultimateleveltex = util.binddata(images.getImage("level1draft.png").getSubimage(0, 0, 1600, 10940));
 		} catch (IOException e) {
 			System.err.println("err finding title screen img"); e.printStackTrace();
 		}
@@ -349,7 +361,16 @@ public class Controller {
 		int bgvao = glGenVertexArrays();
 		DataUtils utils = new DataUtils();
 		IntBuffer bgindicesb = utils.getScreemnIndices();
-		FloatBuffer bgdatafb = utils.getScreen(new Vector2f(0.0f, 0.0f));
+		FloatBuffer bgdatafb = utils.getScreen(new Vector2f(0.0f, 1.0f), 640, 480);
+		/*
+		 * This is important because it is the way we work out how to draw the level based on length
+		 * NEEDS TO BE MOVED TO LOADING SO IT ISNT SLOW AT START
+		 */
+		int width = 800;
+		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (6400/240.0f)-1f), width, 6400);
+		int levelvbo = glGenBuffers();
+		int levelvao = glGenVertexArrays();
+		xthreshold = ((width-645)/2.0f) /(Display.getWidth()/2.0f);
 		
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
@@ -363,7 +384,12 @@ public class Controller {
 		
 		while(!Display.isCloseRequested()) {
 			if(stage == 0) {
+				FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
+				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 				if(started) {
+					utils.begin(shaderhandler, display);
+					utils.setup(leveldatafb, levelvbo, levelvao, shaderhandler, ultimateleveltex, 2, bgindicesb, matrix, 0);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 					rendergl(shaderhandler, display);
 					ih.update(display);
 				} else {
@@ -385,8 +411,6 @@ public class Controller {
 							gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
 						}
 					}
-					FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
-					Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 					
 					utils.begin(shaderhandler, display);
 					if(!levelmap) {
@@ -526,7 +550,17 @@ public class Controller {
 	}
 	public void move(float x, float y) {
 		if(started) {
-			player.move(x, y, display);
+			if(Math.abs(currentx) < xthreshold) {
+				currentx += x;
+				display.changepos(-x, 0.0f, 0.0f);
+				player.move(x, y, xthreshold, display);
+			} else {
+				if((player.getPos().x<0.0f+(xthreshold) && currentx>0.0f) ||
+						(player.getPos().x>0.0f-(xthreshold) && currentx<0.0f)) {
+					currentx += x;
+				}
+				player.move(x, y, xthreshold, display);
+			}
 		}
 	}
 	public void toHome() {
@@ -553,7 +587,6 @@ public class Controller {
 	}
 	public void rendergl(ShaderHandler sh, DisplaySetup d) {
 		DataUtils util = new DataUtils();
-		util.begin(sh, d);
 		for(int i=0; i<stops.size(); i++) {
 			if(d.getPos().y*-480 > stops.get(i)) {
 				pausedcombat = true;
@@ -573,7 +606,8 @@ public class Controller {
 				}
 			}
 		}
-		lr.render(blockdata, sh, blocktex, blocks, d);
+		//ultimatelevel.render(sh, util, 0);
+		//lr.render(blockdata, sh, blocktex, blocks, d);
 		for(int i=0; i<buildings.size(); i++) {
 			buildings.get(i).render(sh, d, util);
 		}

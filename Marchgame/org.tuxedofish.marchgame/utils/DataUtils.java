@@ -65,30 +65,33 @@ public class DataUtils {
 		
 		return bgindicesb;
 	}
-	public FloatBuffer getScreen(Vector2f pos) {
+	public FloatBuffer getScreen(Vector2f pos, int width, int height) {
+		float realwidth = (float)width/Display.getWidth();
+		float realheight = (float)height/(Display.getHeight()/2);
+		
 		float[] bgdata = {
 				//0
-				pos.x-1.0f, pos.y+1.0f, 0.0f, 1.0f,
+				pos.x-realwidth, pos.y, 0.0f, 1.0f,
 				0.0f, 0.0f,
 				0.0f, 0.0f, 0.0f, 0.0f,
 				//1
-				pos.x+1.0f, pos.y+1.0f, 0.0f, 1.0f,
+				pos.x+realwidth, pos.y, 0.0f, 1.0f,
 				1.0f, 0.0f,
 				0.0f, 0.0f, 0.0f, 0.0f,
 				//2
-				pos.x+1.0f, pos.y-1.0f, 0.0f, 1.0f,
+				pos.x+realwidth, pos.y-realheight, 0.0f, 1.0f,
 				1.0f, 1.0f,
 				0.0f, 0.0f, 0.0f, 0.0f,
 				//0
-				pos.x-1.0f, pos.y+1.0f, 0.0f, 1.0f,
+				pos.x-realwidth, pos.y, 0.0f, 1.0f,
 				0.0f, 0.0f,
 				0.0f, 0.0f, 0.0f, 0.0f,
 				//2
-				pos.x+1.0f, pos.y-1.0f, 0.0f, 1.0f,
+				pos.x+realwidth, pos.y-realheight, 0.0f, 1.0f,
 				1.0f, 1.0f,
 				0.0f, 0.0f, 0.0f, 0.0f,
 				//3
-				pos.x-1.0f, pos.y-1.0f, 0.0f, 1.0f,
+				pos.x-realwidth, pos.y-realheight, 0.0f, 1.0f,
 				0.0f, 1.0f,
 				0.0f, 0.0f, 0.0f, 0.0f
 		};

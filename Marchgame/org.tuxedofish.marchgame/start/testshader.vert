@@ -1,4 +1,4 @@
-#version 400
+#version 330
  
 layout(location = 0) in vec4 VertexPosition;
 layout(location = 1) in vec2 VertexTextureCoordinate;

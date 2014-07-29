@@ -57,9 +57,29 @@ public class Parser {
 //				if(new Color(level.getRGB(j, i)).equals(new Color(255, 50, 50))) {
 //					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 46, 50, 50));
 //				}
-//				//water
+				//flowerpot
+				if(new Color(level.getRGB(i, j)).equals(new Color(255, 200, 160))) {
+					g.drawImage((Image)th.getImg().getSubimage((6*51)+1, (4*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//differentpath
+				if(new Color(level.getRGB(i, j)).equals(new Color(200, 200, 200))) {
+					g.drawImage((Image)th.getImg().getSubimage((5*51)+1, (4*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//bottompath
+				if(new Color(level.getRGB(i, j)).equals(new Color(100, 20, 20))) {
+					g.drawImage((Image)th.getImg().getSubimage((4*51)+1, (4*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//				//water
 				if(new Color(level.getRGB(i, j)).equals(new Color(0, 0, 255))) {
 					g.drawImage((Image)th.getImg().getSubimage((1*51)+1, (0*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//grass
+				if(new Color(level.getRGB(i, j)).equals(Color.green)) {
+					g.drawImage((Image)th.getImg().getSubimage((6*51)+1, (0*51)+1, 50, 50), i*50, j*50, null);
+				}
+				//dirty path
+				if(new Color(level.getRGB(i, j)).equals(new Color(60, 60, 60))) {
+					g.drawImage((Image)th.getImg().getSubimage((7*51)+1, (4*51)+1, 50, 50), i*50, j*50, null);
 				}
 			}
 		}
@@ -94,17 +114,25 @@ public class Parser {
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 120, 0))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 0, 50, 50));
 				}
-				//rightpath
+				//flowerpot
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 200, 160))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 46, 50, 50));
+				}
+				//dirty path
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 100, 100))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 5, 50, 50));
 				}
-				//bottompath
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 20, 20))) {
+				//cleaner path
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(60, 60, 60))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 47, 50, 50));
+				}
+				//differentpath
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(200, 200, 200))) {
 					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 45, 50, 50));
 				}
-				//port
-				if(new Color(lvl.getRGB(j, i)).equals(new Color(255, 50, 50))) {
-					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 46, 50, 50));
+				//bottompath
+				if(new Color(lvl.getRGB(j, i)).equals(new Color(100, 20, 20))) {
+					blocks.add(new Block(pos.x + ((float)(j*b.getWidth())/Display.getWidth()), pos.y + ((float)(i*b.getHeight())/Display.getHeight()), 44, 50, 50));
 				}
 				//water
 				if(new Color(lvl.getRGB(j, i)).equals(new Color(0, 0, 255))) {
