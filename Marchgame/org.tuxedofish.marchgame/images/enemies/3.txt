@@ -7,11 +7,10 @@ ep 638 157 0
 Enemy3.png
 0
 13
-40
+100
 2
 10
 2000
-100
 gun alientankgun.png 50 50 false 0.0f 0.0f
 swirl
 1

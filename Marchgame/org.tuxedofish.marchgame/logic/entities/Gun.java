@@ -15,11 +15,13 @@ public class Gun extends Sprite {
 	private Player player;
 	private boolean visible = true;
 	private Vector2f pos;
+	private int shootspeed;
 	
 	public Gun(BufferedImage img, Controller parent, int width, int height,
 			TextureHolder th, int currenttexid, Vector2f pos,
-			int pattern, Player player) {
+			int pattern, Player player, int speedlength) {
 		super(img, parent, width, height, th, currenttexid, pos);
+		this.shootspeed = speedlength;
 		this.pos = pos;
 		this.pattern = pattern;
 		this.player = player;
@@ -40,6 +42,9 @@ public class Gun extends Sprite {
 		}
 		if(pattern == 3) {
 			laser(getPos());
+		}
+		if(pattern == 4) {
+			shoot((float)(Math.PI)/2);
 		}
 	}
 	public void clear() {

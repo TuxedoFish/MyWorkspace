@@ -7,11 +7,10 @@ ep 50 0 0
 alientank.png
 0
 7
-40
+100
 2
 10
 1000
-100
 gun alientankgun.png 70 70 true -0.009f 0.08f
 path
 3

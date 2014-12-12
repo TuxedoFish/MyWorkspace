@@ -27,6 +27,7 @@ import logic.entities.EnemyLoader;
 import logic.entities.Player;
 import logic.entities.ScoreHandler;
 import logic.entities.ScorePellet;
+import logic.entities.Spawner;
 import logic.entities.boss.Boss;
 import logic.entities.boss.BossType;
 import logic.entities.troops.SpriteHolder;
@@ -103,14 +104,17 @@ public class Controller {
 	private float xthreshold;
 	private float currentx = 0.0f;
 	
+	private int height=6400;
 	private int prevhealth = 0;
 	
 	private boolean end = false;
 	private boolean levelmap = false;
 	
+	private ArrayList<Spawner> spawners;
+	
 	private Player player;
 	private BossType boss;
-	private int levelheight;
+	private float levelheight;
 	private EnemyLoader el;
 	private boolean pausedcombat = false;
 	private Sprite ultimatelevel;
@@ -219,6 +223,9 @@ public class Controller {
 				sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
 				sph.addTexture(images.getImage("alientankgun.png"), "alientankgun.png", 29);
 				sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
+				sph.addTexture(images.getImage("missileheads.png"), "missileheads.png", 99, 59);
+				sph.addTexture(images.getImage("samurai.png"), "samurai.png", 99, 199);
+				sph.addTexture(images.getImage("ship.png"), "ship.png", 99, 199);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -246,7 +253,20 @@ public class Controller {
 			IntBuffer vaoids = BufferUtils.createIntBuffer(3+enemies.get(i).getEnemy().getAmountOfGuns());
 			glGenVertexArrays(vaoids);
 			
-			enemies.get(i).finish(vboids, vaoids, new int[]{ct.addTimeStep(200), ct.addTimeStep(enemies.get(i).getShootSpeed())});
+			int[] threadids = new int[enemies.get(i).getShootSpeeds().size()+1];
+			if(threadids.length==1){
+				threadids = new int[2];
+				threadids[0]=ct.addTimeStep(200);
+				threadids[0]=ct.addTimeStep(enemies.get(i).getShootSpeed());
+			} else {
+				threadids[0]=ct.addTimeStep(200);
+				
+				for(int j=1; j<threadids.length; j++) {
+					threadids[j] = ct.addTimeStep(enemies.get(i).getShootSpeeds().get(j-1)); 
+				}
+			}
+			
+			enemies.get(i).finish(vboids, vaoids, threadids);
 		}
 		
 		blocks = el.getBlocks();
@@ -279,7 +299,7 @@ public class Controller {
 		ImageReturn images = new ImageReturn();
 		TextureUtils util = new TextureUtils();
 		
-		levelheight = (images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2;
+		levelheight = (float) ((height) / (Display.getHeight()/2)-1.6);
 		lr = new LevelRenderer(ct.addTimeStep(600));
 		blockdata = lr.getLevelData(blocks, blocktex);
 		lr.update(blocks, display);
@@ -287,6 +307,17 @@ public class Controller {
 		elements = false;
 		gui = new GuiElementHandler();
 		ih.clearElements();
+		
+		spawners = el.getSpawners();
+		for(int i=0; i<spawners.size(); i++) {
+			IntBuffer vboids2 = BufferUtils.createIntBuffer(spawners.get(i).getBuffersNeeded());
+			glGenBuffers(vboids2);
+			IntBuffer vaoids2 = BufferUtils.createIntBuffer(spawners.get(i).getBuffersNeeded());
+			glGenVertexArrays(vaoids2);
+			
+			spawners.get(i).setTiming(ct.addTimeStep(spawners.get(i).getTiming()));
+			spawners.get(i).setBuffers(vboids2, vaoids2);
+		}
 		
 		prevhealth = player.getHealth();
 		prevscore = score;
@@ -320,7 +351,7 @@ public class Controller {
 		gh = new GenrealRenderer();
 		
 		GridMaker gm = new GridMaker();
-		gm.makeGrid(30, 30, 10);
+		gm.makeGrid(190, 180, 3);
 		
 		shaderhandler = new ShaderHandler();
 		setupshaders(shaderhandler);
@@ -353,7 +384,7 @@ public class Controller {
 			
 			//NEEDS TO BE MOVED TO LOADING
 			
-			ultimateleveltex = util.binddata(images.getImage("level1draft.png").getSubimage(0, 0, 1600, 10940));
+			ultimateleveltex = util.binddata(images.getImage("level1draft.png").getSubimage(0, 0, 1600, 13000));
 		} catch (IOException e) {
 			System.err.println("err finding title screen img"); e.printStackTrace();
 		}
@@ -366,8 +397,9 @@ public class Controller {
 		 * This is important because it is the way we work out how to draw the level based on length
 		 * NEEDS TO BE MOVED TO LOADING SO IT ISNT SLOW AT START
 		 */
+		height = 6400;
 		int width = 800;
-		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (6400/240.0f)-1f), width, 6400);
+		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (height/240.0f)-1f), width, 6400);
 		int levelvbo = glGenBuffers();
 		int levelvao = glGenVertexArrays();
 		xthreshold = ((width-645)/2.0f) /(Display.getWidth()/2.0f);
@@ -506,6 +538,25 @@ public class Controller {
 				markers.get(i).animate();
 			}
 		}
+		if(spawners != null) {
+			for(int i=0; i<spawners.size(); i++) {
+				if(spawners.get(i).getThreadID() == index) {
+					int[] threadids = new int[enemies.get(i).getShootSpeeds().size()+1];
+					if(threadids.length==1){
+						threadids = new int[2];
+						threadids[0]=ct.addTimeStep(200);
+						threadids[0]=ct.addTimeStep(enemies.get(i).getShootSpeed());
+					} else {
+						threadids[0]=ct.addTimeStep(200);
+						
+						for(int j=1; j<threadids.length-1; j++) {
+							threadids[i] = ct.addTimeStep(enemies.get(i).getShootSpeeds().get(i)); 
+						}
+					}
+					spawners.get(i).update(this, player, threadids);
+				}
+			}
+		}
 		if(index == playershootthreadid) {
 			ih.shoot();
 		}
@@ -513,9 +564,13 @@ public class Controller {
 			lr.animate(blocktex, blockdata);
 		}
 		for(int i=0; i<enemies.size(); i++) {
-			if(enemies.get(i).getShootThreadID() == index) {
-				if(started) {
-					enemies.get(i).shoot(display);
+			if(enemies.get(i).getShootThreadID()!=null) {
+				for(int j=0; j<enemies.get(i).getShootThreadID().length; j++) {
+					if(enemies.get(i).getShootThreadID()[j] == index) {
+						if(started) {
+							enemies.get(i).shoot(display, index);
+						}
+					}
 				}
 			}
 		}
@@ -592,7 +647,9 @@ public class Controller {
 				pausedcombat = true;
 			}
 		}
-		
+		for(int i=0; i<spawners.size(); i++) {
+			spawners.get(i).render(sh, d, util);
+		}
 		if(end) {
 			end = false;
 			toHome();
@@ -603,6 +660,20 @@ public class Controller {
 				player.changePos(0.0f, 0.01f);
 				for(int i=0; i<enemies.size(); i++) {
 					enemies.get(i).scroll();
+				}
+			} else {
+				boolean stay=true;
+				for(int i=0; i<enemies.size(); i++) {
+					if(!enemies.get(i).isDead()) {
+						if(enemies.get(i).getPos().y<(display.getPos().y*-1)+1.0f &&
+								enemies.get(i).getPos().y>(display.getPos().y*-1)-1.0f) {
+							stay=false;
+						}
+					}
+				}
+				if(stay==true) {
+					stops.remove(stops.size()-1);
+					pausedcombat=false;
 				}
 			}
 		}

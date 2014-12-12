@@ -63,18 +63,15 @@ public class DisplaySetup {
 			Display.setVSyncEnabled(true);
 			Display.setTitle("March Game");
 			
-			ImageReturn images = new ImageReturn(); TextureUtils util = new TextureUtils();
-			ByteBuffer[] logo = new ByteBuffer[]{util.loadtexture(images.getImage("gui\\logo16x.png")), 
-					util.loadtexture(images.getImage("gui\\logo32x.png")), util.loadtexture(images.getImage("gui\\logo128x.png"))};
-			Display.setIcon(logo);
+//			ImageReturn images = new ImageReturn(); TextureUtils util = new TextureUtils();
+//			ByteBuffer[] logo = new ByteBuffer[]{util.loadtexture(images.getImage("gui\\logo16x.png")), 
+//					util.loadtexture(images.getImage("gui\\logo32x.png")), util.loadtexture(images.getImage("gui\\logo128x.png"))};
+//			Display.setIcon(logo);
 			Display.create();
 		} catch (LWJGLException e) {
 			System.err.println("error setting display up");
 			e.printStackTrace();
 			System.exit(1);
-		} catch (IOException e) {
-			System.err.println("error setting display up");
-			e.printStackTrace();
 		}
 		ModelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
 		//Defines the areas of the display

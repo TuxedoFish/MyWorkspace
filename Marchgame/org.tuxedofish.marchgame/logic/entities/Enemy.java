@@ -58,6 +58,8 @@ public class Enemy extends Sprite{
 	private float togo = -1;
 	private boolean onscreen = false;
 	
+	private ArrayList<Integer> gunspeeds = new ArrayList<Integer>();
+	
 	private int animationstyle = 1;
 	
 	private ArrayList<Bullet> playerbullets = new ArrayList<Bullet>();
@@ -66,6 +68,7 @@ public class Enemy extends Sprite{
 	private int hti;
 	private boolean isup = true;
 	private float width;
+	private float height;
 	private TextureHolder[] textures;
 	private int texturestage;
 	private int speed;
@@ -73,7 +76,7 @@ public class Enemy extends Sprite{
 	private int health;
 	private int threadindex;
 	private int shootspeed;
-	private int shootthreadindex;
+	private int[] shootthreadindexs;
 	private String name;
 	
 	private boolean firing = false;
@@ -84,24 +87,51 @@ public class Enemy extends Sprite{
 	private int bullettexid;
 	private int explosiontexid;
 	
+	private String[] sizes;
+	
 	private ArrayList<Polygon> collisions = new ArrayList<Polygon>();
 	
+	public ArrayList<Polygon> getCollisions() {
+		return collisions;
+	}
+	public int getHti() {
+		return hti;
+	}
+	public int getLti() {
+		return lti;
+	}
+	public int getHealth() {
+		return health;
+	}
+	public int getPattern() {
+		return pattern;
+	}
+	public int getAnimationType() {
+		return animationstyle;
+	}
+	public String getMovementStyle() {
+		return movementtype;
+	}
+	public EnemyPath getEnemyPath() {
+		return ep;
+	}
 	public Enemy(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid,
-			String movementtype, int animationtype, int size, ArrayList<Polygon> collisions) {
-		super(parent, size, size, ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
+			, String[] sizes, int pattern, TextureHolder[] ts, int health, int shootspeed, int bullettexid, int explosiontexid,
+			String movementtype, int animationtype, ArrayList<Polygon> collisions) {
+		super(parent, Integer.valueOf(sizes[0]), Integer.valueOf(sizes[1]), ts[2], 0, new Vector2f(((pos.x/Display.getWidth())), 
 				((pos.y)/(Display.getHeight()/2.0f))), texid);
 		this.collisions = collisions;
 		this.explosiontexid = explosiontexid;
 		this.bullettexid = bullettexid;
 		this.movementtype = movementtype;
 		this.animationstyle = animationtype;
+		this.sizes = sizes;
 		if(movementtype.contains("swirl") || movementtype.contains("toplayer")) {
 			setScroll(false);
 			setPos((float)(-0.6f + (Math.random()*1.2f)), pos.y/(Display.getHeight()/2)-1.0f);
 		}
-		setup(pos, texid, parent, ep, player, playerbullets, lowesttexid, highesttexid, width, pattern, ts, health, shootspeed);
+		setup(pos, texid, parent, ep, player, playerbullets, lowesttexid, highesttexid, sizes, pattern, ts, health, shootspeed);
 	}
 	public String getName() {
 		return name;
@@ -111,14 +141,15 @@ public class Enemy extends Sprite{
 	}
 	public void setup(Vector2f pos, int texid, Controller parent, EnemyPath ep, Player player, 
 			ArrayList<Bullet> playerbullets, int lowesttexid, int highesttexid
-			, int width, int pattern, TextureHolder[] ts, int health, int shootspeed) {
+			, String[] sizes, int pattern, TextureHolder[] ts, int health, int shootspeed) {
 		try {
 			explosionsound = sounds.loadClip("explosion.wav");
 			explosionsound.open(sounds.getAudioStream("explosion.wav"));
 		} catch (LineUnavailableException | IOException e) {
 			e.printStackTrace();
 		}
-		this.width = (float)width/Display.getWidth();
+		this.width = Float.valueOf(sizes[0])/Display.getWidth();
+		this.height = Float.valueOf(sizes[1])/Display.getHeight();
 		this.shootspeed = shootspeed;
 		this.playerbullets = playerbullets;
 		this.health = health;
@@ -145,18 +176,25 @@ public class Enemy extends Sprite{
 	public BulletHandler getBulletHandler() {
 		return bullets;
 	}
-	public void addGun(Gun g, boolean visible) {
+	public void addGun(Gun g, boolean visible, int shootspeed) {
 		guns.add(g);
+		if(shootspeed==-1) {
+			shootspeed = this.shootspeed;
+		}
+		gunspeeds.add(shootspeed);
 		guns.get(guns.size()-1).setVisible(visible);
 		guns.get(guns.size()-1).finish(getBulletHandler());
 	}
 	public int getAmountOfGuns() {
 		return guns.size();
 	}
-	public int getShootThreadID() {
-		return shootthreadindex;
+	public int[] getShootThreadID() {
+		return shootthreadindexs;
 	}
-	public int getShootSpeed() {
+	public ArrayList<Integer> getShootSpeeds() {
+		return gunspeeds;
+	}
+	public Integer getShootSpeed() {
 		return shootspeed;
 	}
 	public TextureHolder[] getTextures() {
@@ -244,7 +282,10 @@ public class Enemy extends Sprite{
 				(float)playersprite.getHeight()/Display.getHeight());
 		this.myrect.setRect(p2.x - width/2, p2.y, 
 				(float)width, 
-				(float)this.getHeight()/Display.getHeight());
+				(float)height);
+	}
+	public String[] getSizes() {
+		return this.sizes;
 	}
 	public void scroll() {
 		if(scroll) {
@@ -318,6 +359,9 @@ public class Enemy extends Sprite{
 			  togo -= 1.0f; 
 		  }
 	}
+	public boolean isDead() {
+		return stopped;
+	}
 	public void update(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		updateColl(d);
 		animate();
@@ -373,18 +417,40 @@ public class Enemy extends Sprite{
 	}
 	public void finish(IntBuffer vboids, IntBuffer vaoids, int[] index) {
 		this.threadindex = index[0];
-		this.shootthreadindex = index[1];
+		this.shootthreadindexs = new int[index.length-1];
+		for(int i=1; i<index.length; i++) {
+			shootthreadindexs[i-1] = index[i];
+		}
 		bullets.finishwithouttex(vboids, vaoids);
 		for(int i=0; i<guns.size(); i++) {
 			guns.get(i).finish(vboids.get(1+i), vaoids.get(1+i));
 		}
 		this.finishwithouttex(vboids.get(0), vaoids.get(0));
 	}
-	public void fire(DisplaySetup d) {
+
+	public void finish(int[] vbo, int[] vao, int[] index) {
+		this.threadindex = index[0];
+		this.shootthreadindexs = new int[index.length-1];
+		for(int i=1; i<index.length; i++) {
+			shootthreadindexs[i-1] = index[i];
+		}
+		bullets.finishwithouttex(vbo, vao);
 		for(int i=0; i<guns.size(); i++) {
-			if(!stopped && pattern != 3) {
-				guns.get(i).update(getPos(), (float)myrect.getWidth(), (float)myrect.getHeight());
-				guns.get(i).fire();
+			guns.get(i).finish(vbo[1+i], vao[1+i]);
+		}
+		this.finishwithouttex(vbo[0], vao[0]);
+	}
+	public void fire(DisplaySetup d, int threadindex) {
+		if(!stopped && pattern != 3) {
+				int index=-1;
+				for(int i=0; i<shootthreadindexs.length; i++) {
+					if(shootthreadindexs[i]==threadindex) {
+						index=i;
+					}
+				}
+			if(index<guns.size()) {
+				guns.get(index).update(getPos(), (float)myrect.getWidth(), (float)myrect.getHeight());
+				guns.get(index).fire();
 			}
 		}
 	}

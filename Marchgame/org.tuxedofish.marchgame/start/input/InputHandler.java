@@ -37,6 +37,8 @@ public class InputHandler {
 	private Vector2f lastpos = new Vector2f(-1.0f, -1.0f);
 	private boolean levelmap = false;
 	private Sprite map;
+	private boolean shootbuttondown=false;
+	private boolean spacedown=false;
 	
 	public InputHandler(Controller parent, Sprite map) {
 		this.parent = parent;
@@ -93,7 +95,7 @@ public class InputHandler {
 		buttons.clear();
 	}
 	public void shoot() {
-		if(mousedown) {
+		if(shootbuttondown) {
 			parent.shoot();
 			shootduration = 0;
 		} else {
@@ -141,6 +143,7 @@ public class InputHandler {
 			}
 		}
 		if(Mouse.isButtonDown(0)) {
+			shootbuttondown=true;
 			if(!mousedown) {
 				parent.addLine((float)Mouse.getX()/Display.getWidth()*2.0f-1.0f, (float)Mouse.getY()/Display.getHeight()*2.0f-1.0f);
 				if(shootduration >= 200) {
@@ -194,13 +197,18 @@ public class InputHandler {
 				if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_W)  up = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_S)  down = true;
+				if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)  {spacedown = true; shootbuttondown=true;}
 				if (Keyboard.getEventKey() == Keyboard.KEY_X)  parent.nextStage();
 		    	} else {
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_A)  leftdown = false;
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = false;
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_W)  up = false;
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_S)  down = false;
+					if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)  spacedown = false;
 		      }	
+		}
+		if(!spacedown && !mousedown) {
+			shootbuttondown=false;
 		}
 		if(rightdown) {
 			parent.move(0.02f, 0.0f);

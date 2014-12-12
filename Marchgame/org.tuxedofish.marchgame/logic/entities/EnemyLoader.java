@@ -48,6 +48,7 @@ public class EnemyLoader extends Thread{
 	private ArrayList<Troop> enemies = new ArrayList<Troop>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 	private ArrayList<Block> blocks;
+	private ArrayList<Spawner> spawners = new ArrayList<Spawner>();
 	
 	private BossType boss;
 	private boolean cached;
@@ -57,6 +58,7 @@ public class EnemyLoader extends Thread{
 	private BufferedImage enemy;
 	private boolean finished = false;
 	private int lines;
+	private String texloc;
 	private ControllerTimer ct;
 	private DisplaySetup display;
 	private int highscore;
@@ -75,6 +77,9 @@ public class EnemyLoader extends Thread{
 		this.spriteholder = spriteholder;
 		this.display = display;
 		this.start();
+	}
+	public ArrayList<Spawner> getSpawners() {
+		return spawners;
 	}
 	public ArrayList<Troop> getEnemies() {
 		return enemies;
@@ -96,6 +101,88 @@ public class EnemyLoader extends Thread{
 	}
 	public ArrayList<Float> getStops() {
 		return stops;
+	}
+	public Troop getEnemy(String[] parts, BufferedReader reader) {
+		try {
+		String line2 = "";
+		EnemyPath ep = new EnemyPath();
+		while((line2=reader.readLine()).startsWith("ep")) {
+			String[] data = line2.split(" ");
+			ep.addPoint(new PathPoint(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])), 
+				Integer.valueOf(data[3])));
+		}
+		texloc = line2;
+		int lti = Integer.valueOf(reader.readLine());
+		int hti = Integer.valueOf(reader.readLine());
+		String[] sizes = reader.readLine().split(" ");
+		if(sizes.length==1) {
+			sizes = new String[] {sizes[0], sizes[0]};
+		}
+		int pattern = Integer.valueOf(reader.readLine());
+		int health = Integer.valueOf(reader.readLine());
+		int shootspeed = Integer.valueOf(reader.readLine());
+		
+		line2 = "";
+		ArrayList<Gun> guns = new ArrayList<Gun>();
+		ArrayList<Integer> gunspeeds = new ArrayList<Integer>();
+		ArrayList<Boolean> visible = new ArrayList<Boolean>();
+		while((line2=reader.readLine())!= null && line2.startsWith("gun")) {
+			String[] data = line2.split(" ");
+			int speedlength=-1;
+			if(data.length>7) {
+				speedlength = Integer.valueOf(data[7]);
+			}
+			gunspeeds.add(speedlength);
+			guns.add(new Gun(spriteholder.getImage(data[1]), parent, Integer.valueOf(data[2]), Integer.valueOf(data[3]), 
+					spriteholder.getTexture(data[1]), 0, new Vector2f(Float.valueOf(data[5]), Float.valueOf(data[6])), pattern, player, speedlength));
+			visible.add(Boolean.valueOf(data[4]));
+		}
+		
+		String movementtype = line2;
+		int animationtype = Integer.valueOf(reader.readLine());
+		
+		
+		int id = 0;
+		ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+		ArrayList<Vector2f> points = new ArrayList<Vector2f>();
+		
+		while((line2=reader.readLine())!= null && line2.startsWith("collision")) {
+			String line3 = null;
+			String[] data = line2.split(" ");
+			points.add(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])));
+			while((line3=reader.readLine())!= null && line3.endsWith(Integer.toString(id))) {
+				data = line3.split(" ");
+				points.add(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])));
+			}
+			id += 1;
+			polygons.add(new Polygon());
+			for(int i=0; i<points.size(); i++) {
+				polygons.get(polygons.size()-1).addPoint((int)points.get(i).x, (int)points.get(i).y);
+			}
+			points.clear();
+		}
+		reader.close();
+		try {
+			Troop newenemy = ((Troop) new Troop(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
+					spriteholder.getTextureID(texloc), parent, ep, player, 
+					player.getBullets(), new TextureHolder[]{spriteholder.getTexture("explosion"), 
+				spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, 
+					lti, hti, sizes, pattern, health, shootspeed, spriteholder.getTextureID("bullets"), 
+					spriteholder.getTextureID("explosion"), movementtype, animationtype, polygons));
+			for(int i=0; i<guns.size(); i++) {
+				newenemy.addGun(guns.get(i), visible.get(i), gunspeeds.get(i));
+			}
+			return newenemy;
+		} catch (SecurityException | IllegalArgumentException e) {
+			System.err.println("err loading enemy");
+			e.printStackTrace();
+			return null;
+		}
+		} catch (NumberFormatException | IOException e1) {
+			System.err.println("err loading enemy");
+			e1.printStackTrace();
+			return null;
+		}
 	}
 	@Override
 	public void run() {
@@ -167,10 +254,10 @@ public class EnemyLoader extends Thread{
 				 // NEEDS SERIOUS WORK POSITIONING
 				if(level.equals("level1")) {
 					boss = new HiveEye(parent, player, ct, 
-							(images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2);
+							(float) ((images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-3.5));
 				} else {
 					boss = new HiveJet(parent, player, ct, 
-							(images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-2);
+							(images.getImage("LEVEL1.png").getHeight() * 50) / (Display.getHeight())-5);
 				}
 			} catch (IOException e1) {
 				System.err.println("err loading img");
@@ -181,100 +268,30 @@ public class EnemyLoader extends Thread{
 				reader2 = images.getFile("enemies/" + level + ".txt");
 				String line = null;
 				
-				Class<?> troop = null;
-				troop = Class.forName("logic.entities.troops.Troop");
-				
-				Constructor<?> troopcon = null;
-				try {
-					troopcon = troop.getConstructor(Vector2f.class, int.class, Controller.class, EnemyPath.class,
-							Player.class, ArrayList.class,  TextureHolder[].class,
-							int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class,
-							String.class, int.class, int.class, ArrayList.class); 
-				} catch (NoSuchMethodException | SecurityException e1) {
-					e1.printStackTrace();
-				}
-				
 				while((line=reader2.readLine()) != null) {
 					parent.loadupdate(100/lines);
 					String[] parts = line.split(" ");
 					if(parts[0].equals("stop")) {
 						stops.add(Float.valueOf(parts[2]));
+					} else if (parts[0].contains("spawner")) {
+						System.out.println(parts[0].substring(7, parts[0].length()));
+						BufferedReader reader = images.getFile("enemies/" + parts[0].substring(7, parts[0].length()) + ".txt");
+						int typeofspawner = parts[0].charAt(parts[0].length()-1);
+						Troop spawnertype = getEnemy(parts, reader);
+						spawners.add(new Spawner(spawnertype, new TextureHolder[]{spriteholder.getTexture("explosion"), 
+								spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, parts, spriteholder.getTextureID(texloc), 
+								spriteholder.getTextureID("bullets"), spriteholder.getTextureID("explosion")));
+						
+						System.out.println("spawner" + typeofspawner);
 					} else {
 						BufferedReader reader = images.getFile("enemies/" + parts[0] + ".txt");
-						String line2 = "";
-						EnemyPath ep = new EnemyPath();
-						while((line2=reader.readLine()).startsWith("ep")) {
-							String[] data = line2.split(" ");
-							ep.addPoint(new PathPoint(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])), 
-									Integer.valueOf(data[3])));
-						}
-						String texloc = line2;
-						int lti = Integer.valueOf(reader.readLine());
-						int hti = Integer.valueOf(reader.readLine());
-						int width = Integer.valueOf(reader.readLine());
-						int pattern = Integer.valueOf(reader.readLine());
-						int health = Integer.valueOf(reader.readLine());
-						int shootspeed = Integer.valueOf(reader.readLine());
-						int size = Integer.valueOf(reader.readLine());
-						
-						line2 = "";
-						ArrayList<Gun> guns = new ArrayList<Gun>();
-						ArrayList<Boolean> visible = new ArrayList<Boolean>();
-						while((line2=reader.readLine())!= null && line2.startsWith("gun")) {
-							String[] data = line2.split(" ");
-							guns.add(new Gun(spriteholder.getImage(data[1]), parent, Integer.valueOf(data[2]), Integer.valueOf(data[3]), 
-									spriteholder.getTexture(data[1]), 0, new Vector2f(Float.valueOf(data[5]), Float.valueOf(data[6])), pattern, player));
-							visible.add(Boolean.valueOf(data[4]));
-						}
-						
-						String movementtype = line2;
-						int animationtype = Integer.valueOf(reader.readLine());
-						
-						
-						int id = 0;
-						ArrayList<Polygon> polygons = new ArrayList<Polygon>();
-						ArrayList<Vector2f> points = new ArrayList<Vector2f>();
-						
-						while((line2=reader.readLine())!= null && line2.startsWith("collision")) {
-							String line3 = null;
-							String[] data = line2.split(" ");
-							points.add(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])));
-							while((line3=reader.readLine())!= null && line3.endsWith(Integer.toString(id))) {
-								data = line3.split(" ");
-								points.add(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])));
-							}
-							id += 1;
-							polygons.add(new Polygon());
-							for(int i=0; i<points.size(); i++) {
-								polygons.get(polygons.size()-1).addPoint((int)points.get(i).x, (int)points.get(i).y);
-							}
-							points.clear();
-						}
-						reader.close();
-						try {
-							allenemies.add((Troop) troopcon.newInstance(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
-									spriteholder.getTextureID(texloc), parent, ep, player, 
-									player.getBullets(), new TextureHolder[]{spriteholder.getTexture("explosion"), 
-								spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, 
-									lti, hti, width, pattern, health, shootspeed, spriteholder.getTextureID("bullets"), 
-									spriteholder.getTextureID("explosion"), movementtype, animationtype, size, polygons));
-							for(int i=0; i<guns.size(); i++) {
-								allenemies.get(allenemies.size()-1).addGun(guns.get(i), visible.get(i));
-							}
-						} catch (SecurityException | InstantiationException | IllegalAccessException | 
-								IllegalArgumentException | 
-								InvocationTargetException e) {
-							System.err.println("err finding class / constructor");
-							e.printStackTrace();
+						allenemies.add(getEnemy(parts, reader));
 						}
 					}
-				  }
 				  reader2.close();
 				} catch (IOException e) {
 					System.err.println("err getting img" + e);
 					System.exit(1);
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 			} else {

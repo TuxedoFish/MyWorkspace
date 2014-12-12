@@ -22,16 +22,16 @@ import utils.DataUtils;
 public class Troop extends Enemy{
 	public Troop(Vector2f pos, int texid, Controller parent, EnemyPath ep,
 			Player player, ArrayList<Bullet> playerbullets,  TextureHolder[] ts,
-			int lowesttexid, int highesttexid, int width, int pattern, int health, int shootspeed,
-			int bullettexid, int explosiontexid, String movementtype, int animationstyle, int size, ArrayList<Polygon> collision) {
+			int lowesttexid, int highesttexid, String[] sizes, int pattern, int health, int shootspeed,
+			int bullettexid, int explosiontexid, String movementtype, int animationstyle, ArrayList<Polygon> collision) {
 		super(pos, texid, parent, ep, player, playerbullets, lowesttexid,
-				highesttexid, width, pattern, ts, health, shootspeed, 
-				bullettexid, explosiontexid, movementtype, animationstyle, size, collision);
+				highesttexid, sizes, pattern, ts, health, shootspeed, 
+				bullettexid, explosiontexid, movementtype, animationstyle, collision);
 	}
 	public Enemy getEnemy() {
 		return this;
 	}
-	public void shoot(DisplaySetup d) {
-		this.fire(d);
+	public void shoot(DisplaySetup d, int index) {
+		this.fire(d, index);
 	}
 }

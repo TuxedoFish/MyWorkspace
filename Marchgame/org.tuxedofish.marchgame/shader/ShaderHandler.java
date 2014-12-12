@@ -37,7 +37,7 @@ public class ShaderHandler {
 			} catch (Exception e) {
 				System.err.println("error binding shader @ " + shaderloc + " @ program " + pId);
 				System.err.println("shader = " + shader);
-				System.err.println(e.getLocalizedMessage());
+				System.err.println(e.getMessage());
 				System.exit(1);
 			}
 		}
@@ -58,8 +58,11 @@ public class ShaderHandler {
 				programs.get(program - 1).bindshader(shader);
 			} catch (Exception e) {
 				System.err.println("error binding shader @ " + shader + " @ program " + pId);
-				System.err.println("shader = " + shader);
-				System.err.println(e.getLocalizedMessage());
+				System.err.println("shader =" + shader);
+				System.err.println(e.getMessage());
+				for(int x=0; x<e.getStackTrace().length; x++) {
+					System.err.println(e.getStackTrace()[x]);
+				}
 				System.exit(1);
 			}
 		}
@@ -80,10 +83,10 @@ public class ShaderHandler {
 			//Compiles the glsl
 			ARBShaderObjects.glCompileShaderARB(shader);
 			//Tests for error
-			if(ARBShaderObjects.glGetObjectParameterfARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL_FALSE) {
-				System.err.println(getLogInfo(shader));
-				throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
-			}
+//			if(ARBShaderObjects.glGetObjectParameterfARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL_FALSE) {
+//				System.err.println(getLogInfo(shader));
+//				throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
+//			}
 			//Returns shader id
 			return shader;
 		}catch(Exception e) {

@@ -57,6 +57,10 @@ public class BulletHandler extends ArrayList<Bullet>{
 		this.explosion.finish(vboids.get(0), vaoids.get(0));
 		this.bullet.finish(vboids.get(1), vaoids.get(1));
 	}
+	public void finishwithouttex(int[] vbo, int[] vao) {
+		this.explosion.finishwithouttex(vbo[0], vao[0]);
+		this.bullet.finishwithouttex(vbo[1], vao[1]);
+	}
 	public void addExplosion(Bullet explosion) {
 		explosions.add(explosion);
 	}
