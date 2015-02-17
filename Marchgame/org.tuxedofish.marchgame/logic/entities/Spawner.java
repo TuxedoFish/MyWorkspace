@@ -83,11 +83,10 @@ public class Spawner {
 				enemytype.getEnemy().getHealth(), 200, 
 				bullettextureid, explosiontextureid, enemytype.getEnemy().getMovementStyle(), 
 				enemytype.getEnemy().getAnimationType(), enemytype.getEnemy().getCollisions())));
-//		IntBuffer vbo = BufferUtils.createIntBuffer(buffersneeded*16);
-//		vbos.flip();
+		
 //		vbo.clear();
 //		for(int i=0; i<buffersneeded; i++) {
-//			System.out.println(vbos.capacity() + " : " + vbos.position() + " : " + ((amountspawned*buffersneeded) + i + 1));
+//			System.out.println(((amountspawned*buffersneeded) + i + 1));
 //			vbo.put(vbos.get((amountspawned*buffersneeded) + i + 1));
 //		}
 //		IntBuffer vao = BufferUtils.createIntBuffer(buffersneeded);
@@ -96,8 +95,13 @@ public class Spawner {
 //		for(int i=0; i<buffersneeded; i++) {
 //			vao.put(vaos.get((amountspawned*buffersneeded) + i));
 //		}
+//		System.out.println(vbo.get(0));
+		
 		enemies.get(enemies.size()-1).finish(vbos, vaos, timings);
 		amountspawned+=1;
+	}
+	public ArrayList<Troop> getEnemies() {
+		return enemies;
 	}
 	public void setTiming(int index) {
 		threadid=index;
@@ -105,6 +109,7 @@ public class Spawner {
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		for(int i=0; i<enemies.size(); i++) {
 			enemies.get(i).update(sh, d, util);
+			enemies.get(i).getHealth();
 		}
 	}
 }

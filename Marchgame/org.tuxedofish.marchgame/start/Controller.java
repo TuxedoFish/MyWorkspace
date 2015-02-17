@@ -518,6 +518,13 @@ public class Controller {
 							enemies.get(i).resetBlinking();
 						}
 					}
+					for(int j=0; j<spawners.size(); j++) {
+						for(int i=0; i<spawners.get(j).getEnemies().size(); i++) {
+							if(spawners.get(j).getEnemies().get(i).getThreadID() == index) {
+								spawners.get(j).getEnemies().get(i).resetBlinking();
+							}
+						}
+					}
 					ArrayList<Integer> bossthreadids = boss.getThreadIDs();
 					if(bossthreadids.contains(index)) {
 						boss.resetBlinking(index);
@@ -546,7 +553,7 @@ public class Controller {
 						threadids = new int[2];
 						threadids[0]=ct.addTimeStep(200);
 						threadids[0]=ct.addTimeStep(enemies.get(i).getShootSpeed());
-					} else {
+					 } else {
 						threadids[0]=ct.addTimeStep(200);
 						
 						for(int j=1; j<threadids.length-1; j++) {
@@ -647,7 +654,7 @@ public class Controller {
 				pausedcombat = true;
 			}
 		}
-		for(int i=0; i<spawners.size(); i++) {
+		for(int i=0; i<spawners.size(); i++) { 
 			spawners.get(i).render(sh, d, util);
 		}
 		if(end) {
