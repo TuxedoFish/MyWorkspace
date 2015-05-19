@@ -49,6 +49,8 @@ import shader.ShaderHandler;
 import start.DisplaySetup;
 
 public class DataUtils {
+	private float opacity = 1.0f;
+	
 	public void setup(FloatBuffer data, VertexHandler vh, ShaderHandler sh, int textureID, int type, 
 			IntBuffer indicesBuffer, FloatBuffer modelmatrixfb, int brightness) {
 		

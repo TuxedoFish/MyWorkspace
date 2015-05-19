@@ -210,7 +210,7 @@ public class Controller {
 			elements = false;
 			gui.clearElements();
 			ih.clearElements();
-			gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+			gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f), 20.0f);
 			SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
 			try {
 				sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
@@ -321,8 +321,8 @@ public class Controller {
 		
 		prevhealth = player.getHealth();
 		prevscore = score;
-		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
-		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
+		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f), 15.0f);
+		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f), 15.0f);
 		elements = true;
 		highscore = el.getHighScore();
 		
@@ -379,7 +379,7 @@ public class Controller {
 		int loadscreen = 0;
 		
 		try {
-			titlescreen = util.binddata(images.getImage("title2.png"));
+			titlescreen = util.binddata(images.getImage("titlescreen.png"));
 			loadscreen = util.binddata(images.getImage("loadscreen.png"));
 			
 			//NEEDS TO BE MOVED TO LOADING
@@ -402,17 +402,19 @@ public class Controller {
 		FloatBuffer leveldatafb = utils.getScreen(new Vector2f(0.0f, (height/240.0f)-1f), width, 6400);
 		int levelvbo = glGenBuffers();
 		int levelvao = glGenVertexArrays();
-		xthreshold = ((width-645)/2.0f) /(Display.getWidth()/2.0f);
+		xthreshold = ((width-650)/2.0f) /(Display.getWidth()/2.0f);
 		
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		gui = new GuiElementHandler();
-		gui.newButton("button2", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
-		gui.newString("Click To Play", Color.RED, 200.0f, 50.0f, new Vector2f(-0.3f, -0.85f));
+		gui.newString("Press X To Play", Color.WHITE, 200.0f, 40.0f, new Vector2f(-0.3f, -0.7f), 25.0f);
 		elements = true;
 		
 		DataUtils dutils = new DataUtils();
 		GenrealRenderer gr = new GenrealRenderer();
+		
+		float opacity = 0.0f;
+		boolean rising = true;
 		
 		while(!Display.isCloseRequested()) {
 			if(stage == 0) {
@@ -440,7 +442,7 @@ public class Controller {
 							gui.clearElements();
 							ih.clearElements();
 							gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
-							gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f));
+							gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f), 20.0f);
 						}
 					}
 					
@@ -455,8 +457,23 @@ public class Controller {
 					} else {
 						map.render(shaderhandler, dutils, 0);
 					}
-					gui.drawElements(shaderhandler);
+					if(rising) {
+						opacity += 0.01f;
+						if(opacity >= 1.0f) {
+							opacity = 1.0f;
+							rising = false;
+						}
+					} else {
+						opacity -= 0.01f;
+						if(opacity <= 0.0f) {
+							opacity  = 0.0f;
+							rising = true;
+						}
+					}
 					ih.update(display);
+					gui.clearElements();
+					gui.newString("Press X To Play", new Color(0.0f, 0.0f, 0.0f, opacity), 200.0f, 40.0f, new Vector2f(-0.3f, -0.7f), 25.0f);
+					gui.drawElements(shaderhandler);
 				}
 			} else {
 				if(stage == 1) {
@@ -562,6 +579,14 @@ public class Controller {
 					}
 					spawners.get(i).update(this, player, threadids);
 				}
+				for(int j=0; j<spawners.get(i).getEnemies().size(); j++) {
+					for(int k=0; k<spawners.get(i).getEnemies().get(j).getShootThreadID().length; k++) {
+						if(spawners.get(i).getEnemies().get(j).getShootThreadID()[k] == index) {
+							System.out.println("spawner shoot");
+							spawners.get(i).getEnemies().get(j).shoot(display, index);
+						}
+					}
+				}
 			}
 		}
 		if(index == playershootthreadid) {
@@ -632,7 +657,7 @@ public class Controller {
 		elements = false;
 		gui = new GuiElementHandler();
 		gui.newButton("button2", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
-		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f));
+		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f), 20.0f);
 		elements = true;
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
 		player.reset();
@@ -700,11 +725,11 @@ public class Controller {
 		if(prevscore != score && started) {
 			prevscore = score;
 			gui.removeElement(scoreid);
-			scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f));
+			scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f), 15.0f);
 			if(score > highscore) {
 				highscore = score;
 				gui.removeElement(highscoreid);
-				highscoreid = gui.newString("highscore : " + highscore, Color.red, 100, 50, new Vector2f(0.1f, 0.85f));
+				highscoreid = gui.newString("highscore : " + highscore, Color.red, 100, 50, new Vector2f(0.1f, 0.85f), 15.0f);
 			}
 		}
 		sch.render(sh, display, util);
@@ -722,7 +747,7 @@ public class Controller {
 		Vector4f realplayerpos = new Vector4f(player.getPos().x, player.getPos().y, 0.0f, 1.0f);
 		Matrix4f.transform(display.getModelViewMatrixAsMatrix(), realplayerpos, realplayerpos);
 
-		scoretextids.add(gui.newString(Integer.toString(score), Color.BLUE, 50, 50, new Vector2f(realplayerpos.x, realplayerpos.y)));
+		scoretextids.add(gui.newString(Integer.toString(score), Color.BLUE, 50, 50, new Vector2f(realplayerpos.x, realplayerpos.y), 20.0f));
 		scorethreadids.add(ct.addTimeStep(500));
 	}
 	public void setupshaders(ShaderHandler s) {
@@ -737,8 +762,8 @@ public class Controller {
 		}
 		 s.finishprogram(testprogram);
 	}
-	public int addString(String str, Vector2f pos) {
-		return gui.newStringAtPos(str, Color.RED, pos);
+	public int addString(String str, Vector2f pos, float size) {
+		return gui.newStringAtPos(str, Color.RED, pos, size);
 	}
 	public void removeElement(Integer index) {
 		gui.removeElement(index);

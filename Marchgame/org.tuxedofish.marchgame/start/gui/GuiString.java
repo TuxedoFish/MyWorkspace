@@ -87,7 +87,7 @@ public class GuiString implements GuiElement{
 		
 		this.bounds = r;
 	}
-	public GuiString(String str, Color c, Vector2f pos, float width, float height, Vector2f topleft) {
+	public GuiString(String str, Color c, Vector2f pos, float width, float height, Vector2f topleft, float size) {
 		this.pos = pos;
 		int[] indices = {
 				0, 1, 2,
@@ -102,13 +102,18 @@ public class GuiString implements GuiElement{
 		
 		ImageReturn images = new ImageReturn();
 		try {
-			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(10.0f));
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(size));
 		} catch (FontFormatException | IOException e) {
 			System.err.println("err loading font");
 			e.printStackTrace();
 		}
 		
-		Rectangle2D r = g.getFontMetrics().getStringBounds(str, 0, str.length(), g);
+		Rectangle2D rect = g.getFontMetrics().getStringBounds(str, 0, str.length(), g);
+		rect =	new Rectangle2D.Double(
+			      rect.getX(),
+			      rect.getY(),
+			      width,
+			      height);
 		
 		for(int i=0; i < str.length();i++) {
 			if(!((Math.abs(pos.x-topleft.x)) + (g.getFontMetrics().getStringBounds(str, 0, i, g).getWidth()
@@ -126,33 +131,33 @@ public class GuiString implements GuiElement{
 			}
 		}
 		
-		img = new BufferedImage((int)r.getWidth(), (int)r.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		img = new BufferedImage((int)rect.getWidth(), (int)rect.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		g = img.getGraphics();
 		
 		try {
-			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(10.0f));
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(size));
 		} catch (FontFormatException | IOException e) {
 			System.err.println("err loading font");
 			e.printStackTrace();
 		}
 		g.setColor(c);
-		g.drawString(str, 0, (int)r.getHeight()/4*3);
+		g.drawString(str, 0, (int)rect.getHeight()/4*3);
 		g.dispose();
-
+		
 		TextureUtils util = new TextureUtils();
 		texid = util.binddata(img);
 		
 		float[] data = {
 				pos.x, pos.y, -1.0f, 1.0f, 	0.0f, 0.0f,		0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x + (float)((r.getWidth()/Display.getWidth())*3), pos.y, -1.0f, 1.0f, 	 1.0f, 0.0f, 
+				pos.x + (float)((rect.getWidth()/Display.getWidth())*3), pos.y, -1.0f, 1.0f, 	 1.0f, 0.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x + (float)((r.getWidth()/Display.getWidth())*3), pos.y - (float)((r.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 
+				pos.x + (float)((rect.getWidth()/Display.getWidth())*3), pos.y - (float)((rect.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 
 				1.0f, 1.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 				
-				pos.x, pos.y - (float)((r.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 	0.0f, 1.0f, 
+				pos.x, pos.y - (float)((rect.getHeight()/Display.getHeight())*3), -1.0f, 1.0f, 	0.0f, 1.0f, 
 				0.0f, 0.0f, 0.0f, 1.0f,
 		};
 		
@@ -160,7 +165,7 @@ public class GuiString implements GuiElement{
 		datafb.put(data);
 		datafb.rewind();
 		
-		this.bounds = r;
+		this.bounds = rect;
 	}
 	public Rectangle2D getBounds() { 
 		return bounds;

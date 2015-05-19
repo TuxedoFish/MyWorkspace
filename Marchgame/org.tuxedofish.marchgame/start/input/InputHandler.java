@@ -165,7 +165,7 @@ public class InputHandler {
 					float xchange = ((float)Mouse.getX()-(float)lastpos.x)/(float)Display.getWidth();
 					float ychange = ((float)Mouse.getY()-(float)lastpos.y)/(float)Display.getHeight();
 					
-					if(!(d.getPos().x+xchange+1.1f < map.getPos().x + (float)map.getWidth()/Display.getWidth())) {
+					if(!(d.getPos().x+xchange+1.15f < map.getPos().x + (float)map.getWidth()/Display.getWidth())) {
 						xchange = 0.0f;
 					}
 					if(!(d.getPos().x+xchange-1.1f > map.getPos().x)) {

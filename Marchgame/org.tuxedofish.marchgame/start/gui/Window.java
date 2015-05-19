@@ -50,8 +50,9 @@ public class Window {
 	private Boolean left, right, top, bottom, move;
 	private boolean resizable = true;
 	private GuiElementHandler gui = new GuiElementHandler();
+	private float size;
 	
-	public Window(float x, float y, float width, float height, ShaderHandler sh) {
+	public Window(float x, float y, float width, float height, ShaderHandler sh, float size) {
 		this.width = width; this.height = height;
 		this.sh = sh;
 		texID = glGenTextures();
@@ -61,13 +62,15 @@ public class Window {
 		y = util.clamp(y, Display.getHeight());
 		
 		float[] window = makeWindow(texID, new Vector4f(x/(Display.getWidth()/2) - 1.0f, y/(Display.getHeight()/2) - 1.0f, -1.0f, 1.0f), 
-				width/(Display.getWidth()/2), height/(Display.getHeight()/2), indices);
+				width/(Display.getWidth()/2), height/(Display.getHeight()/2), indices, size);
 		
 		this.windowdata = BufferUtils.createFloatBuffer(window.length);
 		this.windowdata.put(window);
 		this.windowdata.rewind();
 		
 		indices = getIndices();
+		
+		this.size = size;
 		
 		setupCollisionBoxs();
 	}
@@ -94,7 +97,7 @@ public class Window {
 		
 		return indices;
 	}
-	private float[] makeWindow(int textureID, Vector4f topleft, float width, float height, int[] indices) {
+	private float[] makeWindow(int textureID, Vector4f topleft, float width, float height, int[] indices, float size) {
 		float[] rectdata = {
 				//MAIN
 				topleft.x, topleft.y, topleft.z, topleft.w, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,	
@@ -105,6 +108,8 @@ public class Window {
 		
 		BufferedImage img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = img.getGraphics();
+		
+		this.size = size;
 		
 		g.setColor(Color.black);
 		g.fillRect(0, 0, 50, 50);
@@ -117,10 +122,10 @@ public class Window {
 		util.binddata(img, textureID);
 		
 		gui.clearElements();
-		gui.newString("gotta love testing ", Color.blue, width, height, new Vector2f(topleft.x, topleft.y));
-		gui.newString("wooo writing", Color.blue, width, height, new Vector2f(topleft.x, topleft.y));
+		gui.newString("gotta love testing ", Color.blue, width, height, new Vector2f(topleft.x, topleft.y), size);
+		gui.newString("wooo writing", Color.blue, width, height, new Vector2f(topleft.x, topleft.y), size);
 		gui.newLine();
-		gui.newString("new line", Color.blue, width, height, new Vector2f(topleft.x, topleft.y));
+		gui.newString("new line", Color.blue, width, height, new Vector2f(topleft.x, topleft.y), size);
 		return rectdata;
 	}
 	public void draw() {
@@ -178,7 +183,7 @@ public class Window {
 		setupCollisionBoxs();
 		
 		float[] window = makeWindow(texID, (getPos(1)), Math.abs((getPos(1).x) - (getPos(2).x)), 
-				Math.abs((getPos(1).y) - (getPos(4).y)), indices);
+				Math.abs((getPos(1).y) - (getPos(4).y)), indices, size);
 		
 		this.windowdata = BufferUtils.createFloatBuffer(window.length);
 		this.windowdata.put(window);

@@ -83,20 +83,6 @@ public class Spawner {
 				enemytype.getEnemy().getHealth(), 200, 
 				bullettextureid, explosiontextureid, enemytype.getEnemy().getMovementStyle(), 
 				enemytype.getEnemy().getAnimationType(), enemytype.getEnemy().getCollisions())));
-		
-//		vbo.clear();
-//		for(int i=0; i<buffersneeded; i++) {
-//			System.out.println(((amountspawned*buffersneeded) + i + 1));
-//			vbo.put(vbos.get((amountspawned*buffersneeded) + i + 1));
-//		}
-//		IntBuffer vao = BufferUtils.createIntBuffer(buffersneeded);
-//		vaos.flip();
-//		vao.clear();
-//		for(int i=0; i<buffersneeded; i++) {
-//			vao.put(vaos.get((amountspawned*buffersneeded) + i));
-//		}
-//		System.out.println(vbo.get(0));
-		
 		enemies.get(enemies.size()-1).finish(vbos, vaos, timings);
 		amountspawned+=1;
 	}

@@ -74,10 +74,10 @@ public class GuiElementHandler {
 	public GuiElementHandler() {
 		texid = glGenTextures();
 	}
-	public int newString(String str, Color c, float  width, float height, Vector2f topleft) {
+	public int newString(String str, Color c, float  width, float height, Vector2f topleft, float size) {
 		if(!content.contains(str)) {
 			elements.add(new GuiString(str, c, new Vector2f(topleft.x, topleft.y), 
-				width, height, topleft));
+				width, height, topleft, size));
 			content.add(str);
 			images.add(elements.get(elements.size()-1).getImg());
 			bounds.add(elements.get(elements.size()-1).getBounds());
@@ -90,9 +90,9 @@ public class GuiElementHandler {
 		keys.add(currentindex);
 		return currentindex;
 	}
-	public int newStringAtPos(String str, Color c, Vector2f pos) {
+	public int newStringAtPos(String str, Color c, Vector2f pos, float size) {
 		elements.add(new GuiString(str, c, new Vector2f(pos.x, pos.y), 
-			10, 10, pos));
+			10, 10, pos, size));
 		content.add(str);
 		images.add(elements.get(elements.size()-1).getImg());
 		bounds.add(elements.get(elements.size()-1).getBounds());
@@ -151,6 +151,7 @@ public class GuiElementHandler {
 		maxheight = 0.0f;
 		elements.clear();
 		keys.clear();
+		content.clear();
 	}
 	public void drawElements(ShaderHandler sh) {
 		for(int i=0; i<elements.size();i++) {

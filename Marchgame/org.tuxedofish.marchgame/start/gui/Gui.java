@@ -58,10 +58,10 @@ public class Gui {
 	
 	private int done;
 	
-	public Gui(DisplaySetup d, VertexHandler vh, ShaderHandler sh, Controller parent){
+	public Gui(DisplaySetup d, VertexHandler vh, ShaderHandler sh, Controller parent, float size){
 		this.d = d; this.vh = vh; this.sh = sh; this.parent = parent;
 		
-		this.window = new Window(10, 300, 300, 300, sh);
+		this.window = new Window(10, 300, 300, 300, sh, size);
 	}
 	public boolean istouching(int mousex, int mousey) {
 		return window.isTouching(mousex, mousey);
