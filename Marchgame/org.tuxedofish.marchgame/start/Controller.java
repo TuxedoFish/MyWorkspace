@@ -451,6 +451,8 @@ public class Controller {
 						if(el!=null) {
 							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
 						} else {
+							gui.clearElements();
+							gui.newString("Press X To Play", new Color(0.0f, 0.0f, 0.0f, opacity), 200.0f, 40.0f, new Vector2f(-0.3f, -0.7f), 25.0f);
 							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
 						}
 						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -471,8 +473,6 @@ public class Controller {
 						}
 					}
 					ih.update(display);
-					gui.clearElements();
-					gui.newString("Press X To Play", new Color(0.0f, 0.0f, 0.0f, opacity), 200.0f, 40.0f, new Vector2f(-0.3f, -0.7f), 25.0f);
 					gui.drawElements(shaderhandler);
 				}
 			} else {
@@ -564,7 +564,7 @@ public class Controller {
 		}
 		if(spawners != null) {
 			for(int i=0; i<spawners.size(); i++) {
-				if(spawners.get(i).getThreadID() == index) {
+				if(spawners.get(i).getThreadID() == index && enemies.size()!=0) {
 					int[] threadids = new int[enemies.get(i).getShootSpeeds().size()+1];
 					if(threadids.length==1){
 						threadids = new int[2];
@@ -582,7 +582,6 @@ public class Controller {
 				for(int j=0; j<spawners.get(i).getEnemies().size(); j++) {
 					for(int k=0; k<spawners.get(i).getEnemies().get(j).getShootThreadID().length; k++) {
 						if(spawners.get(i).getEnemies().get(j).getShootThreadID()[k] == index) {
-							System.out.println("spawner shoot");
 							spawners.get(i).getEnemies().get(j).shoot(display, index);
 						}
 					}
@@ -645,8 +644,12 @@ public class Controller {
 				if((player.getPos().x<0.0f+(xthreshold) && currentx>0.0f) ||
 						(player.getPos().x>0.0f-(xthreshold) && currentx<0.0f)) {
 					currentx += x;
+					display.changepos(-x, 0.0f, 0.0f);
 				}
 				player.move(x, y, xthreshold, display);
+			}
+			if(display.getPos().x > 0.23999996) {
+				display.changepos((float) -(display.getPos().x-0.23999996), 0, 0);
 			}
 		}
 	}
@@ -695,6 +698,20 @@ public class Controller {
 				}
 			} else {
 				boolean stay=true;
+				for (int i=0; i<spawners.size(); i++) {
+					if(spawners.get(i).getAmountLeft()>0){
+						stay = false;
+					} else {
+						for(int j=0; j<spawners.get(i).getEnemies().size(); j++) {
+							if(!spawners.get(i).getEnemies().get(j).isDead()) {
+								if(spawners.get(i).getEnemies().get(j).getPos().y<(display.getPos().y*-1)+1.0f &&
+										spawners.get(i).getEnemies().get(j).getPos().y>(display.getPos().y*-1)-1.0f) {
+									stay=false;
+								}
+							}
+						}
+					}
+				}
 				for(int i=0; i<enemies.size(); i++) {
 					if(!enemies.get(i).isDead()) {
 						if(enemies.get(i).getPos().y<(display.getPos().y*-1)+1.0f &&
@@ -763,7 +780,7 @@ public class Controller {
 		 s.finishprogram(testprogram);
 	}
 	public int addString(String str, Vector2f pos, float size) {
-		return gui.newStringAtPos(str, Color.RED, pos, size);
+		return gui.newStringAtPos(str, Color.WHITE, pos, size);
 	}
 	public void removeElement(Integer index) {
 		gui.removeElement(index);

@@ -301,16 +301,11 @@ public class Enemy extends Sprite{
 	public void followPath(DisplaySetup d) {
 		if(Math.abs(d.getPos().y) + 1.0f > pos.y && !stopped) {
 			if(started) {
-				if(stage >= dist) {
+				if(stage >= dist/p.getSpeed()) {
 					index += 1;
 					stage = 0;
 					if(index >= ep.getSize()) {
 						if(index==ep.getSize()) {
-							this.lastp = ep.getPoint(index-1);
-							this.p = new PathPoint(new Vector2f(0.0f, 0.0f), ep.getPoint(index-1).getIndex());
-							this.p.setPos(new Vector2f(lastp.getPos().x, lastp.getPos().y - 0.6f));
-							dist = 50;
-						} else {
 							this.stopped = true;
 						}
 					} else {
@@ -320,7 +315,8 @@ public class Enemy extends Sprite{
 								Math.pow(p.getPos().y - lastp.getPos().y, 2))*300.0f);
 					}
 				} else {
-					this.changePos((p.getPos().x - lastp.getPos().x)/dist, (p.getPos().y - lastp.getPos().y)/dist);
+					this.changePos(((p.getPos().x - lastp.getPos().x)/dist)*p.getSpeed(), 
+							((p.getPos().y - lastp.getPos().y)/dist)*p.getSpeed());
 					if(animationstyle == 3) {
 						float direction = (float) Math.atan2(p.getPos().y - lastp.getPos().y, p.getPos().x - lastp.getPos().x);
 						int texture = 6-(int)(direction/(Math.PI/4));

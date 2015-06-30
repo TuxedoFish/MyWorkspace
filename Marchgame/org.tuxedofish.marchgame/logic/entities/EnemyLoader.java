@@ -104,13 +104,16 @@ public class EnemyLoader extends Thread{
 	}
 	public Troop getEnemy(String[] parts, BufferedReader reader) {
 		try {
-		String line2 = "";
+		String line2 = reader.readLine();
+		
 		EnemyPath ep = new EnemyPath();
-		while((line2=reader.readLine()).startsWith("ep")) {
-			String[] data = line2.split(" ");
-			ep.addPoint(new PathPoint(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])), 
-				Integer.valueOf(data[3])));
+		
+		if(parts.length == 6) {
+			ep = getPath(parts[5]);
+		} else {
+			ep = null;
 		}
+		
 		texloc = line2;
 		int lti = Integer.valueOf(reader.readLine());
 		int hti = Integer.valueOf(reader.readLine());
@@ -274,15 +277,12 @@ public class EnemyLoader extends Thread{
 					if(parts[0].equals("stop")) {
 						stops.add(Float.valueOf(parts[2]));
 					} else if (parts[0].contains("spawner")) {
-						System.out.println(parts[0].substring(7, parts[0].length()));
 						BufferedReader reader = images.getFile("enemies/" + parts[0].substring(7, parts[0].length()) + ".txt");
 						int typeofspawner = parts[0].charAt(parts[0].length()-1);
 						Troop spawnertype = getEnemy(parts, reader);
 						spawners.add(new Spawner(spawnertype, new TextureHolder[]{spriteholder.getTexture("explosion"), 
 								spriteholder.getTexture("bullets"), spriteholder.getTexture(texloc)}, parts, spriteholder.getTextureID(texloc), 
 								spriteholder.getTextureID("bullets"), spriteholder.getTextureID("explosion")));
-						
-						System.out.println("spawner" + typeofspawner);
 					} else {
 						BufferedReader reader = images.getFile("enemies/" + parts[0] + ".txt");
 						allenemies.add(getEnemy(parts, reader));
@@ -333,7 +333,7 @@ public class EnemyLoader extends Thread{
 									for(int l=0; l<path.getHeight(); l++) {
 										Color c2 = new Color(path.getRGB(k, l));
 										if(c2.getRed() != 255 || c2.getGreen() != 255 || c2.getBlue() != 255) {
-											ep.addPoint(new PathPoint(new Vector2f(k, l), c2.getRed()/10));
+											ep.addPoint(new PathPoint(new Vector2f(k, l), 1.0f, c2.getRed()/10));
 											if(!colors.contains(c)) {
 												writer.write("ep " + k + " " + l + " " + c2.getRed()/10); writer.println();
 											}
@@ -374,6 +374,28 @@ public class EnemyLoader extends Thread{
 		}
 		this.enemies = allenemies;
 		this.finished = true;
+	}
+	public EnemyPath getPath(String texloc) {
+		EnemyPath ep = new EnemyPath();
+		BufferedReader reader;
+		ImageReturn images = new ImageReturn();
+		try {
+			reader = images.getFile("enemies/" + texloc + ".txt");
+		
+			String line2 = "";
+						
+			while((line2=reader.readLine()).startsWith("ep")) {
+				String[] data = line2.split(" ");
+				ep.addPoint(new PathPoint(new Vector2f(Float.valueOf(data[1]), Float.valueOf(data[2])), 
+					Float.valueOf(data[3]), Integer.valueOf(data[4])));
+			}
+			
+			reader.close();
+			return ep;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	public boolean getFinished() {
 		return finished;

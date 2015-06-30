@@ -198,7 +198,8 @@ public class InputHandler {
 				if (Keyboard.getEventKey() == Keyboard.KEY_W)  up = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_S)  down = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)  {spacedown = true; shootbuttondown=true;}
-				if (Keyboard.getEventKey() == Keyboard.KEY_X)  parent.nextStage();
+				if (Keyboard.getEventKey() == Keyboard.KEY_X)  parent.action("start");
+				if (Keyboard.getEventKey() == Keyboard.KEY_Y)  parent.nextStage();
 		    	} else {
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_A)  leftdown = false;
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_D)  rightdown = false;

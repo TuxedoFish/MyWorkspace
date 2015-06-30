@@ -44,6 +44,7 @@ public class Spawner {
 	private int maxspawnamount;
 	private int amountspawned;
 	private int buffersneeded;
+	private boolean first = true;
 	
 	public int getThreadID() {
 		if(amountspawned>= maxspawnamount) {
@@ -77,20 +78,25 @@ public class Spawner {
 		this.buffersneeded = 3+enemytype.getEnemy().getAmountOfGuns();
 	}
 	public void update(Controller parent, Player player, int[] timings) {
-		enemies.add(((Troop) new Troop(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
-				enemytype.gettexid(), parent, enemytype.getEnemy().getEnemyPath(), player, player.getBullets(), th, enemytype.getEnemy().getLti(),
-				enemytype.getEnemy().getHti(), enemytype.getEnemy().getSizes(), enemytype.getEnemy().getPattern(), 
-				enemytype.getEnemy().getHealth(), 200, 
-				bullettextureid, explosiontextureid, enemytype.getEnemy().getMovementStyle(), 
-				enemytype.getEnemy().getAnimationType(), enemytype.getEnemy().getCollisions())));
-		enemies.get(enemies.size()-1).finish(vbos, vaos, timings);
-		amountspawned+=1;
+		if(!first) {
+			enemies.add(((Troop) new Troop(new Vector2f(Float.valueOf(parts[1]), Float.valueOf(parts[2])), 
+					enemytype.gettexid(), parent, enemytype.getEnemy().getEnemyPath(), player, player.getBullets(), th, enemytype.getEnemy().getLti(),
+					enemytype.getEnemy().getHti(), enemytype.getEnemy().getSizes(), enemytype.getEnemy().getPattern(), 
+					enemytype.getEnemy().getHealth(), 200, 
+					bullettextureid, explosiontextureid, enemytype.getEnemy().getMovementStyle(), 
+					enemytype.getEnemy().getAnimationType(), enemytype.getEnemy().getCollisions())));
+			enemies.get(enemies.size()-1).finish(vbos, vaos, timings);
+			amountspawned+=1;
+		} else {first=false;}
 	}
 	public ArrayList<Troop> getEnemies() {
 		return enemies;
 	}
 	public void setTiming(int index) {
 		threadid=index;
+	}
+	public int getAmountLeft() {
+		return maxspawnamount - amountspawned;
 	}
 	public void render(ShaderHandler sh, DisplaySetup d, DataUtils util) {
 		for(int i=0; i<enemies.size(); i++) {

@@ -1,5 +1,6 @@
 package logic.entities;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.util.vector.Vector2f;
@@ -21,8 +22,12 @@ public class EnemyPath {
 				return points.get(i);
 			}
 		}
+		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+		for(int j=0; j<stack.length; j++) {
+			System.err.println(stack[j].toString());
+		}
 		System.err.println("err at EnemyPath");
 		System.exit(1);
-		return null;
+		return(null);
 	}
 }
