@@ -210,7 +210,7 @@ public class Controller {
 			elements = false;
 			gui.clearElements();
 			ih.clearElements();
-			gui.newString("loading : 0", Color.red, 100, 20, new Vector2f(0.1f, 0.95f), 20.0f);
+			gui.newString("loading : 0", Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
 			SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
 			try {
 				sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
@@ -321,8 +321,8 @@ public class Controller {
 		
 		prevhealth = player.getHealth();
 		prevscore = score;
-		scoreid = gui.newString("score : " + score, Color.red, 100, 50, new Vector2f(0.1f, 0.95f), 15.0f);
-		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 100, 50, new Vector2f(0.1f, 0.85f), 15.0f);
+		scoreid = gui.newString("score : " + score, Color.red, 300, 50, new Vector2f(0.1f, 0.95f), 15.0f);
+		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 300, 50, new Vector2f(0.1f, 0.85f), 15.0f);
 		elements = true;
 		highscore = el.getHighScore();
 		
@@ -407,7 +407,11 @@ public class Controller {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		gui = new GuiElementHandler();
-		gui.newString("Press X To Play", Color.WHITE, 200.0f, 40.0f, new Vector2f(-0.3f, -0.7f), 25.0f);
+		gui.newString("< NEW GAME >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.3f), 10.0f);
+		gui.newString("< FREE PLAY >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.4f), 10.0f);
+		gui.newString("< AREANA >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.5f), 10.0f);
+		gui.newString("< OPTIONS>", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.6f), 10.0f);
+		
 		elements = true;
 		
 		DataUtils dutils = new DataUtils();
@@ -442,7 +446,7 @@ public class Controller {
 							gui.clearElements();
 							ih.clearElements();
 							gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
-							gui.newString("loading : " + loadpercent, Color.red, 100, 20, new Vector2f(0.1f, 0.95f), 20.0f);
+							gui.newString("loading : " + loadpercent, Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
 						}
 					}
 					
@@ -451,8 +455,6 @@ public class Controller {
 						if(el!=null) {
 							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
 						} else {
-							gui.clearElements();
-							gui.newString("Press X To Play", new Color(0.0f, 0.0f, 0.0f, opacity), 200.0f, 40.0f, new Vector2f(-0.3f, -0.7f), 25.0f);
 							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
 						}
 						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

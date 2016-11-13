@@ -102,7 +102,7 @@ public class GuiString implements GuiElement{
 		
 		ImageReturn images = new ImageReturn();
 		try {
-			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(size));
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("airstrike.ttf")).deriveFont(size));
 		} catch (FontFormatException | IOException e) {
 			System.err.println("err loading font");
 			e.printStackTrace();
@@ -131,11 +131,11 @@ public class GuiString implements GuiElement{
 			}
 		}
 		
-		img = new BufferedImage((int)rect.getWidth(), (int)rect.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		img = new BufferedImage((int)rect.getWidth()*3, (int)rect.getHeight()*3, BufferedImage.TYPE_4BYTE_ABGR);
 		g = img.getGraphics();
 		
 		try {
-			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("HARLOWSI.TTF")).deriveFont(size));
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, images.getFont("airstrike.ttf")).deriveFont(size*3));
 		} catch (FontFormatException | IOException e) {
 			System.err.println("err loading font");
 			e.printStackTrace();

@@ -92,7 +92,7 @@ public class GuiElementHandler {
 	}
 	public int newStringAtPos(String str, Color c, Vector2f pos, float size) {
 		elements.add(new GuiString(str, c, new Vector2f(pos.x, pos.y), 
-			(size/2.5f)*str.length(), size, pos, size));
+			(size)*str.length(), size*2, pos, size));
 		content.add(str);
 		images.add(elements.get(elements.size()-1).getImg());
 		bounds.add(elements.get(elements.size()-1).getBounds());

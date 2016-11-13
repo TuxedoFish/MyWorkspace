@@ -16,6 +16,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 import logic.GridParser;
 
+import org.lwjgl.*;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;

@@ -183,8 +183,8 @@ public class Sprite{
 		FloatBuffer datafb;
 		
 		float z = 0.0f;
-		float realwidth = (float)width/Display.getWidth();
-		float realheight = (float)height/Display.getHeight();
+		float realwidth = (float)(width)/Display.getWidth();
+		float realheight = (float)(height)/Display.getHeight();
 		Vector2f[] tc = th.getTextureCoords(texid);
 		
 		data = new float[]{

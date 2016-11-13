@@ -19,7 +19,7 @@ public class Texture {
 		};
 	}
 	private float roundTwoDecimals(float d) {
-        DecimalFormat twoDForm = new DecimalFormat("#.######");
+        DecimalFormat twoDForm = new DecimalFormat("#.############");
         return d;
 	}
 	public Texture(int texid, Vector2f pos, float width, float height, float parentwidth, float parentheight) {
