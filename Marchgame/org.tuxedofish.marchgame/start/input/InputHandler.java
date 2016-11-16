@@ -116,6 +116,7 @@ public class InputHandler {
 	}
 	public void update(DisplaySetup d) {
 		Vector2f mousepos = new Vector2f(Mouse.getX(), Mouse.getY());
+		parent.mouseLoc((float)Mouse.getX()/(float)Display.getWidth(), (float)Mouse.getY()/(float)Display.getHeight());
 		for(int i=0; i<buttons.size(); i++) {
 			if(contains(mousepos, buttons.get(i).getBounds())) {
 				if(Mouse.isButtonDown(0) && !mousedown) {
@@ -143,9 +144,10 @@ public class InputHandler {
 			}
 		}
 		if(Mouse.isButtonDown(0)) {
+			parent.action("start");
 			shootbuttondown=true;
 			if(!mousedown) {
-				parent.addLine((float)Mouse.getX()/Display.getWidth()*2.0f-1.0f, (float)Mouse.getY()/Display.getHeight()*2.0f-1.0f);
+				//parent.addLine((float)Mouse.getX()/Display.getWidth()*2.0f-1.0f, (float)Mouse.getY()/Display.getHeight()*2.0f-1.0f);
 				if(shootduration >= 200) {
 					parent.shoot();
 					parent.resetThread(parent.getPlayerShootThreadId());
@@ -198,7 +200,6 @@ public class InputHandler {
 				if (Keyboard.getEventKey() == Keyboard.KEY_W)  up = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_S)  down = true;
 				if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)  {spacedown = true; shootbuttondown=true;}
-				if (Keyboard.getEventKey() == Keyboard.KEY_X)  parent.action("start");
 				if (Keyboard.getEventKey() == Keyboard.KEY_Y)  parent.nextStage();
 		    	} else {
 		    		if (Keyboard.getEventKey() == Keyboard.KEY_A)  leftdown = false;

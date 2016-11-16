@@ -108,7 +108,6 @@ public class Controller {
 	private int prevhealth = 0;
 	
 	private boolean end = false;
-	private boolean levelmap = false;
 	
 	private ArrayList<Spawner> spawners;
 	
@@ -126,6 +125,8 @@ public class Controller {
 	
 	private int texid;
 	
+	private int stage = 0;
+	
 	private boolean elements = false;
 	
 	private ArrayList<Integer> texids = new ArrayList<Integer>(); 
@@ -140,7 +141,7 @@ public class Controller {
 	
 	private boolean update = false;
 	
-	private EnemyAutoGenerator eag = new EnemyAutoGenerator(this);
+	//private EnemyAutoGenerator eag = new EnemyAutoGenerator(this);
 	
 	private Vector4f lastpoint = null;
 	
@@ -151,8 +152,7 @@ public class Controller {
 	
 	private int healthid;
 	private int scoreid;
-	
-	private int stage = 0;
+
 	
 	private int loadpercent = 0;
 	private int prevpercent = 0;
@@ -164,6 +164,8 @@ public class Controller {
 	private LevelRenderer lr;
 	private Sprite currentlevel;
 	private int level;
+	
+	private int menu = 0;
 	
 	private ShaderHandler shaderhandler;
 	
@@ -204,44 +206,42 @@ public class Controller {
 		ct.resetTimeStep(index);
 	}
 	public void startup(String level) {
-		if(stage == 0) {
-			display.changepos(-display.getPos().x, -display.getPos().y, 0.0f);
-			levelmap = false;
-			elements = false;
-			gui.clearElements();
-			ih.clearElements();
-			gui.newString("loading : 0", Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
-			SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
-			try {
-				sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
-				sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
-				sph.addTexture(images.getImage("Spinninglaser.png"), "Spinninglaser.png", 49);
-				sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
-				sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
-				sph.addTexture(images.getImage("alientank.png"), "alientank.png", 59);
-				sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
-				sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
-				sph.addTexture(images.getImage("alientankgun.png"), "alientankgun.png", 29);
-				sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
-				sph.addTexture(images.getImage("missileheads.png"), "missileheads.png", 99, 59);
-				sph.addTexture(images.getImage("samurai.png"), "samurai.png", 99, 199);
-				sph.addTexture(images.getImage("ship.png"), "ship.png", 99, 199);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			sph.finish();
-			
-			GridParser gp = new GridParser();
-			try {
-				blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
-			} catch (IOException e) {
-				System.out.println("u done fucked up");
-				e.printStackTrace();
-			}
-			blocktex.finish();
-			
-			el = new EnemyLoader(true, level, this, null, ct, display, sph, blocktex);
+		display.changepos(-display.getPos().x, -display.getPos().y, 0.0f);
+		stage = 2;
+		elements = false;
+		gui.clearElements();
+		ih.clearElements();
+		gui.newString("loading : 0", Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
+		SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
+		try {
+			sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
+			sph.addTexture(images.getImage("Enemy3.png"), "Enemy3.png", 49);
+			sph.addTexture(images.getImage("Spinninglaser.png"), "Spinninglaser.png", 49);
+			sph.addTexture(images.getImage("cyborg.png"), "cyborg.png", 32);
+			sph.addTexture(images.getImage("missile.png"), "missile.png", 32);
+			sph.addTexture(images.getImage("alientank.png"), "alientank.png", 59);
+			sph.addTexture(images.getImage("SegaExplosions.png"), "explosion", 100);
+			sph.addTexture(images.getImage("bullets2.png"), "bullets", 19);
+			sph.addTexture(images.getImage("alientankgun.png"), "alientankgun.png", 29);
+			sph.addTexture(images.getImage("gun1.png"), "gun1.png", 20);
+			sph.addTexture(images.getImage("missileheads.png"), "missileheads.png", 99, 59);
+			sph.addTexture(images.getImage("samurai.png"), "samurai.png", 99, 199);
+			sph.addTexture(images.getImage("ship.png"), "ship.png", 99, 199);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		sph.finish();
+		
+		GridParser gp = new GridParser();
+		try {
+			blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
+		} catch (IOException e) {
+			System.out.println("u done fucked up");
+			e.printStackTrace();
+		}
+		blocktex.finish();
+		
+		el = new EnemyLoader(true, level, this, null, ct, display, sph, blocktex);
 	}
 	public void startupfinish() throws IOException {
 		enemies = el.getEnemies();
@@ -327,6 +327,7 @@ public class Controller {
 		highscore = el.getHighScore();
 		
 		started = true;
+		stage = 3;
 	}
 	public ArrayList<Integer> getColorsID() {
 		return texids;
@@ -407,108 +408,116 @@ public class Controller {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		gui = new GuiElementHandler();
-		gui.newString("< NEW GAME >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.3f), 10.0f);
-		gui.newString("< FREE PLAY >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.4f), 10.0f);
-		gui.newString("< AREANA >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.5f), 10.0f);
-		gui.newString("< OPTIONS>", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.6f), 10.0f);
+		gui.newString("< NEW GAME >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.0f), 10.0f);
+		gui.newString("  NEW GAME  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.0f), 10.0f);
+		
+		gui.newString("< FREE PLAY >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.1f), 10.0f);
+		gui.newString("  FREE PLAY  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.1f), 10.0f);
+
+		gui.newString("< AREANA >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.2f), 10.0f);
+		gui.newString("  AREANA  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.2f), 10.0f);
+		
+		gui.newString("< OPTIONS >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.3f), 10.0f);
+		gui.newString("  OPTIONS  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.3f), 10.0f);
+		
+		gui.switchvisibility(1); gui.switchvisibility(2); gui.switchvisibility(4); gui.switchvisibility(6);
 		
 		elements = true;
 		
 		DataUtils dutils = new DataUtils();
 		GenrealRenderer gr = new GenrealRenderer();
-		
 		float opacity = 0.0f;
 		boolean rising = true;
 		
 		while(!Display.isCloseRequested()) {
-			if(stage == 0) {
-				FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
-				Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
-				if(started) {
-					utils.begin(shaderhandler, display);
-					utils.setup(leveldatafb, levelvbo, levelvao, shaderhandler, ultimateleveltex, 2, bgindicesb, matrix, 0);
-					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-					rendergl(shaderhandler, display);
-					ih.update(display);
-				} else {
-					if(el != null && el.getFinished()) {
-						try {
-							this.startupfinish();
-						} catch (IOException e) {
-							System.err.println("failed to startup");
-							e.printStackTrace();
-						}
-					}
-					if(el != null && prevpercent != loadpercent) {
-						if(blocks.size() == 0) {
-							prevpercent = loadpercent;
-							elements = false;
-							gui.clearElements();
-							ih.clearElements();
-							gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
-							gui.newString("loading : " + loadpercent, Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
-						}
-					}
-					
-					utils.begin(shaderhandler, display);
-					if(!levelmap) {
-						if(el!=null) {
-							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
-						} else {
-							utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
-						}
-						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-					} else {
-						map.render(shaderhandler, dutils, 0);
-					}
-					if(rising) {
-						opacity += 0.01f;
-						if(opacity >= 1.0f) {
-							opacity = 1.0f;
-							rising = false;
-						}
-					} else {
-						opacity -= 0.01f;
-						if(opacity <= 0.0f) {
-							opacity  = 0.0f;
-							rising = true;
-						}
-					}
-					ih.update(display);
-					gui.drawElements(shaderhandler);
-				}
+			FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
+			Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
+			if(stage == 3) {
+				utils.begin(shaderhandler, display);
+				utils.setup(leveldatafb, levelvbo, levelvao, shaderhandler, ultimateleveltex, 2, bgindicesb, matrix, 0);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				rendergl(shaderhandler, display);
+				ih.update(display);
 			} else {
-				if(stage == 1) {
-					utils.begin(shaderhandler, display);
-					ih.update(display);
-					if(!finished) {
-						enemybg.finish(glGenBuffers(), glGenVertexArrays());
-						finished = true;
+				if(el != null && el.getFinished()) {
+					try {
+						this.startupfinish();
+					} catch (IOException e) {
+						System.err.println("failed to startup");
+						e.printStackTrace();
 					}
-					enemybg.render(shaderhandler, utils, 0);
-					gr.renderLineCollection(enemypolygonslines, shaderhandler, display, this);
-				} else {
-					utils.begin(shaderhandler, display);
-					ih.update(display);
-					gr.renderLineCollection(enemypathlines, shaderhandler, display, this);
 				}
+				if(stage == 2 && prevpercent != loadpercent) {
+					if(blocks.size() == 0) {
+						prevpercent = loadpercent;
+						elements = false;
+						gui.clearElements();
+						ih.clearElements();
+						gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
+						gui.newString("loading : " + loadpercent, Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
+					}
+				}
+				
+				utils.begin(shaderhandler, display);
+				if(stage==1) {
+					map.render(shaderhandler, dutils, 0);
+				} else  if(stage == 2) {
+					utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, loadscreen, 1, bgindicesb, matrix, 0);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				} else if (stage == 0) {
+					utils.setup(bgdatafb, bgvbo, bgvao, shaderhandler, titlescreen, 1, bgindicesb, matrix, 0);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				}
+				if(rising) {
+					opacity += 0.01f;
+					if(opacity >= 1.0f) {
+						opacity = 1.0f;
+						rising = false;
+					}
+				} else {
+					opacity -= 0.01f;
+					if(opacity <= 0.0f) {
+						opacity  = 0.0f;
+						rising = true;
+					}
+				}
+				ih.update(display);
+				gui.drawElements(shaderhandler);
 			}
+//				if(stage == 1) {
+//					utils.begin(shaderhandler, display);
+//					ih.update(display);
+//					if(!finished) {
+//						enemybg.finish(glGenBuffers(), glGenVertexArrays());
+//						finished = true;
+//					}
+//					enemybg.render(shaderhandler, utils, 0);
+//					gr.renderLineCollection(enemypolygonslines, shaderhandler, display, this);
+//				} else {
+//					utils.begin(shaderhandler, display);
+//					ih.update(display);
+//					gr.renderLineCollection(enemypathlines, shaderhandler, display, this);
+//				}
 			Display.update();
 			Display.sync(60);
 		}
 		ct.interrupt();
 	}
 	public boolean isLevelMap() {
-		return levelmap;
+		if(stage==1) {
+			return true;
+		} else {
+			return true;
+		}
 	}
 	public void action(String message) {
-		if(message.equals("start")) {
-			levelmap = true;
+		if(message.equals("start") && menu==0 && stage==0) {
+			stage = 1;
 			ih.atLevelMap(true);
 			this.levelselectscreen();
 		}
 		if(message.contains("level")) {
-			levelmap = false;
+			stage = 2;
 			ih.atLevelMap(false);
 			level=Integer.valueOf(message.substring(message.length()-1, message.length()));
 			this.startup("level" + level);
@@ -531,7 +540,7 @@ public class Controller {
 			if(playerthread == index && player != null) {
 				player.resetBlinking();
 			} else {
-				if(started) {
+				if(stage == 3) {
 					for(int i=0; i<enemies.size(); i++) {
 						if(enemies.get(i).getThreadID() == index) {
 							enemies.get(i).resetBlinking();
@@ -559,9 +568,11 @@ public class Controller {
 		if(boss != null && index == boss.getUpdateThreadID()) {
 			boss.update();
 		}
-		for(int i=0; i<markers.size(); i++) {
-			if(markers.get(i).getAnimationThreadID() == index) {
-				markers.get(i).animate();
+		if(stage==1) {
+			for(int i=0; i<markers.size(); i++) {
+				if(markers.get(i).getAnimationThreadID() == index) {
+					markers.get(i).animate();
+				}
 			}
 		}
 		if(spawners != null) {
@@ -790,29 +801,29 @@ public class Controller {
 	public void removeThread(Integer index) {
 		ct.removeTimeStep(index);
 	}
-	public void addLine(float mousex, float mousey) {
-		if(stage == 1) {
-			if(lastpoint != null) {
-				enemypolygonslines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
-			} else {
-				enemypolygonslines.addLine(new Line(new Vector4f(mousex, mousey, 0.0f, 1.0f), new Vector4f(mousex, mousey, 0.0f, 1.0f)));
-			}
-			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
-			enemycollisionpoints.add(new Vector2f(mousex, mousey));
-			enemycollisiontexids.add(enemytexid);
-		} else if(stage == 2) {
-			if(lastpoint != null) {
-				enemypathlines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
-			} else {
-				enemypathlines.addLine(new Line(new Vector4f(mousex, mousey, 0.0f, 1.0f), new Vector4f(mousex, mousey, 0.0f, 1.0f)));
-			}
-			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
-			enemypathpoints .add(new Vector2f(mousex, mousey));
-		}
-	}
-	public void setStage(int stage) {
-		this.stage = stage;
-	}
+//	public void addLine(float mousex, float mousey) {
+//		if(stage == 1) {
+//			if(lastpoint != null) {
+//				enemypolygonslines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+//			} else {
+//				enemypolygonslines.addLine(new Line(new Vector4f(mousex, mousey, 0.0f, 1.0f), new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+//			}
+//			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
+//			enemycollisionpoints.add(new Vector2f(mousex, mousey));
+//			enemycollisiontexids.add(enemytexid);
+//		} else if(stage == 2) {
+//			if(lastpoint != null) {
+//				enemypathlines.addLine(new Line(lastpoint, new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+//			} else {
+//				enemypathlines.addLine(new Line(new Vector4f(mousex, mousey, 0.0f, 1.0f), new Vector4f(mousex, mousey, 0.0f, 1.0f)));
+//			}
+//			lastpoint = new Vector4f(mousex, mousey, 0.0f, 1.0f);
+//			enemypathpoints .add(new Vector2f(mousex, mousey));
+//		}
+//	}
+//	public void setStage(int stage) {
+//		this.stage = stage;
+//	}
 	public int getStage() {
 		return stage;
 	}
@@ -862,5 +873,13 @@ public class Controller {
 	}
 	public void end() {
 		end = true;
+	}
+	public void mouseLoc(float x, float y) {
+		if(stage==0 && el==null) {
+			if(0.46<y && y<1.0f && menu != 0) {gui.switchvisibility(menu*2); gui.switchvisibility((menu*2)+1); gui.switchvisibility(0); gui.switchvisibility(1); menu=0;}
+			if(0.41<y && y<0.46f && menu != 1) {gui.switchvisibility(menu*2); gui.switchvisibility((menu*2)+1); gui.switchvisibility(2); gui.switchvisibility(3); menu=1;}
+			if(0.36<y && y<0.41 && menu != 2) {gui.switchvisibility(menu*2); gui.switchvisibility((menu*2)+1); gui.switchvisibility(4); gui.switchvisibility(5); menu=2;}
+			if(0.31<y && y<0.36 && menu != 3) {gui.switchvisibility(menu*2); gui.switchvisibility((menu*2)+1); gui.switchvisibility(6); gui.switchvisibility(7); menu=3;}
+		}
 	}
 }

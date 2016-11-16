@@ -70,11 +70,13 @@ public class GuiElementHandler {
 	private ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
 	private ArrayList<Rectangle2D> bounds = new ArrayList<Rectangle2D>();
 	private ArrayList<String> content = new ArrayList<String>();
+	private ArrayList<Boolean> visibility = new ArrayList<Boolean>();
 	
 	public GuiElementHandler() {
 		texid = glGenTextures();
 	}
 	public int newString(String str, Color c, float  width, float height, Vector2f topleft, float size) {
+		visibility.add(true);
 		if(!content.contains(str)) {
 			elements.add(new GuiString(str, c, new Vector2f(topleft.x, topleft.y), 
 				width, height, topleft, size));
@@ -91,6 +93,7 @@ public class GuiElementHandler {
 		return currentindex;
 	}
 	public int newStringAtPos(String str, Color c, Vector2f pos, float size) {
+		visibility.add(true);
 		elements.add(new GuiString(str, c, new Vector2f(pos.x, pos.y), 
 			(size)*str.length(), size*2, pos, size));
 		content.add(str);
@@ -110,6 +113,7 @@ public class GuiElementHandler {
 	}
 	public int newButton(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
 			String eventmessage) {
+		visibility.add(true);
 		GuiButton button = new GuiButton(loc, pos, width, height, parent, eventmessage);
 		System.out.println(width + " : " + height);
 		elements.add(button);
@@ -121,6 +125,7 @@ public class GuiElementHandler {
 	}
 	public GuiMarker newMarker(String loc, Vector2f pos, float width, float height, InputHandler ih, Controller parent,
 			String eventmessage, int animationid, int animationlength) {
+		visibility.add(true);
 		GuiMarker marker = new GuiMarker(loc, pos, width, height, parent, eventmessage, animationid, animationlength);
 		elements.add(marker);
 		ih.addMarker(marker, elements.size()-1);
@@ -130,6 +135,7 @@ public class GuiElementHandler {
 		return marker;
 	}
 	public int newBar(String barname, Vector2f pos, int percent) {
+		visibility.add(true);
 		elements.add(new GuiBar(barname, pos, percent));
 		
 		currentindex += 1;
@@ -137,6 +143,7 @@ public class GuiElementHandler {
 		return currentindex;
 	}
 	public void removeElement(int index) {
+		visibility.remove(keys.indexOf(index));
 		elements.remove(keys.indexOf(index));
 		keys.remove(keys.indexOf(index));
 	}
@@ -146,6 +153,7 @@ public class GuiElementHandler {
 		maxheight = 0;
 	}
 	public void clearElements() {
+		visibility.clear();
 		nextx = 0.0f;
 		nexty = 0.0f;
 		maxheight = 0.0f;
@@ -153,16 +161,22 @@ public class GuiElementHandler {
 		keys.clear();
 		content.clear();
 	}
+	public void switchvisibility(int i) {
+		if(visibility.get(i)) {visibility.set(i, false);} else {
+														visibility.set(i, true);}
+	}
 	public void drawElements(ShaderHandler sh) {
+		DataUtils datautil = new DataUtils();
 		for(int i=0; i<elements.size();i++) {
-			DataUtils datautil = new DataUtils();
-			if(elements.size() > i) {
-				if(elements.get(i).getType().equals("Marker")) {
-					datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 2, elements.get(i).getIndices(), elements.get(i).getMatrix(), 0);
-					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-				} else {
-					datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 1, elements.get(i).getIndices(), null, 0);
-					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			if(visibility.get(i)) {
+				if(elements.size() > i) {
+					if(elements.get(i).getType().equals("Marker")) {
+						datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 2, elements.get(i).getIndices(), elements.get(i).getMatrix(), 0);
+						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+					} else {
+						datautil.setup(elements.get(i).getData(), vboId, vaoId, sh, elements.get(i).getTextureId(), 1, elements.get(i).getIndices(), null, 0);
+						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+					}
 				}
 			}
 		}
