@@ -211,7 +211,7 @@ public class Controller {
 		elements = false;
 		gui.clearElements();
 		ih.clearElements();
-		gui.newString("loading : 0", Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
+		gui.newBar("bar", new Vector2f(-0.6f, 0.2f), loadpercent); 
 		SpriteHolder sph = new SpriteHolder(); ImageReturn images = new ImageReturn();
 		try {
 			sph.addTexture(images.getImage("Enemy2.png"), "Enemy2.png", 49);
@@ -305,6 +305,7 @@ public class Controller {
 		lr.update(blocks, display);
 		
 		elements = false;
+		stage = 3;
 		gui = new GuiElementHandler();
 		ih.clearElements();
 		
@@ -321,13 +322,13 @@ public class Controller {
 		
 		prevhealth = player.getHealth();
 		prevscore = score;
-		scoreid = gui.newString("score : " + score, Color.red, 300, 50, new Vector2f(0.1f, 0.95f), 15.0f);
-		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 300, 50, new Vector2f(0.1f, 0.85f), 15.0f);
 		elements = true;
 		highscore = el.getHighScore();
 		
+		scoreid = gui.newString("score : " + score, Color.red, 300, 50, new Vector2f(0.1f, 0.95f), 15.0f);
+		highscoreid = gui.newString("highscore : " + el.getHighScore(), Color.red, 300, 50, new Vector2f(0.1f, 0.85f), 15.0f);
+		
 		started = true;
-		stage = 3;
 	}
 	public ArrayList<Integer> getColorsID() {
 		return texids;
@@ -454,8 +455,7 @@ public class Controller {
 						elements = false;
 						gui.clearElements();
 						ih.clearElements();
-						gui.newBar("bar", new Vector2f(-0.5f, 0.95f), loadpercent);
-						gui.newString("loading : " + loadpercent, Color.red, 200, 40, new Vector2f(0.1f, 0.95f), 20.0f);
+						gui.newBar("bar", new Vector2f(-0.6f, 0.2f), loadpercent);
 					}
 				}
 				
