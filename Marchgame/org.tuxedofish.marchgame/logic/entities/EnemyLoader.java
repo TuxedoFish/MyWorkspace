@@ -225,7 +225,7 @@ public class EnemyLoader extends Thread{
 				
 				Parser parser = new Parser();
 				blocks = parser.parseLevel(images.getImage(level + ".png"), 
-						new Vector2f(-1.0f, -1.0f), blockth);
+						new Vector2f(-1.25f, -1.0f), blockth);
 				
 //				Vector2f p = new Vector2f(-1.0f, 0.0f);
 //				BufferedImage img = images.getImage("trees.png");

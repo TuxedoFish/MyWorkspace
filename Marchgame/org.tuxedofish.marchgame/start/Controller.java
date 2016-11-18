@@ -236,7 +236,7 @@ public class Controller {
 		try {
 			blocktex = gp.parseGrid(images.getImage("LAND2.png"), 50);
 		} catch (IOException e) {
-			System.out.println("u done fucked up");
+			System.out.println("textures were not loaded");
 			e.printStackTrace();
 		}
 		blocktex.finish();
@@ -434,6 +434,7 @@ public class Controller {
 			Matrix4f mat = new Matrix4f(); mat.store(matrix); matrix.flip();
 			if(stage == 3) {
 				utils.begin(shaderhandler, display);
+				lr.render(blockdata, shaderhandler, blocktex, blocks, display);
 				utils.setup(leveldatafb, levelvbo, levelvao, shaderhandler, ultimateleveltex, 2, bgindicesb, matrix, 0);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 				rendergl(shaderhandler, display);
@@ -667,13 +668,27 @@ public class Controller {
 		}
 	}
 	public void toHome() {
+		stage=0;
 		started = false;
 		el = null;
 		prevpercent = 0; loadpercent = 0;
 		elements = false;
+		
 		gui = new GuiElementHandler();
-		gui.newButton("button2", new Vector2f(-0.45f, -0.75f), 200.0f, 50.0f, ih, this, "start");
-		gui.newString("Click To Play", Color.BLACK, 200.0f, 50.0f, new Vector2f(-0.3f, -0.82f), 20.0f);
+		gui.newString("< NEW GAME >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.0f), 10.0f);
+		gui.newString("  NEW GAME  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.0f), 10.0f);
+		
+		gui.newString("< FREE PLAY >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.1f), 10.0f);
+		gui.newString("  FREE PLAY  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.1f), 10.0f);
+
+		gui.newString("< AREANA >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.2f), 10.0f);
+		gui.newString("  AREANA  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.2f), 10.0f);
+		
+		gui.newString("< OPTIONS >", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.3f), 10.0f);
+		gui.newString("  OPTIONS  ", Color.WHITE, 100, 20, new Vector2f(-0.22f, -0.3f), 10.0f);
+		
+		gui.switchvisibility(1); gui.switchvisibility(2); gui.switchvisibility(4); gui.switchvisibility(6);
+		
 		elements = true;
 		display.changepos(0.0f, -display.getPos().y, 0.0f);
 		player.reset();
@@ -740,7 +755,6 @@ public class Controller {
 			}
 		}
 		//ultimatelevel.render(sh, util, 0);
-		//lr.render(blockdata, sh, blocktex, blocks, d);
 		for(int i=0; i<buildings.size(); i++) {
 			buildings.get(i).render(sh, d, util);
 		}
